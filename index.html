@@ -268,17 +268,6 @@
       max-width: 100vw;
     }
 
-    header::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
-      animation: shine 3s infinite linear;
-    }
-
     .header-content {
       max-width: 1200px;
       margin: 0 auto;
@@ -302,7 +291,7 @@
     .logo {
       font-size: 2.5rem;
       color: white;
-      animation: pulse 2s infinite, rotate 10s infinite linear;
+      animation: pulse 2s infinite;
       filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
       background: rgba(255, 255, 255, 0.2);
       width: 70px;
@@ -357,7 +346,7 @@
 
     .theme-toggle:hover {
       background: rgba(255, 255, 255, 0.3);
-      transform: rotate(30deg) scale(1.1);
+      transform: scale(1.1);
       box-shadow: var(--neon-glow);
     }
 
@@ -592,7 +581,6 @@
 
     .section-title i {
       color: var(--primary);
-      animation: spin 4s infinite linear;
     }
 
     #subjects {
@@ -1265,11 +1253,6 @@
       100% { transform: translateX(100%) rotate(30deg); }
     }
 
-    @keyframes shine {
-      0% { transform: translateX(-100%) skewX(-15deg); }
-      100% { transform: translateX(100%) skewX(-15deg); }
-    }
-
     @keyframes neon-pulse {
       0%, 100% { box-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary); }
       50% { box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 30px var(--primary); }
@@ -1450,6 +1433,8 @@
 
     .modal-body {
       padding: 1.5rem;
+      max-height: 60vh;
+      overflow-y: auto;
     }
 
     .modal-footer {
