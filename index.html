@@ -1,0 +1,4047 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Smart Raport Analyzer</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://unpkg.com/jspdf-autotable@3.5.25/dist/jspdf.plugin.autotable.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <style>
+    /* CSS Variables for theming */
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --accent: #f72585;
+      --success: #4cc9f0;
+      --warning: #f8961e;
+      --danger: #f94144;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --dark-bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #e5e7eb;
+      --text-secondary: #94a3b8;
+      --gradient: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
+      --gradient-2: linear-gradient(135deg, #f72585 0%, #7209b7 100%);
+      --gradient-3: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      --radius: 12px;
+      --transition: all 0.3s ease;
+      --neon-glow: 0 0 10px rgba(67, 97, 238, 0.7), 0 0 20px rgba(67, 97, 238, 0.5), 0 0 30px rgba(67, 97, 238, 0.3);
+    }
+
+    /* Light theme variables */
+    .light-mode {
+      --light: #212529;
+      --dark: #f8f9fa;
+      --dark-bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --border: #cbd5e1;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+      --neon-glow: 0 0 10px rgba(67, 97, 238, 0.5), 0 0 20px rgba(67, 97, 238, 0.3);
+    }
+
+    /* Reset and Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: var(--transition);
+      min-height: 100vh;
+      position: relative;
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+
+    /* FIX FOR MOBILE ZOOM OUT - Prevent horizontal scrolling */
+    .main-container, 
+    .dashboard-cards,
+    .input-section,
+    .result-section,
+    .chart-section,
+    .history-section,
+    .sidebar,
+    .header-content,
+    footer {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+
+    /* Mobile-specific fixes */
+    @media (max-width: 768px) {
+      body {
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
+      
+      .main-container {
+        padding-left: 15px;
+        padding-right: 15px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .card, 
+      .input-section, 
+      .result-section, 
+      .chart-section,
+      .history-section,
+      .sidebar-card {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+      }
+      
+      /* Ensure no element exceeds viewport */
+      * {
+        max-width: 100vw;
+      }
+      
+      /* Fix for button groups on mobile */
+      .button-group {
+        flex-direction: column;
+      }
+      
+      .button-group .btn {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      
+      /* Fix for subject cards */
+      .subject-card {
+        padding: 1rem;
+        margin-left: 0;
+        margin-right: 0;
+      }
+      
+      .scores-container {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+      
+      /* Fix for result content */
+      .result-content {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+      }
+      
+      /* Fix for dashboard cards */
+      .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      /* Fix header for mobile */
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .logo-container {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+      
+      .theme-toggle-container {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+    }
+
+    /* Animated Background */
+    .animated-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      overflow: hidden;
+    }
+
+    .bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+      opacity: 0.1;
+      animation: float 20s infinite linear;
+    }
+
+    .bg-circle:nth-child(1) {
+      width: 300px;
+      height: 300px;
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+    }
+
+    .bg-circle:nth-child(2) {
+      width: 400px;
+      height: 400px;
+      top: 50%;
+      right: -200px;
+      animation-delay: -5s;
+      animation-duration: 25s;
+      background: radial-gradient(circle, var(--secondary) 0%, transparent 70%);
+    }
+
+    .bg-circle:nth-child(3) {
+      width: 250px;
+      height: 250px;
+      bottom: -100px;
+      left: 20%;
+      animation-delay: -10s;
+      animation-duration: 30s;
+      background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    }
+
+    .bg-circle:nth-child(4) {
+      width: 350px;
+      height: 350px;
+      top: 20%;
+      left: 60%;
+      animation-delay: -15s;
+      animation-duration: 35s;
+      background: radial-gradient(circle, var(--success) 0%, transparent 70%);
+    }
+
+    /* Floating Particles */
+    .floating-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background-color: var(--primary);
+      border-radius: 50%;
+      opacity: 0.5;
+      animation: particle-float 20s infinite linear;
+    }
+
+    /* Header Styles */
+    header {
+      background: var(--gradient);
+      padding: 1.5rem 2rem;
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      z-index: 10;
+      width: 100%;
+      max-width: 100vw;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+      animation: shine 3s infinite linear;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .logo {
+      font-size: 2.5rem;
+      color: white;
+      animation: pulse 2s infinite, rotate 10s infinite linear;
+      filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
+      background: rgba(255, 255, 255, 0.2);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .logo-text {
+      flex: 1;
+    }
+
+    .logo-text h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.8rem;
+      color: white;
+      margin-bottom: 0.2rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .logo-text p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.9rem;
+    }
+
+    .theme-toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-left: auto;
+    }
+
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(30deg) scale(1.1);
+      box-shadow: var(--neon-glow);
+    }
+
+    /* Mobile header adjustments */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding: 0;
+      }
+      
+      .logo-container {
+        min-width: 100%;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.8rem;
+        padding-right: 60px; /* Space for theme toggle */
+      }
+      
+      .theme-toggle-container {
+        position: absolute;
+        top: 1.5rem;
+        right: 2rem;
+        margin-left: 0;
+      }
+      
+      .logo-text h1 {
+        font-size: 1.5rem;
+        max-width: calc(100% - 80px);
+      }
+      
+      .logo-text p {
+        font-size: 0.85rem;
+        max-width: calc(100% - 80px);
+      }
+      
+      .logo {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header {
+        padding: 1.2rem 1.5rem;
+      }
+      
+      .theme-toggle-container {
+        top: 1.2rem;
+        right: 1.5rem;
+      }
+      
+      .logo {
+        width: 50px;
+        height: 50px;
+        font-size: 1.8rem;
+      }
+      
+      .logo-text h1 {
+        font-size: 1.3rem;
+      }
+      
+      .logo-text p {
+        font-size: 0.8rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .logo-text h1 {
+        font-size: 1.1rem;
+      }
+      
+      .logo {
+        width: 45px;
+        height: 45px;
+        font-size: 1.5rem;
+      }
+    }
+
+    /* Main Container */
+    .main-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 2rem;
+      width: 100%;
+    }
+
+    @media (max-width: 992px) {
+      .main-container {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 0 15px;
+        margin: 1rem auto;
+      }
+    }
+
+    /* Dashboard Cards */
+    .dashboard-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      width: 100%;
+    }
+
+    @media (max-width: 992px) {
+      .dashboard-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 576px) {
+      .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--gradient);
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: var(--shadow-lg), var(--neon-glow);
+    }
+
+    .card:hover::before {
+      width: 8px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      background: var(--gradient);
+      color: white;
+      animation: bounce 2s infinite;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.2rem;
+    }
+
+    .card-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    /* Subject Input Section */
+    .input-section {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .input-section::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to right,
+        transparent 20%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 80%
+      );
+      transform: rotate(30deg);
+      animation: shimmer 3s infinite linear;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-title i {
+      color: var(--primary);
+      animation: spin 4s infinite linear;
+    }
+
+    #subjects {
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+
+    .subject-card {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      animation: slideIn 0.5s ease-out;
+      width: 100%;
+    }
+
+    .subject-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(67, 97, 238, 0.3);
+    }
+
+    .subject-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--gradient);
+      transition: var(--transition);
+    }
+
+    .subject-card:hover::before {
+      width: 8px;
+      background: var(--gradient-2);
+    }
+
+    .subject-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+
+    .subject-name {
+      flex: 1;
+      width: 100%;
+    }
+
+    .subject-name input {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-size: 1rem;
+      transition: var(--transition);
+      max-width: 100%;
+    }
+
+    .subject-name input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2), 0 0 10px rgba(67, 97, 238, 0.5);
+    }
+
+    .remove-subject {
+      background-color: rgba(248, 37, 133, 0.1);
+      color: var(--accent);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin-left: 1rem;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .remove-subject:hover {
+      background-color: rgba(248, 37, 133, 0.2);
+      transform: scale(1.1) rotate(90deg);
+      box-shadow: 0 0 10px rgba(248, 37, 133, 0.5);
+    }
+
+    .scores-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.8rem;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .scores-container {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 576px) {
+      .scores-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 400px) {
+      .scores-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .score-input {
+      position: relative;
+    }
+
+    .score-input label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .score-input input {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-size: 1rem;
+      text-align: center;
+      transition: var(--transition);
+      max-width: 100%;
+    }
+
+    .score-input input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2), 0 0 10px rgba(67, 97, 238, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .score-input input:valid {
+      border-color: var(--success);
+      background-color: rgba(76, 201, 240, 0.05);
+    }
+
+    /* Buttons */
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+
+    .btn {
+      padding: 0.9rem 1.8rem;
+      border-radius: 8px;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.7s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(67, 97, 238, 0.4), var(--neon-glow);
+    }
+
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-success {
+      background: var(--gradient-3);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: var(--gradient-3);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(76, 201, 240, 0.4);
+    }
+
+    .btn-export {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+
+    .btn-export:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Result Section */
+    .result-section {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .result-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--gradient);
+      animation: progress 2s infinite linear;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .result-title {
+      font-size: 1.5rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .share-btn {
+      background-color: rgba(67, 97, 238, 0.1);
+      color: var(--primary);
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .share-btn:hover {
+      background-color: rgba(67, 97, 238, 0.2);
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(67, 97, 238, 0.3);
+    }
+
+    #result {
+      min-height: 200px;
+      width: 100%;
+    }
+
+    .result-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .result-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .result-stat {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      transition: var(--transition);
+      border: 1px solid transparent;
+    }
+
+    .result-stat:hover {
+      border-color: var(--primary);
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .motivation-card {
+      grid-column: 1 / -1;
+      background: var(--gradient);
+      border-radius: var(--radius);
+      padding: 2rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      animation: pulse 2s infinite;
+    }
+
+    .motivation-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+      animation: rotate 20s infinite linear;
+    }
+
+    .motivation-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      animation: bounce 2s infinite;
+      text-align: center;
+    }
+
+    .motivation-text {
+      font-size: 1.2rem;
+      font-style: italic;
+      line-height: 1.6;
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    /* Chart Section */
+    .chart-section {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .chart-section::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--gradient-2);
+      animation: progress 3s infinite linear reverse;
+    }
+
+    .chart-container {
+      height: 300px;
+      position: relative;
+      margin-top: 1.5rem;
+      width: 100%;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 2rem;
+      height: fit-content;
+      width: 100%;
+    }
+
+    @media (max-width: 992px) {
+      .sidebar {
+        position: static;
+        margin-top: 2rem;
+      }
+    }
+
+    .sidebar-card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .sidebar-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .sidebar-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--gradient);
+    }
+
+    .sidebar-title {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .recommendation-list {
+      list-style: none;
+    }
+
+    .recommendation-item {
+      display: flex;
+      align-items: center;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .recommendation-item:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding-left: 0.5rem;
+      border-radius: 4px;
+    }
+
+    .recommendation-item:last-child {
+      border-bottom: none;
+    }
+
+    .rec-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(67, 97, 238, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      color: var(--primary);
+      transition: var(--transition);
+    }
+
+    .recommendation-item:hover .rec-icon {
+      background-color: rgba(67, 97, 238, 0.2);
+      transform: scale(1.1);
+    }
+
+    .rec-text {
+      flex: 1;
+    }
+
+    /* History Section */
+    .history-section {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      position: relative;
+      width: 100%;
+    }
+
+    .history-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+      opacity: 0.1;
+      border-radius: 50%;
+      animation: pulse 4s infinite;
+    }
+
+    .history-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 1rem;
+      padding-right: 5px;
+    }
+
+    .history-item {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.8rem;
+      border-left: 4px solid var(--primary);
+      transition: var(--transition);
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    .history-item:hover {
+      transform: translateX(5px);
+      border-left-color: var(--accent);
+    }
+
+    .history-date {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.3rem;
+    }
+
+    .history-avg {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Footer */
+    footer {
+      background-color: var(--card-bg);
+      margin-top: 3rem;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-secondary);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      max-width: 100vw;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--gradient);
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+
+    @keyframes particle-float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.7; }
+      90% { opacity: 0.7; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes progress {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) skewX(-15deg); }
+      100% { transform: translateX(100%) skewX(-15deg); }
+    }
+
+    @keyframes neon-pulse {
+      0%, 100% { box-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary); }
+      50% { box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 30px var(--primary); }
+    }
+
+    .animate-fadeIn {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    .animate-fadeInUp {
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .animate-slideIn {
+      animation: slideIn 0.5s ease forwards;
+    }
+
+    /* Utility Classes */
+    .hidden {
+      display: none !important;
+    }
+
+    .success {
+      color: var(--success) !important;
+    }
+
+    .warning {
+      color: var(--warning) !important;
+    }
+
+    .danger {
+      color: var(--danger) !important;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gradient);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--gradient-2);
+      box-shadow: 0 0 10px rgba(67, 97, 238, 0.5);
+    }
+
+    /* Print Styles */
+    @media print {
+      .no-print, button, .theme-toggle, .remove-subject, .share-btn {
+        display: none !important;
+      }
+      
+      body, .card, .input-section, .result-section, .chart-section, .sidebar-card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        background-color: white !important;
+        color: black !important;
+      }
+      
+      .main-container {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .sidebar {
+        display: none;
+      }
+      
+      .motivation-card {
+        background: #f0f0f0 !important;
+        color: black !important;
+      }
+      
+      .stat-value {
+        -webkit-text-fill-color: black !important;
+        color: black !important;
+      }
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg), 0 0 30px rgba(67, 97, 238, 0.3);
+      border: 1px solid var(--border);
+      animation: slideIn 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--gradient);
+    }
+
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 1.5rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .modal-close:hover {
+      color: var(--danger);
+      background-color: rgba(249, 65, 68, 0.1);
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* Export Modal Specific */
+    .export-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .export-option {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      transition: var(--transition);
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .export-option:hover {
+      border-color: var(--primary);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .export-option i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+
+    .export-option h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .export-option p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* Creator Info Modal */
+    .creator-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .creator-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: white;
+      box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
+    }
+
+    .creator-details h3 {
+      font-size: 1.8rem;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+
+    .creator-title {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .creator-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #4CAF50;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    .status-text {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .creator-bio {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+      border-left: 4px solid var(--primary);
+      position: relative;
+    }
+
+    .creator-bio p {
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .quote-icon {
+      color: var(--primary);
+      opacity: 0.5;
+      font-size: 1.2rem;
+    }
+
+    .creator-skills {
+      margin-bottom: 1.5rem;
+    }
+
+    .creator-skills h4 {
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .skills-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .skill-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .skill-name {
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    .skill-bar {
+      grid-column: 1 / -1;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .skill-progress {
+      height: 100%;
+      background: var(--gradient);
+      border-radius: 4px;
+      transition: width 1.5s ease;
+    }
+
+    .skill-percent {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .creator-contact {
+      margin-bottom: 1.5rem;
+    }
+
+    .creator-contact h4 {
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(67, 97, 238, 0.1);
+      color: var(--primary);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+
+    .contact-link:hover {
+      background: rgba(67, 97, 238, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .creator-quote {
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius);
+      text-align: center;
+      border-top: 2px solid var(--primary);
+    }
+
+    .creator-quote p {
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 0.5rem;
+    }
+
+    .quote-author {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    /* Portfolio Modal */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .portfolio-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .portfolio-item:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary);
+    }
+
+    .portfolio-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--gradient);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .portfolio-item h3 {
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .portfolio-item p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .portfolio-status {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .portfolio-status:first-child {
+      background: rgba(76, 175, 80, 0.2);
+      color: #4CAF50;
+    }
+
+    .portfolio-status:nth-child(2) {
+      background: rgba(255, 152, 0, 0.2);
+      color: #FF9800;
+    }
+
+    .portfolio-status:nth-child(3) {
+      background: rgba(33, 150, 243, 0.2);
+      color: #2196F3;
+    }
+
+    /* Creator Highlight in Footer */
+    .creator-highlight {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      animation: pulse 2s infinite;
+    }
+
+    /* Footer Actions */
+    .footer-actions {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Footer Technology Tags */
+    .footer-tech {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .tech-tag {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .tech-tag:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .tech-tag i {
+      font-size: 0.9rem;
+    }
+
+    .tech-tag:nth-child(1) i { color: #e34f26; } /* HTML5 */
+    .tech-tag:nth-child(2) i { color: #1572b6; } /* CSS3 */
+    .tech-tag:nth-child(3) i { color: #f7df1e; } /* JavaScript */
+    .tech-tag:nth-child(4) i { color: #4cc9f0; } /* Chart.js */
+
+    .footer-note {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 1rem;
+      line-height: 1.5;
+    }
+
+    .footer-note i {
+      color: var(--primary);
+      margin-right: 0.5rem;
+    }
+
+    /* Responsive adjustments for modals */
+    @media (max-width: 768px) {
+      .export-options {
+        grid-template-columns: 1fr;
+      }
+      
+      .creator-header {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .portfolio-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .contact-links {
+        justify-content: center;
+      }
+      
+      .modal-content {
+        max-width: 95%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .footer-tech {
+        gap: 0.5rem;
+      }
+      
+      .tech-tag {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.6rem;
+      }
+      
+      .creator-avatar {
+        width: 70px;
+        height: 70px;
+        font-size: 2rem;
+      }
+      
+      .creator-details h3 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+    <div class="bg-circle"></div>
+  </div>
+  
+  <!-- Floating Particles -->
+  <div class="floating-particles" id="particles"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo-container">
+        <div class="logo">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="logo-text">
+          <h1>📊 Smart Raport Analyzer Pro</h1>
+          <p>Analisis nilai raport semester 1–5 dengan AI & rekomendasi personal</p>
+        </div>
+      </div>
+      <div class="theme-toggle-container">
+        <button class="theme-toggle" id="themeToggle">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="main-container">
+    <main class="main-content">
+      <!-- Dashboard Cards -->
+      <div class="dashboard-cards">
+        <div class="card animate-fadeIn" style="animation-delay: 0.1s">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-calculator"></i>
+            </div>
+            <div>
+              <div class="card-title">Rata-rata Total</div>
+              <div class="card-value" id="avgTotal">-</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card animate-fadeIn" style="animation-delay: 0.2s">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-chart-bar"></i>
+            </div>
+            <div>
+              <div class="card-title">Tren Nilai</div>
+              <div class="card-value" id="trendValue">-</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card animate-fadeIn" style="animation-delay: 0.3s">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-medal"></i>
+            </div>
+            <div>
+              <div class="card-title">Mapel Terbaik</div>
+              <div class="card-value" id="bestSubject">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject Input Section -->
+      <section class="input-section animate-fadeIn" style="animation-delay: 0.4s">
+        <h2 class="section-title"><i class="fas fa-book-open"></i> Input Nilai Mata Pelajaran</h2>
+        <p class="mb-2">Masukkan nilai untuk setiap mata pelajaran dari semester 1 hingga 5. Nilai harus antara 0-100.</p>
+        
+        <div id="subjects">
+          <!-- Subject cards will be added here dynamically -->
+        </div>
+        
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="addSubject()">
+            <i class="fas fa-plus-circle"></i> Tambah Mapel
+          </button>
+          <button class="btn btn-secondary" onclick="addSampleData()">
+            <i class="fas fa-vial"></i> Data Contoh
+          </button>
+          <button class="btn btn-success" onclick="analyze()">
+            <i class="fas fa-chart-pie"></i> Analisis Nilai
+          </button>
+          <button class="btn btn-secondary" onclick="clearAll()">
+            <i class="fas fa-trash-alt"></i> Hapus Semua
+          </button>
+          <button class="btn btn-export" onclick="showExportModal()">
+            <i class="fas fa-file-export"></i> Ekspor Data
+          </button>
+        </div>
+      </section>
+
+      <!-- Result Section -->
+      <section class="result-section animate-fadeIn" style="animation-delay: 0.5s" id="resultSection">
+        <div class="result-header">
+          <h2 class="result-title"><i class="fas fa-chart-line"></i> Hasil Analisis</h2>
+          <div class="result-actions">
+            <button class="share-btn no-print" onclick="shareResults()">
+              <i class="fas fa-share-alt"></i> Bagikan
+            </button>
+            <button class="share-btn no-print" onclick="printResults()" style="margin-left: 10px;">
+              <i class="fas fa-print"></i> Cetak
+            </button>
+          </div>
+        </div>
+        
+        <div id="result">
+          <div class="text-center" style="padding: 3rem 0; color: var(--text-secondary);">
+            <i class="fas fa-chart-bar" style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;"></i>
+            <p>Masukkan nilai mata pelajaran terlebih dahulu, lalu klik "Analisis Nilai" untuk melihat hasil analisis.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chart Section -->
+      <section class="chart-section animate-fadeIn" style="animation-delay: 0.6s" id="chartSection">
+        <h2 class="section-title"><i class="fas fa-chart-area"></i> Visualisasi Nilai</h2>
+        <div class="chart-container">
+          <canvas id="gradeChart"></canvas>
+        </div>
+      </section>
+
+      <!-- History Section -->
+      <section class="history-section animate-fadeIn" style="animation-delay: 0.7s" id="historySection">
+        <h2 class="section-title"><i class="fas fa-history"></i> Riwayat Analisis</h2>
+        <div class="history-list" id="historyList">
+          <!-- History items will be added here dynamically -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <!-- Recommendations -->
+      <div class="sidebar-card animate-slideIn" style="animation-delay: 0.5s">
+        <h3 class="sidebar-title"><i class="fas fa-lightbulb"></i> Rekomendasi</h3>
+        <ul class="recommendation-list" id="recommendations">
+          <li class="recommendation-item">
+            <div class="rec-icon">
+              <i class="fas fa-clipboard-check"></i>
+            </div>
+            <div class="rec-text">Masukkan nilai untuk mendapatkan rekomendasi personal</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Grade Distribution -->
+      <div class="sidebar-card animate-slideIn" style="animation-delay: 0.6s">
+        <h3 class="sidebar-title"><i class="fas fa-percentage"></i> Distribusi Nilai</h3>
+        <div id="gradeDistribution">
+          <p class="text-center" style="color: var(--text-secondary);">Tidak ada data</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="sidebar-card animate-slideIn" style="animation-delay: 0.7s">
+        <h3 class="sidebar-title"><i class="fas fa-bolt"></i> Aksi Cepat</h3>
+        <div class="button-group" style="flex-direction: column;">
+          <button class="btn btn-secondary" onclick="showExportModal()">
+            <i class="fas fa-file-export"></i> Ekspor Data
+          </button>
+          <button class="btn btn-secondary" onclick="saveProgress()">
+            <i class="fas fa-save"></i> Simpan Progress
+          </button>
+          <button class="btn btn-secondary" onclick="showTutorial()">
+            <i class="fas fa-question-circle"></i> Panduan
+          </button>
+        </div>
+      </div>
+
+      <!-- Achievement Badge -->
+      <div class="sidebar-card animate-slideIn" style="animation-delay: 0.8s" id="achievementCard">
+        <h3 class="sidebar-title"><i class="fas fa-trophy"></i> Penghargaan</h3>
+        <div class="text-center" id="achievementContent">
+          <i class="fas fa-medal" style="font-size: 4rem; color: var(--warning); margin-bottom: 1rem; animation: bounce 2s infinite;"></i>
+          <p>Lengkapi analisis untuk mendapatkan penghargaan</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <p>Smart Raport Analyzer Pro &copy; 2026 | Dibuat dengan <i class="fas fa-heart" style="color: var(--accent); animation: pulse 1s infinite;"></i> untuk pendidikan Indonesia</p>
+      <p class="mt-1">Oleh: <strong class="creator-highlight">Firman_devs</strong> | Versi 2.0 | Fitur: Analisis Nilai, Visualisasi Grafik, Rekomendasi Personal, dan banyak lagi</p>
+      
+      <div class="footer-actions mt-2">
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;" onclick="showAbout()">
+          <i class="fas fa-info-circle"></i> Tentang Aplikasi
+        </button>
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-left: 0.5rem;" onclick="showCreatorInfo()">
+          <i class="fas fa-user-tie"></i> Tentang Saya
+        </button>
+      </div>
+      
+      <p class="footer-note mt-2">
+        <i class="fas fa-code"></i> Aplikasi ini dikembangkan dengan teknologi web modern untuk pengalaman pengguna yang optimal
+      </p>
+    </div>
+  </footer>
+
+  <!-- Export Modal -->
+  <div class="modal" id="exportModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-file-export"></i> Ekspor Data</h2>
+        <button class="modal-close" onclick="closeModal('exportModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Pilih format ekspor yang diinginkan:</p>
+        <div class="export-options">
+          <div class="export-option" onclick="exportToPDF()">
+            <i class="fas fa-file-pdf"></i>
+            <h3>Ekspor ke PDF</h3>
+            <p>Simpan hasil analisis dalam format PDF yang mudah dibagikan</p>
+          </div>
+          <div class="export-option" onclick="exportToExcel()">
+            <i class="fas fa-file-excel"></i>
+            <h3>Ekspor ke Excel</h3>
+            <p>Simpan data nilai dalam format Excel untuk analisis lebih lanjut</p>
+          </div>
+          <div class="export-option" onclick="exportToJSON()">
+            <i class="fas fa-file-code"></i>
+            <h3>Ekspor ke JSON</h3>
+            <p>Simpan data dalam format JSON untuk backup atau penggunaan lainnya</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('exportModal')">Batal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Creator Info Modal -->
+  <div class="modal" id="creatorModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-user-tie"></i> Tentang Pembuat</h2>
+        <button class="modal-close" onclick="closeModal('creatorModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="creator-info">
+          <div class="creator-header">
+            <div class="creator-avatar">
+              <i class="fas fa-user-graduate"></i>
+            </div>
+            <div class="creator-details">
+              <h3>Firman_devs</h3>
+              <p class="creator-title">Pelajar & Developer</p>
+              <div class="creator-status">
+                <span class="status-dot"></span>
+                <span class="status-text">Siswa SMA yang passionate tentang teknologi</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="creator-bio">
+            <p><i class="fas fa-quote-left quote-icon"></i> Halo! Saya Firman, seorang pelajar SMA yang memiliki ketertarikan mendalam dalam pengembangan web dan teknologi pendidikan. Sebagai siswa, saya sering menghadapi tantangan dalam menganalisis perkembangan nilai akademik saya sendiri. Dari pengalaman pribadi inilah, tercipta ide untuk membuat <strong>Smart Raport Analyzer Pro</strong>. <i class="fas fa-quote-right quote-icon"></i></p>
+            
+            <p style="margin-top: 1rem;">Saya percaya bahwa teknologi dapat menjadi alat yang powerful untuk membantu siswa, guru, dan orang tua dalam memantau perkembangan akademik secara lebih efektif. Aplikasi ini saya buat dengan harapan dapat membantu sesama pelajar untuk lebih memahami kekuatan dan area perbaikan dalam pembelajaran mereka.</p>
+            
+            <p style="margin-top: 1rem;"><strong>Motivasi saya membuat aplikasi ini:</strong></p>
+            <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+              <li>Membantu siswa memahami perkembangan akademik mereka dengan lebih baik</li>
+              <li>Menyediakan alat yang mudah digunakan untuk analisis nilai raport</li>
+              <li>Menggabungkan minat saya dalam pemrograman dengan kebutuhan dunia pendidikan</li>
+              <li>Membuat proses evaluasi akademik menjadi lebih interaktif dan informatif</li>
+            </ul>
+          </div>
+          
+          <div class="creator-skills">
+            <h4><i class="fas fa-cogs"></i> Keahlian Teknis</h4>
+            <div class="skills-grid">
+              <div class="skill-item">
+                <span class="skill-name">Frontend Development</span>
+                <div class="skill-bar">
+                  <div class="skill-progress" style="width: 85%"></div>
+                </div>
+                <span class="skill-percent">85%</span>
+              </div>
+              
+              <div class="skill-item">
+                <span class="skill-name">UI/UX Design</span>
+                <div class="skill-bar">
+                  <div class="skill-progress" style="width: 80%"></div>
+                </div>
+                <span class="skill-percent">80%</span>
+              </div>
+              
+              <div class="skill-item">
+                <span class="skill-name">JavaScript</span>
+                <div class="skill-bar">
+                  <div class="skill-progress" style="width: 82%"></div>
+                </div>
+                <span class="skill-percent">82%</span>
+              </div>
+              
+              <div class="skill-item">
+                <span class="skill-name">Responsive Design</span>
+                <div class="skill-bar">
+                  <div class="skill-progress" style="width: 84%"></div>
+                </div>
+                <span class="skill-percent">84%</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="creator-contact">
+            <h4><i class="fas fa-envelope"></i> Kontak & Portofolio</h4>
+            <div class="contact-links">
+              <button class="contact-link" onclick="sendEmail()">
+                <i class="fas fa-envelope"></i> Email
+              </button>
+              <button class="contact-link" onclick="openGitHub()">
+                <i class="fab fa-github"></i> GitHub
+              </button>
+              <button class="contact-link" onclick="showPortfolio()">
+                <i class="fas fa-briefcase"></i> Portofolio
+              </button>
+            </div>
+          </div>
+          
+          <div class="creator-quote">
+            <p>"Teknologi bukan hanya tentang kode, tapi tentang menciptakan solusi yang berdampak positif bagi kehidupan sehari-hari, terutama dalam dunia pendidikan."</p>
+            <p class="quote-author">- Firman_devs (Pelajar & Developer)</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('creatorModal')">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Portfolio Modal -->
+  <div class="modal" id="portfolioModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-briefcase"></i> Portofolio Proyek</h2>
+        <button class="modal-close" onclick="closeModal('portfolioModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="portfolio-grid">
+          <div class="portfolio-item">
+            <div class="portfolio-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>Smart Raport Analyzer</h3>
+            <p>Aplikasi analisis nilai raport dengan visualisasi data interaktif dan AI recommendations</p>
+            <span class="portfolio-status">Live</span>
+          </div>
+          
+          <div class="portfolio-item">
+            <div class="portfolio-icon">
+              <i class="fas fa-book-reader"></i>
+            </div>
+            <h3>E-Learning Platform</h3>
+            <p>Platform pembelajaran online dengan materi interaktif untuk siswa SMA</p>
+            <span class="portfolio-status">In Development</span>
+          </div>
+          
+          <div class="portfolio-item">
+            <div class="portfolio-icon">
+              <i class="fas fa-tasks"></i>
+            </div>
+            <h3>Student Task Manager</h3>
+            <p>Aplikasi manajemen tugas khusus pelajar dengan fitur pengingat deadline</p>
+            <span class="portfolio-status">Completed</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('portfolioModal')">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial Modal -->
+  <div class="modal" id="tutorialModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-graduation-cap"></i> Panduan Penggunaan</h2>
+        <button class="modal-close" onclick="closeModal('tutorialModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="tutorial-step">
+          <h3>1. Tambah Mata Pelajaran</h3>
+          <p>Klik tombol "Tambah Mapel" untuk menambahkan mata pelajaran baru. Beri nama dan isi nilai untuk setiap semester (1-5).</p>
+        </div>
+        <div class="tutorial-step">
+          <h3>2. Input Nilai</h3>
+          <p>Isi nilai untuk setiap semester (0-100). Anda dapat menambahkan hingga 20 mata pelajaran.</p>
+        </div>
+        <div class="tutorial-step">
+          <h3>3. Analisis Nilai</h3>
+          <p>Klik "Analisis Nilai" untuk memproses data. Aplikasi akan memberikan statistik, tren, dan rekomendasi.</p>
+        </div>
+        <div class="tutorial-step">
+          <h3>4. Simpan & Bagikan</h3>
+          <p>Gunakan fitur simpan progress, ekspor data (PDF/Excel), atau bagikan hasil analisis Anda.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('tutorialModal')">Mengerti</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div class="modal" id="aboutModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-info-circle"></i> Tentang Aplikasi</h2>
+        <button class="modal-close" onclick="closeModal('aboutModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Smart Raport Analyzer Pro adalah aplikasi berbasis web untuk menganalisis nilai raport siswa. Aplikasi ini membantu:</p>
+        <ul>
+          <li>Menganalisis perkembangan nilai dari waktu ke waktu</li>
+          <li>Mengidentifikasi mata pelajaran yang perlu perhatian lebih</li>
+          <li>Memberikan rekomendasi belajar personal</li>
+          <li>Memvisualisasikan data nilai dengan grafik interaktif</li>
+          <li>Mengekspor hasil analisis dalam format PDF dan Excel</li>
+        </ul>
+        <p>Aplikasi ini dirancang untuk siswa, orang tua, dan guru untuk memantau perkembangan akademik dengan lebih efektif.</p>
+        <p><strong>Fitur Utama:</strong></p>
+        <ul>
+          <li>Analisis nilai dengan AI</li>
+          <li>Grafik interaktif dengan Chart.js</li>
+          <li>Sistem rekomendasi personal</li>
+          <li>Ekspor ke PDF dan Excel</li>
+          <li>Mode terang/gelap</li>
+          <li>Responsif untuk semua perangkat</li>
+          <li>Riwayat analisis</li>
+          <li>Penghargaan berdasarkan prestasi</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('aboutModal')">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+    // Global variables
+    let subjects = [];
+    let chart = null;
+    let analysisHistory = [];
+    let isLightMode = false;
+    let currentStats = null;
+
+    // DOM Elements
+    const subjectsDiv = document.getElementById("subjects");
+    const themeToggle = document.getElementById("themeToggle");
+    const particlesContainer = document.getElementById("particles");
+
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add initial subject
+      addSubject();
+      
+      // Initialize particles animation
+      createParticles();
+      
+      // Load saved data if exists
+      loadSavedData();
+      
+      // Set theme based on user preference
+      const savedTheme = localStorage.getItem('raportTheme');
+      if (savedTheme === 'light') {
+        toggleTheme();
+      }
+      
+      // Update dashboard with sample data initially
+      updateDashboard();
+      
+      // Add keyboard shortcuts info
+      console.log("Keyboard Shortcuts:");
+      console.log("Ctrl+N: Tambah Mapel");
+      console.log("Ctrl+A: Analisis Nilai");
+      console.log("Ctrl+S: Simpan Progress");
+      console.log("Ctrl+D: Data Contoh");
+      console.log("Ctrl+E: Ekspor Data");
+      console.log("Esc: Tutup Modal");
+      
+      // Add resize listener to fix mobile issues
+      window.addEventListener('resize', fixMobileLayout);
+      fixMobileLayout();
+    });
+
+    // Fix mobile layout issues
+    function fixMobileLayout() {
+      if (window.innerWidth <= 768) {
+        // Ensure all containers don't exceed viewport
+        document.querySelectorAll('.card, .input-section, .result-section, .chart-section, .sidebar-card').forEach(el => {
+          el.style.maxWidth = '100%';
+          el.style.width = '100%';
+        });
+        
+        // Fix button groups
+        document.querySelectorAll('.button-group').forEach(group => {
+          group.style.flexDirection = 'column';
+        });
+        
+        // Fix header layout
+        const headerContent = document.querySelector('.header-content');
+        if (headerContent) {
+          headerContent.style.flexDirection = 'column';
+          headerContent.style.alignItems = 'flex-start';
+        }
+      }
+    }
+
+    // Create floating particles
+    function createParticles() {
+      const colors = ['#4361ee', '#7209b7', '#f72585', '#4cc9f0', '#f8961e'];
+      
+      for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        // Random properties
+        const size = Math.random() * 4 + 1;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const left = Math.random() * 100;
+        const duration = Math.random() * 20 + 10;
+        const delay = Math.random() * 5;
+        
+        // Apply styles
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.backgroundColor = color;
+        particle.style.left = `${left}%`;
+        particle.style.top = '100vh';
+        particle.style.animationDelay = `${delay}s`;
+        particle.style.animationDuration = `${duration}s`;
+        
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Toggle light/dark mode
+    themeToggle.addEventListener('click', toggleTheme);
+
+    function toggleTheme() {
+      isLightMode = !isLightMode;
+      document.body.classList.toggle('light-mode', isLightMode);
+      
+      // Update theme toggle icon
+      const icon = themeToggle.querySelector('i');
+      icon.className = isLightMode ? 'fas fa-sun' : 'fas fa-moon';
+      
+      // Animate the toggle button
+      themeToggle.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        themeToggle.style.transform = '';
+      }, 300);
+      
+      // Save theme preference
+      localStorage.setItem('raportTheme', isLightMode ? 'light' : 'dark');
+      
+      // Update chart colors if chart exists
+      if (chart) {
+        updateChartTheme();
+      }
+      
+      // Show notification
+      showNotification(`Mode ${isLightMode ? 'Terang' : 'Gelap'} diaktifkan`, 'success');
+    }
+
+    // Add a new subject input
+    function addSubject() {
+      const subjectId = Date.now(); // Unique ID for each subject
+      const subjectCard = document.createElement('div');
+      subjectCard.className = 'subject-card animate-fadeIn';
+      subjectCard.id = `subject-${subjectId}`;
+      subjectCard.style.animationDelay = `${subjects.length * 0.1}s`;
+      
+      subjectCard.innerHTML = `
+        <div class="subject-header">
+          <div class="subject-name">
+            <input type="text" placeholder="Nama Mata Pelajaran" class="mapel" onchange="updateSubjectName(${subjectId}, this.value)">
+          </div>
+          <button class="remove-subject" onclick="removeSubject(${subjectId})">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="scores-container">
+          <div class="score-input">
+            <label>Semester 1</label>
+            <input type="number" min="0" max="100" placeholder="0-100" class="nilai" onchange="updateSubjectScore(${subjectId}, 0, this.value)">
+          </div>
+          <div class="score-input">
+            <label>Semester 2</label>
+            <input type="number" min="0" max="100" placeholder="0-100" class="nilai" onchange="updateSubjectScore(${subjectId}, 1, this.value)">
+          </div>
+          <div class="score-input">
+            <label>Semester 3</label>
+            <input type="number" min="0" max="100" placeholder="0-100" class="nilai" onchange="updateSubjectScore(${subjectId}, 2, this.value)">
+          </div>
+          <div class="score-input">
+            <label>Semester 4</label>
+            <input type="number" min="0" max="100" placeholder="0-100" class="nilai" onchange="updateSubjectScore(${subjectId}, 3, this.value)">
+          </div>
+          <div class="score-input">
+            <label>Semester 5</label>
+            <input type="number" min="0" max="100" placeholder="0-100" class="nilai" onchange="updateSubjectScore(${subjectId}, 4, this.value)">
+          </div>
+        </div>
+      `;
+      
+      subjectsDiv.appendChild(subjectCard);
+      
+      // Add to subjects array
+      subjects.push({
+        id: subjectId,
+        name: '',
+        scores: [null, null, null, null, null]
+      });
+      
+      // Limit to 20 subjects
+      if (subjects.length >= 20) {
+        document.querySelector('.btn-primary').disabled = true;
+        document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-ban"></i> Maksimum 20 Mapel';
+        showNotification('Maksimum 20 mata pelajaran telah tercapai', 'warning');
+      }
+      
+      // Save to local storage
+      saveToLocalStorage();
+      
+      // Scroll to the new subject
+      setTimeout(() => {
+        subjectCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    // Remove a subject
+    function removeSubject(id) {
+      const subjectIndex = subjects.findIndex(s => s.id === id);
+      if (subjectIndex !== -1) {
+        subjects.splice(subjectIndex, 1);
+      }
+      
+      const subjectElement = document.getElementById(`subject-${id}`);
+      if (subjectElement) {
+        subjectElement.style.transform = 'translateX(-100%)';
+        subjectElement.style.opacity = '0';
+        
+        setTimeout(() => {
+          subjectElement.remove();
+        }, 300);
+      }
+      
+      // Re-enable add button if needed
+      if (subjects.length < 20) {
+        document.querySelector('.btn-primary').disabled = false;
+        document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Mapel';
+      }
+      
+      // Save to local storage
+      saveToLocalStorage();
+      
+      // Update dashboard
+      updateDashboard();
+    }
+
+    // Update subject name
+    function updateSubjectName(id, name) {
+      const subjectIndex = subjects.findIndex(s => s.id === id);
+      if (subjectIndex !== -1) {
+        subjects[subjectIndex].name = name;
+        saveToLocalStorage();
+        updateDashboard();
+      }
+    }
+
+    // Update subject score
+    function updateSubjectScore(id, semester, score) {
+      const subjectIndex = subjects.findIndex(s => s.id === id);
+      if (subjectIndex !== -1) {
+        // Validate score
+        const numScore = parseInt(score);
+        if (isNaN(numScore) || numScore < 0 || numScore > 100) {
+          // Reset to empty if invalid
+          subjects[subjectIndex].scores[semester] = null;
+          
+          // Show error on input
+          const input = document.querySelector(`#subject-${id} .score-input:nth-child(${semester + 1}) input`);
+          input.style.borderColor = 'var(--danger)';
+          input.style.boxShadow = '0 0 10px rgba(249, 65, 68, 0.5)';
+          setTimeout(() => {
+            input.style.borderColor = '';
+            input.style.boxShadow = '';
+          }, 2000);
+        } else {
+          subjects[subjectIndex].scores[semester] = numScore;
+        }
+        
+        saveToLocalStorage();
+        updateDashboard();
+      }
+    }
+
+    // Add sample data for demonstration
+    function addSampleData() {
+      // Clear existing subjects
+      subjects = [];
+      subjectsDiv.innerHTML = '';
+      
+      // Sample subjects and scores
+      const sampleData = [
+        { name: "Matematika", scores: [85, 88, 90, 87, 92] },
+        { name: "Bahasa Indonesia", scores: [80, 82, 85, 83, 88] },
+        { name: "Bahasa Inggris", scores: [78, 80, 82, 85, 87] },
+        { name: "IPA", scores: [90, 92, 88, 91, 93] },
+        { name: "IPS", scores: [82, 85, 87, 84, 89] },
+        { name: "PKN", scores: [88, 87, 89, 90, 91] }
+      ];
+      
+      // Create subject cards for sample data
+      sampleData.forEach((data, index) => {
+        const subjectId = Date.now() + index;
+        const subjectCard = document.createElement('div');
+        subjectCard.className = 'subject-card animate-fadeIn';
+        subjectCard.style.animationDelay = `${0.1 * index}s`;
+        subjectCard.id = `subject-${subjectId}`;
+        
+        subjectCard.innerHTML = `
+          <div class="subject-header">
+            <div class="subject-name">
+              <input type="text" value="${data.name}" class="mapel" onchange="updateSubjectName(${subjectId}, this.value)">
+            </div>
+            <button class="remove-subject" onclick="removeSubject(${subjectId})">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="scores-container">
+            ${data.scores.map((score, semIndex) => `
+              <div class="score-input">
+                <label>Semester ${semIndex + 1}</label>
+                <input type="number" min="0" max="100" value="${score}" class="nilai" onchange="updateSubjectScore(${subjectId}, ${semIndex}, this.value)">
+              </div>
+            `).join('')}
+          </div>
+        `;
+        
+        subjectsDiv.appendChild(subjectCard);
+        
+        // Add to subjects array
+        subjects.push({
+          id: subjectId,
+          name: data.name,
+          scores: data.scores
+        });
+      });
+      
+      // Re-enable add button
+      document.querySelector('.btn-primary').disabled = false;
+      document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Mapel';
+      
+      // Save to local storage
+      saveToLocalStorage();
+      
+      // Update dashboard
+      updateDashboard();
+      
+      // Show success message
+      showNotification('Data contoh berhasil dimuat!', 'success');
+    }
+
+    // Clear all subjects
+    function clearAll() {
+      if (subjects.length === 0) {
+        showNotification('Tidak ada data untuk dihapus', 'warning');
+        return;
+      }
+      
+      if (confirm('Apakah Anda yakin ingin menghapus semua data? Tindakan ini tidak dapat dibatalkan.')) {
+        subjects = [];
+        subjectsDiv.innerHTML = '';
+        
+        // Re-enable add button
+        document.querySelector('.btn-primary').disabled = false;
+        document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Mapel';
+        
+        // Clear local storage
+        localStorage.removeItem('raportSubjects');
+        localStorage.removeItem('raportHistory');
+        
+        // Reset dashboard
+        resetDashboard();
+        
+        // Clear chart
+        if (chart) {
+          chart.destroy();
+          chart = null;
+        }
+        
+        // Clear result section
+        document.getElementById('result').innerHTML = `
+          <div class="text-center" style="padding: 3rem 0; color: var(--text-secondary);">
+            <i class="fas fa-chart-bar" style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;"></i>
+            <p>Masukkan nilai mata pelajaran terlebih dahulu, lalu klik "Analisis Nilai" untuk melihat hasil analisis.</p>
+          </div>
+        `;
+        
+        // Clear recommendations
+        document.getElementById('recommendations').innerHTML = `
+          <li class="recommendation-item">
+            <div class="rec-icon">
+              <i class="fas fa-clipboard-check"></i>
+            </div>
+            <div class="rec-text">Masukkan nilai untuk mendapatkan rekomendasi personal</div>
+          </li>
+        `;
+        
+        // Clear grade distribution
+        document.getElementById('gradeDistribution').innerHTML = `
+          <p class="text-center" style="color: var(--text-secondary);">Tidak ada data</p>
+        `;
+        
+        // Clear history
+        document.getElementById('historyList').innerHTML = '';
+        
+        // Reset current stats
+        currentStats = null;
+        
+        showNotification('Semua data berhasil dihapus', 'success');
+      }
+    }
+
+    // Main analysis function
+    function analyze() {
+      if (subjects.length === 0) {
+        showNotification('Tambahkan setidaknya satu mata pelajaran', 'warning');
+        return;
+      }
+      
+      // Filter subjects with at least one score
+      const validSubjects = subjects.filter(subject => 
+        subject.scores.some(score => score !== null && score !== undefined)
+      );
+      
+      if (validSubjects.length === 0) {
+        showNotification('Masukkan setidaknya satu nilai untuk dianalisis', 'warning');
+        return;
+      }
+      
+      // Calculate statistics
+      const stats = calculateStatistics(validSubjects);
+      currentStats = stats;
+      
+      // Generate motivation
+      const motivation = getMotivation(stats.overallAvg, stats.trend, stats.diff);
+      
+      // Generate recommendations
+      const recommendations = generateRecommendations(validSubjects, stats);
+      
+      // Update UI with results
+      displayResults(stats, motivation, recommendations);
+      
+      // Update chart
+      updateChart(validSubjects, stats);
+      
+      // Update dashboard
+      updateDashboard();
+      
+      // Update grade distribution
+      updateGradeDistribution(validSubjects);
+      
+      // Add to history
+      addToHistory(stats);
+      
+      // Update achievement
+      updateAchievement(stats);
+      
+      // Save to local storage
+      saveToLocalStorage();
+      
+      // Scroll to results
+      document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+      
+      // Show success message with animation
+      showNotification('Analisis berhasil dilakukan!', 'success');
+      
+      // Add celebration effect for high scores
+      if (stats.overallAvg >= 85) {
+        celebrationEffect();
+      }
+    }
+
+    // Celebration effect for high scores
+    function celebrationEffect() {
+      const colors = ['#4361ee', '#7209b7', '#f72585', '#4cc9f0', '#f8961e'];
+      
+      for (let i = 0; i < 20; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'fixed';
+        confetti.style.width = '10px';
+        confetti.style.height = '10px';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.borderRadius = '50%';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = '-20px';
+        confetti.style.zIndex = '9999';
+        confetti.style.pointerEvents = 'none';
+        confetti.style.boxShadow = '0 0 10px currentColor';
+        
+        document.body.appendChild(confetti);
+        
+        // Animation
+        const animation = confetti.animate([
+          { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+          { transform: `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+        ], {
+          duration: Math.random() * 2000 + 1000,
+          easing: 'cubic-bezier(0.215, 0.610, 0.355, 1)'
+        });
+        
+        // Remove after animation
+        animation.onfinish = () => confetti.remove();
+      }
+    }
+
+    // Calculate statistics
+    function calculateStatistics(validSubjects) {
+      let totalAll = 0;
+      let countAll = 0;
+      let lastTotal = 0;
+      let prevTotal = 0;
+      let subjectAverages = [];
+      
+      validSubjects.forEach(subject => {
+        const scores = subject.scores.filter(score => score !== null);
+        
+        if (scores.length >= 1) {
+          const subjectTotal = scores.reduce((a, b) => a + b, 0);
+          const subjectAvg = subjectTotal / scores.length;
+          
+          totalAll += subjectTotal;
+          countAll += scores.length;
+          
+          subjectAverages.push({
+            name: subject.name || 'Tanpa Nama',
+            average: subjectAvg
+          });
+          
+          // For trend calculation, use last two scores if available
+          if (scores.length >= 2) {
+            lastTotal += scores[scores.length - 1];
+            prevTotal += scores[scores.length - 2];
+          } else {
+            // If only one score, use it for both
+            lastTotal += scores[0];
+            prevTotal += scores[0];
+          }
+        }
+      });
+      
+      const avgAll = totalAll / countAll;
+      const diff = Math.abs(lastTotal - prevTotal);
+      
+      let trend = "stabil";
+      if (lastTotal > prevTotal + 5) trend = "naik";
+      else if (lastTotal < prevTotal - 5) trend = "turun";
+      
+      // Find best and worst subjects
+      subjectAverages.sort((a, b) => b.average - a.average);
+      const bestSubject = subjectAverages.length > 0 ? subjectAverages[0] : null;
+      const worstSubject = subjectAverages.length > 0 ? subjectAverages[subjectAverages.length - 1] : null;
+      
+      // Calculate improvement needed
+      const improvementNeeded = worstSubject ? Math.max(0, 85 - worstSubject.average) : 0;
+      
+      return {
+        overallAvg: avgAll,
+        trend: trend,
+        diff: diff,
+        bestSubject: bestSubject,
+        worstSubject: worstSubject,
+        improvementNeeded: improvementNeeded,
+        subjectCount: validSubjects.length,
+        subjectAverages: subjectAverages
+      };
+    }
+
+    // Generate motivation based on statistics
+    function getMotivation(avg, trend, diff) {
+      const motivations = [
+        {
+          condition: avg >= 90,
+          text: "Luar biasa! Nilaimu sangat memukau. Pertahankan kerja keras dan konsistensimu, kamu berada di jalur yang tepat untuk meraih kesuksesan besar! 🚀",
+          icon: "fas fa-star"
+        },
+        {
+          condition: avg >= 85 && avg < 90,
+          text: "Hebat! Nilaimu sangat baik dan menunjukkan pemahaman yang solid. Dengan sedikit peningkatan, kamu bisa mencapai tingkat yang lebih tinggi lagi! 💪",
+          icon: "fas fa-trophy"
+        },
+        {
+          condition: avg >= 75 && avg < 85,
+          text: "Bagus! Kamu memiliki dasar yang kuat. Fokus pada area yang perlu ditingkatkan, dan kamu akan melihat kemajuan yang signifikan. Terus semangat! 📈",
+          icon: "fas fa-chart-line"
+        },
+        {
+          condition: avg >= 65 && avg < 75,
+          text: "Kamu sudah menunjukkan usaha yang baik. Identifikasi mata pelajaran yang butuh perhatian lebih dan buat strategi belajar yang efektif. Kamu pasti bisa! 🔍",
+          icon: "fas fa-lightbulb"
+        },
+        {
+          condition: avg < 65,
+          text: "Setiap perjalanan dimulai dengan langkah pertama. Nilai saat ini adalah titik awal untuk perbaikan. Fokus, konsisten, dan jangan ragu meminta bantuan! 🌱",
+          icon: "fas fa-seedling"
+        }
+      ];
+      
+      // Find matching motivation
+      let motivation = motivations.find(m => m.condition) || motivations[motivations.length - 1];
+      
+      // Adjust based on trend
+      if (trend === "naik") {
+        motivation.text += " Tren naik menunjukkan perkembangan positif. Pertahankan momentum ini! ↗️";
+      } else if (trend === "turun") {
+        motivation.text += " Ada penurunan yang perlu diperhatikan. Evaluasi metode belajarmu dan cari solusi. 📉";
+      } else {
+        motivation.text += " Konsistensi adalah kunci. Pertahankan ritme belajarmu! ⚖️";
+      }
+      
+      return motivation;
+    }
+
+    // Generate personalized recommendations
+    function generateRecommendations(validSubjects, stats) {
+      const recommendations = [];
+      
+      // Recommendation based on overall average
+      if (stats.overallAvg < 75) {
+        recommendations.push({
+          text: "Fokus pada mata pelajaran dengan nilai terendah untuk meningkatkan rata-rata keseluruhan",
+          icon: "fas fa-bullseye"
+        });
+        
+        recommendations.push({
+          text: "Buat jadwal belajar rutin dengan waktu khusus untuk mata pelajaran yang sulit",
+          icon: "fas fa-calendar-check"
+        });
+      } else if (stats.overallAvg < 85) {
+        recommendations.push({
+          text: "Tingkatkan pemahaman konsep dasar untuk mata pelajaran dengan nilai rata-rata",
+          icon: "fas fa-layer-group"
+        });
+      } else {
+        recommendations.push({
+          text: "Coba tantang diri dengan materi yang lebih advance atau ikut kompetisi akademik",
+          icon: "fas fa-rocket"
+        });
+      }
+      
+      // Recommendation based on trend
+      if (stats.trend === "turun") {
+        recommendations.push({
+          text: "Evaluasi penyebab penurunan nilai dan buat strategi perbaikan segera",
+          icon: "fas fa-search"
+        });
+      }
+      
+      // Recommendation for worst subject if exists
+      if (stats.worstSubject) {
+        recommendations.push({
+          text: `Prioritaskan perbaikan pada ${stats.worstSubject.name} (nilai: ${stats.worstSubject.average.toFixed(1)})`,
+          icon: "fas fa-exclamation-triangle"
+        });
+      }
+      
+      // General recommendations
+      recommendations.push({
+        text: "Gunakan teknik belajar aktif seperti mind mapping atau Feynman technique",
+        icon: "fas fa-brain"
+      });
+      
+      recommendations.push({
+        text: "Istirahat yang cukup dan jaga kesehatan untuk optimalkan konsentrasi belajar",
+        icon: "fas fa-heartbeat"
+      });
+      
+      return recommendations;
+    }
+
+    // Display results in the UI
+    function displayResults(stats, motivation, recommendations) {
+      const resultDiv = document.getElementById('result');
+      
+      // Format statistics
+      const avgFormatted = stats.overallAvg.toFixed(2);
+      const diffFormatted = stats.diff.toFixed(2);
+      const bestSubjectText = stats.bestSubject ? 
+        `${stats.bestSubject.name} (${stats.bestSubject.average.toFixed(1)})` : 
+        '-';
+      const worstSubjectText = stats.worstSubject ? 
+        `${stats.worstSubject.name} (${stats.worstSubject.average.toFixed(1)})` : 
+        '-';
+      
+      // Determine color for average
+      let avgColorClass = '';
+      if (stats.overallAvg >= 85) avgColorClass = 'success';
+      else if (stats.overallAvg >= 75) avgColorClass = 'warning';
+      else avgColorClass = 'danger';
+      
+      // Determine color for trend
+      let trendColorClass = '';
+      if (stats.trend === 'naik') trendColorClass = 'success';
+      else if (stats.trend === 'turun') trendColorClass = 'danger';
+      else trendColorClass = '';
+      
+      // Create result HTML
+      resultDiv.innerHTML = `
+        <div class="result-content">
+          <div class="result-stat">
+            <div class="stat-label">Rata-rata Total</div>
+            <div class="stat-value ${avgColorClass}">${avgFormatted}</div>
+            <div class="stat-label">dari ${stats.subjectCount} mapel</div>
+          </div>
+          
+          <div class="result-stat">
+            <div class="stat-label">Tren Nilai</div>
+            <div class="stat-value ${trendColorClass}">
+              ${stats.trend === 'naik' ? '↗ Naik' : stats.trend === 'turun' ? '↘ Turun' : '→ Stabil'}
+            </div>
+            <div class="stat-label">Perkembangan terakhir</div>
+          </div>
+          
+          <div class="result-stat">
+            <div class="stat-label">Mapel Terbaik</div>
+            <div class="stat-value success">${bestSubjectText}</div>
+            <div class="stat-label">Nilai tertinggi</div>
+          </div>
+          
+          <div class="result-stat">
+            <div class="stat-label">Perlu Perhatian</div>
+            <div class="stat-value danger">${worstSubjectText}</div>
+            <div class="stat-label">Butuh peningkatan</div>
+          </div>
+          
+          <div class="motivation-card">
+            <div class="motivation-icon">
+              <i class="${motivation.icon}"></i>
+            </div>
+            <div class="motivation-text">
+              ${motivation.text}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Update recommendations in sidebar
+      const recommendationsList = document.getElementById('recommendations');
+      recommendationsList.innerHTML = '';
+      
+      recommendations.forEach(rec => {
+        const li = document.createElement('li');
+        li.className = 'recommendation-item animate-fadeIn';
+        li.innerHTML = `
+          <div class="rec-icon">
+            <i class="${rec.icon}"></i>
+          </div>
+          <div class="rec-text">${rec.text}</div>
+        `;
+        recommendationsList.appendChild(li);
+      });
+    }
+
+    // Update the chart with subject data
+    function updateChart(validSubjects, stats) {
+      const ctx = document.getElementById('gradeChart').getContext('2d');
+      
+      // Destroy existing chart if it exists
+      if (chart) {
+        chart.destroy();
+      }
+      
+      // Prepare data for chart
+      const labels = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5'];
+      
+      // Calculate average per semester
+      const semesterAverages = [];
+      for (let i = 0; i < 5; i++) {
+        let total = 0;
+        let count = 0;
+        
+        validSubjects.forEach(subject => {
+          if (subject.scores[i] !== null) {
+            total += subject.scores[i];
+            count++;
+          }
+        });
+        
+        semesterAverages.push(count > 0 ? total / count : 0);
+      }
+      
+      // Get top 3 subjects for individual lines
+      const topSubjects = stats.subjectAverages.slice(0, 3);
+      const subjectDatasets = topSubjects.map((subject, index) => {
+        const colors = [
+          'rgba(67, 97, 238, 0.8)',
+          'rgba(114, 9, 183, 0.8)',
+          'rgba(247, 37, 133, 0.8)'
+        ];
+        
+        const borderColors = [
+          'rgb(67, 97, 238)',
+          'rgb(114, 9, 183)',
+          'rgb(247, 37, 133)'
+        ];
+        
+        // Get scores for this subject
+        const subjectData = validSubjects.find(s => s.name === subject.name);
+        const scores = subjectData ? subjectData.scores.map(score => score !== null ? score : null) : [];
+        
+        return {
+          label: subject.name,
+          data: scores,
+          borderColor: borderColors[index],
+          backgroundColor: colors[index],
+          borderWidth: 2,
+          fill: false,
+          tension: 0.4,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          pointBackgroundColor: borderColors[index],
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2
+        };
+      });
+      
+      // Create chart
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Rata-rata Semua Mapel',
+              data: semesterAverages,
+              borderColor: 'rgb(76, 201, 240)',
+              backgroundColor: 'rgba(76, 201, 240, 0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 6,
+              pointHoverRadius: 10,
+              pointBackgroundColor: 'rgb(76, 201, 240)',
+              pointBorderColor: '#fff',
+              pointBorderWidth: 2
+            },
+            ...subjectDatasets
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                color: getComputedStyle(document.body).getPropertyValue('--text'),
+                font: {
+                  family: "'Poppins', sans-serif"
+                }
+              }
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              backgroundColor: getComputedStyle(document.body).getPropertyValue('--card-bg'),
+              titleColor: getComputedStyle(document.body).getPropertyValue('--text'),
+              bodyColor: getComputedStyle(document.body).getPropertyValue('--text'),
+              borderColor: getComputedStyle(document.body).getPropertyValue('--border'),
+              borderWidth: 1,
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                color: getComputedStyle(document.body).getPropertyValue('--border'),
+                drawBorder: false
+              },
+              ticks: {
+                color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
+                font: {
+                  family: "'Poppins', sans-serif"
+                }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              max: 100,
+              grid: {
+                color: getComputedStyle(document.body).getPropertyValue('--border'),
+                drawBorder: false
+              },
+              ticks: {
+                color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
+                font: {
+                  family: "'Poppins', sans-serif"
+                },
+                callback: function(value) {
+                  return value + '';
+                }
+              }
+            }
+          },
+          interaction: {
+            intersect: false,
+            mode: 'nearest'
+          },
+          animations: {
+            tension: {
+              duration: 1000,
+              easing: 'linear'
+            }
+          }
+        }
+      });
+    }
+
+    // Update chart theme when theme changes
+    function updateChartTheme() {
+      if (!chart) return;
+      
+      // Update chart colors based on theme
+      const textColor = getComputedStyle(document.body).getPropertyValue('--text');
+      const textSecondaryColor = getComputedStyle(document.body).getPropertyValue('--text-secondary');
+      const borderColor = getComputedStyle(document.body).getPropertyValue('--border');
+      const cardBgColor = getComputedStyle(document.body).getPropertyValue('--card-bg');
+      
+      chart.options.plugins.legend.labels.color = textColor;
+      chart.options.plugins.tooltip.backgroundColor = cardBgColor;
+      chart.options.plugins.tooltip.titleColor = textColor;
+      chart.options.plugins.tooltip.bodyColor = textColor;
+      chart.options.plugins.tooltip.borderColor = borderColor;
+      
+      chart.options.scales.x.grid.color = borderColor;
+      chart.options.scales.x.ticks.color = textSecondaryColor;
+      chart.options.scales.y.grid.color = borderColor;
+      chart.options.scales.y.ticks.color = textSecondaryColor;
+      
+      chart.update();
+    }
+
+    // Update dashboard with current data
+    function updateDashboard() {
+      const validSubjects = subjects.filter(subject => 
+        subject.scores.some(score => score !== null && score !== undefined)
+      );
+      
+      if (validSubjects.length > 0) {
+        const stats = calculateStatistics(validSubjects);
+        
+        // Update average total
+        document.getElementById('avgTotal').textContent = stats.overallAvg.toFixed(1);
+        
+        // Update trend value
+        let trendText = '';
+        let trendClass = '';
+        
+        if (stats.trend === 'naik') {
+          trendText = '↗ Naik';
+          trendClass = 'success';
+        } else if (stats.trend === 'turun') {
+          trendText = '↘ Turun';
+          trendClass = 'danger';
+        } else {
+          trendText = '→ Stabil';
+          trendClass = '';
+        }
+        
+        document.getElementById('trendValue').textContent = trendText;
+        document.getElementById('trendValue').className = `card-value ${trendClass}`;
+        
+        // Update best subject
+        if (stats.bestSubject) {
+          document.getElementById('bestSubject').textContent = stats.bestSubject.name;
+        } else {
+          document.getElementById('bestSubject').textContent = '-';
+        }
+      } else {
+        // Reset dashboard if no data
+        resetDashboard();
+      }
+    }
+
+    // Reset dashboard to default state
+    function resetDashboard() {
+      document.getElementById('avgTotal').textContent = '-';
+      document.getElementById('trendValue').textContent = '-';
+      document.getElementById('trendValue').className = 'card-value';
+      document.getElementById('bestSubject').textContent = '-';
+    }
+
+    // Update grade distribution chart
+    function updateGradeDistribution(validSubjects) {
+      const distributionDiv = document.getElementById('gradeDistribution');
+      
+      // Count grades by category
+      const categories = [
+        { name: 'A (85-100)', min: 85, max: 100, color: '#4cc9f0', count: 0 },
+        { name: 'B (70-84)', min: 70, max: 84, color: '#4361ee', count: 0 },
+        { name: 'C (60-69)', min: 60, max: 69, color: '#f8961e', count: 0 },
+        { name: 'D (<60)', min: 0, max: 59, color: '#f94144', count: 0 }
+      ];
+      
+      // Count all scores
+      let totalScores = 0;
+      
+      validSubjects.forEach(subject => {
+        subject.scores.forEach(score => {
+          if (score !== null) {
+            totalScores++;
+            
+            for (const category of categories) {
+              if (score >= category.min && score <= category.max) {
+                category.count++;
+                break;
+              }
+            }
+          }
+        });
+      });
+      
+      if (totalScores === 0) {
+        distributionDiv.innerHTML = `<p class="text-center" style="color: var(--text-secondary);">Tidak ada data</p>`;
+        return;
+      }
+      
+      // Create distribution visualization
+      let distributionHTML = '<div class="distribution-container">';
+      
+      categories.forEach(category => {
+        const percentage = totalScores > 0 ? Math.round((category.count / totalScores) * 100) : 0;
+        
+        distributionHTML += `
+          <div class="distribution-item" style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+              <span style="color: ${category.color}; font-weight: 600;">${category.name}</span>
+              <span>${category.count} (${percentage}%)</span>
+            </div>
+            <div style="height: 8px; background-color: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; position: relative;">
+              <div style="width: ${percentage}%; height: 100%; background-color: ${category.color}; border-radius: 4px; transition: width 1s ease;"></div>
+            </div>
+          </div>
+        `;
+      });
+      
+      distributionHTML += '</div>';
+      distributionDiv.innerHTML = distributionHTML;
+    }
+
+    // Add analysis to history
+    function addToHistory(stats) {
+      const historyItem = {
+        date: new Date().toLocaleString('id-ID'),
+        average: stats.overallAvg,
+        trend: stats.trend,
+        subjectCount: stats.subjectCount
+      };
+      
+      // Add to beginning of array
+      analysisHistory.unshift(historyItem);
+      
+      // Keep only last 10 items
+      if (analysisHistory.length > 10) {
+        analysisHistory = analysisHistory.slice(0, 10);
+      }
+      
+      // Update history UI
+      updateHistoryUI();
+      
+      // Save to local storage
+      localStorage.setItem('raportHistory', JSON.stringify(analysisHistory));
+    }
+
+    // Update history UI
+    function updateHistoryUI() {
+      const historyList = document.getElementById('historyList');
+      
+      if (analysisHistory.length === 0) {
+        historyList.innerHTML = '<p class="text-center" style="color: var(--text-secondary); padding: 2rem 0;">Belum ada riwayat analisis</p>';
+        return;
+      }
+      
+      historyList.innerHTML = '';
+      
+      analysisHistory.forEach((item, index) => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item animate-fadeInUp';
+        historyItem.style.animationDelay = `${index * 0.1}s`;
+        
+        let trendIcon = '→';
+        if (item.trend === 'naik') trendIcon = '↗';
+        else if (item.trend === 'turun') trendIcon = '↘';
+        
+        historyItem.innerHTML = `
+          <div class="history-date">${item.date}</div>
+          <div class="history-avg">Rata-rata: ${item.average.toFixed(1)} ${trendIcon}</div>
+          <div style="font-size: 0.8rem; color: var(--text-secondary);">${item.subjectCount} mapel</div>
+        `;
+        
+        historyList.appendChild(historyItem);
+      });
+    }
+
+    // Update achievement badge
+    function updateAchievement(stats) {
+      const achievementContent = document.getElementById('achievementContent');
+      let achievement = {
+        title: 'Pemula',
+        description: 'Baru memulai analisis',
+        icon: 'fas fa-seedling',
+        color: '#94a3b8'
+      };
+      
+      // Determine achievement based on stats
+      if (stats.overallAvg >= 95) {
+        achievement = {
+          title: 'Jenius',
+          description: 'Nilai di atas 95! Luar biasa!',
+          icon: 'fas fa-crown',
+          color: '#fbbf24'
+        };
+      } else if (stats.overallAvg >= 90) {
+        achievement = {
+          title: 'Excellent',
+          description: 'Nilai di atas 90! Hebat!',
+          icon: 'fas fa-award',
+          color: '#f472b6'
+        };
+      } else if (stats.overallAvg >= 85) {
+        achievement = {
+          title: 'Scholar',
+          description: 'Nilai di atas 85! Bagus!',
+          icon: 'fas fa-graduation-cap',
+          color: '#60a5fa'
+        };
+      } else if (stats.overallAvg >= 80) {
+        achievement = {
+          title: 'Dedicated',
+          description: 'Nilai di atas 80! Teruskan!',
+          icon: 'fas fa-medal',
+          color: '#34d399'
+        };
+      } else if (stats.overallAvg >= 75) {
+        achievement = {
+          title: 'Hard Worker',
+          description: 'Nilai di atas 75! Semangat!',
+          icon: 'fas fa-fist-raised',
+          color: '#f59e0b'
+        };
+      }
+      
+      achievementContent.innerHTML = `
+        <div class="text-center">
+          <i class="${achievement.icon}" style="font-size: 4rem; color: ${achievement.color}; margin-bottom: 0.5rem; animation: bounce 2s infinite;"></i>
+          <h4 style="color: ${achievement.color}; margin-bottom: 0.3rem;">${achievement.title}</h4>
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">${achievement.description}</p>
+        </div>
+      `;
+    }
+
+    // Share results
+    function shareResults() {
+      const stats = currentStats;
+      
+      if (!stats) {
+        showNotification('Tidak ada hasil untuk dibagikan', 'warning');
+        return;
+      }
+      
+      const shareText = `Hasil analisis raport saya:
+Rata-rata: ${stats.overallAvg.toFixed(1)}
+Tren: ${stats.trend === 'naik' ? 'Naik' : stats.trend === 'turun' ? 'Turun' : 'Stabil'}
+Mapel terbaik: ${stats.bestSubject ? stats.bestSubject.name : '-'}
+Mapel perlu perhatian: ${stats.worstSubject ? stats.worstSubject.name : '-'}
+
+Analisis dilakukan dengan Smart Raport Analyzer Pro`;
+      
+      // Check if Web Share API is available
+      if (navigator.share) {
+        navigator.share({
+          title: 'Hasil Analisis Raport',
+          text: shareText,
+          url: window.location.href
+        })
+        .then(() => showNotification('Berhasil membagikan hasil', 'success'))
+        .catch(error => {
+          console.log('Error sharing:', error);
+          copyToClipboard(shareText);
+        });
+      } else {
+        // Fallback to clipboard
+        copyToClipboard(shareText);
+      }
+    }
+
+    // Copy text to clipboard
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => showNotification('Hasil disalin ke clipboard', 'success'))
+        .catch(err => {
+          console.error('Failed to copy: ', err);
+          showNotification('Gagal menyalin ke clipboard', 'danger');
+        });
+    }
+
+    // Print results
+    function printResults() {
+      window.print();
+    }
+
+    // Show export modal
+    function showExportModal() {
+      if (subjects.length === 0) {
+        showNotification('Tidak ada data untuk diekspor', 'warning');
+        return;
+      }
+      document.getElementById('exportModal').classList.add('active');
+    }
+
+    // Export to PDF
+    async function exportToPDF() {
+      try {
+        showNotification('Membuat PDF...', 'success');
+        
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Add title
+        doc.setFontSize(20);
+        doc.setTextColor(67, 97, 238);
+        doc.text('Smart Raport Analyzer Pro', 105, 20, null, null, 'center');
+        
+        // Add date
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 105, 30, null, null, 'center');
+        
+        // Add overall stats if available
+        if (currentStats) {
+          doc.setFontSize(16);
+          doc.setTextColor(0, 0, 0);
+          doc.text('Statistik Utama', 20, 45);
+          
+          doc.setFontSize(12);
+          doc.text(`Rata-rata Total: ${currentStats.overallAvg.toFixed(2)}`, 20, 55);
+          doc.text(`Tren: ${currentStats.trend === 'naik' ? 'Naik' : currentStats.trend === 'turun' ? 'Turun' : 'Stabil'}`, 20, 62);
+          doc.text(`Jumlah Mata Pelajaran: ${currentStats.subjectCount}`, 20, 69);
+          
+          if (currentStats.bestSubject) {
+            doc.text(`Mata Pelajaran Terbaik: ${currentStats.bestSubject.name} (${currentStats.bestSubject.average.toFixed(1)})`, 20, 76);
+          }
+          
+          if (currentStats.worstSubject) {
+            doc.text(`Perlu Perhatian: ${currentStats.worstSubject.name} (${currentStats.worstSubject.average.toFixed(1)})`, 20, 83);
+          }
+        }
+        
+        // Add table of subjects
+        let yPosition = 95;
+        doc.setFontSize(14);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Data Nilai Mata Pelajaran', 20, yPosition);
+        yPosition += 10;
+        
+        // Filter valid subjects
+        const validSubjects = subjects.filter(subject => 
+          subject.scores.some(score => score !== null && score !== undefined)
+        );
+        
+        if (validSubjects.length > 0) {
+          // Prepare table data
+          const tableData = [];
+          const headers = ['No', 'Mata Pelajaran', 'S1', 'S2', 'S3', 'S4', 'S5', 'Rata-rata'];
+          
+          validSubjects.forEach((subject, index) => {
+            const scores = subject.scores.map(score => score !== null ? score : '-');
+            const avg = subject.scores.filter(s => s !== null).reduce((a, b) => a + b, 0) / subject.scores.filter(s => s !== null).length;
+            
+            tableData.push([
+              index + 1,
+              subject.name || 'Tanpa Nama',
+              ...scores,
+              isNaN(avg) ? '-' : avg.toFixed(1)
+            ]);
+          });
+          
+          // Add table
+          doc.autoTable({
+            startY: yPosition,
+            head: [headers],
+            body: tableData,
+            theme: 'grid',
+            headStyles: { fillColor: [67, 97, 238] },
+            margin: { left: 20 }
+          });
+        }
+        
+        // Save PDF
+        doc.save(`raport-analysis-${new Date().toISOString().slice(0, 10)}.pdf`);
+        closeModal('exportModal');
+        showNotification('PDF berhasil diekspor!', 'success');
+      } catch (error) {
+        console.error('Error exporting to PDF:', error);
+        showNotification('Gagal mengekspor ke PDF', 'danger');
+      }
+    }
+
+    // Export to Excel
+    function exportToExcel() {
+      try {
+        showNotification('Membuat file Excel...', 'success');
+        
+        // Filter valid subjects
+        const validSubjects = subjects.filter(subject => 
+          subject.scores.some(score => score !== null && score !== undefined)
+        );
+        
+        if (validSubjects.length === 0) {
+          showNotification('Tidak ada data untuk diekspor', 'warning');
+          return;
+        }
+        
+        // Prepare data for Excel
+        const wb = XLSX.utils.book_new();
+        
+        // Create data sheet
+        const data = [];
+        
+        // Add headers
+        data.push(['Smart Raport Analyzer Pro', '', '', '', '', '', '']);
+        data.push(['Tanggal', new Date().toLocaleDateString('id-ID'), '', '', '', '', '']);
+        data.push(['', '', '', '', '', '', '']);
+        
+        if (currentStats) {
+          data.push(['Statistik Utama', '', '', '', '', '', '']);
+          data.push(['Rata-rata Total', currentStats.overallAvg.toFixed(2), '', '', '', '', '']);
+          data.push(['Tren', currentStats.trend === 'naik' ? 'Naik' : currentStats.trend === 'turun' ? 'Turun' : 'Stabil', '', '', '', '', '']);
+          data.push(['Jumlah Mata Pelajaran', currentStats.subjectCount, '', '', '', '', '']);
+          
+          if (currentStats.bestSubject) {
+            data.push(['Mata Pelajaran Terbaik', `${currentStats.bestSubject.name} (${currentStats.bestSubject.average.toFixed(1)})`, '', '', '', '', '']);
+          }
+          
+          if (currentStats.worstSubject) {
+            data.push(['Perlu Perhatian', `${currentStats.worstSubject.name} (${currentStats.worstSubject.average.toFixed(1)})`, '', '', '', '', '']);
+          }
+          
+          data.push(['', '', '', '', '', '', '']);
+        }
+        
+        // Add subject data headers
+        data.push(['No', 'Mata Pelajaran', 'Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Rata-rata']);
+        
+        // Add subject data
+        validSubjects.forEach((subject, index) => {
+          const scores = subject.scores.map(score => score !== null ? score : '');
+          const avg = subject.scores.filter(s => s !== null).reduce((a, b) => a + b, 0) / subject.scores.filter(s => s !== null).length;
+          
+          data.push([
+            index + 1,
+            subject.name || 'Tanpa Nama',
+            ...scores,
+            isNaN(avg) ? '' : avg.toFixed(1)
+          ]);
+        });
+        
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        XLSX.utils.book_append_sheet(wb, ws, 'Analisis Raport');
+        
+        // Save Excel file
+        XLSX.writeFile(wb, `raport-analysis-${new Date().toISOString().slice(0, 10)}.xlsx`);
+        closeModal('exportModal');
+        showNotification('File Excel berhasil diekspor!', 'success');
+      } catch (error) {
+        console.error('Error exporting to Excel:', error);
+        showNotification('Gagal mengekspor ke Excel', 'danger');
+      }
+    }
+
+    // Export to JSON
+    function exportToJSON() {
+      if (subjects.length === 0) {
+        showNotification('Tidak ada data untuk diekspor', 'warning');
+        return;
+      }
+      
+      const data = {
+        subjects: subjects,
+        exportDate: new Date().toISOString(),
+        appVersion: '2.0',
+        stats: currentStats
+      };
+      
+      const dataStr = JSON.stringify(data, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+      
+      const exportFileDefaultName = `raport-data-${new Date().toISOString().slice(0, 10)}.json`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+      
+      closeModal('exportModal');
+      showNotification('Data JSON berhasil diekspor', 'success');
+    }
+
+    // Save progress to local storage
+    function saveProgress() {
+      saveToLocalStorage();
+      showNotification('Progress berhasil disimpan', 'success');
+    }
+
+    // Show tutorial modal
+    function showTutorial() {
+      document.getElementById('tutorialModal').classList.add('active');
+    }
+
+    // Show about modal
+    function showAbout() {
+      document.getElementById('aboutModal').classList.add('active');
+    }
+
+    // Show creator info modal
+    function showCreatorInfo() {
+      document.getElementById('creatorModal').classList.add('active');
+    }
+
+    // Show portfolio modal
+    function showPortfolio() {
+      closeModal('creatorModal');
+      setTimeout(() => {
+        document.getElementById('portfolioModal').classList.add('active');
+      }, 300);
+    }
+
+    // Close modal
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    // Send email
+    function sendEmail() {
+      const email = 'firman.developer@example.com';
+      const subject = 'Inquiry about Smart Raport Analyzer Pro';
+      const body = 'Halo Firman_devs,\n\nSaya tertarik dengan aplikasi Smart Raport Analyzer Pro dan ingin bertanya tentang...';
+      
+      window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    // Open GitHub
+    function openGitHub() {
+      window.open('https://github.com/firman_devs', '_blank');
+    }
+
+    // Show notification
+    function showNotification(message, type) {
+      // Remove existing notification if any
+      const existingNotification = document.querySelector('.notification');
+      if (existingNotification) {
+        existingNotification.remove();
+      }
+      
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.className = `notification animate-fadeIn`;
+      
+      // Icon based on type
+      let icon = 'info-circle';
+      if (type === 'success') icon = 'check-circle';
+      else if (type === 'warning') icon = 'exclamation-triangle';
+      else if (type === 'danger') icon = 'exclamation-circle';
+      
+      notification.innerHTML = `
+        <div class="notification-content">
+          <i class="fas fa-${icon}"></i>
+          <span>${message}</span>
+        </div>
+        <div class="notification-progress"></div>
+      `;
+      
+      // Add styles for notification
+      const style = document.createElement('style');
+      style.textContent = `
+        .notification {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background-color: ${type === 'success' ? 'var(--success)' : type === 'warning' ? 'var(--warning)' : type === 'danger' ? 'var(--danger)' : 'var(--primary)'};
+          color: var(--dark);
+          padding: 1rem 1.5rem;
+          border-radius: var(--radius);
+          box-shadow: var(--shadow-lg), 0 0 20px ${type === 'success' ? 'rgba(76, 201, 240, 0.5)' : type === 'warning' ? 'rgba(248, 150, 30, 0.5)' : type === 'danger' ? 'rgba(249, 65, 68, 0.5)' : 'rgba(67, 97, 238, 0.5)'};
+          z-index: 1001;
+          max-width: 350px;
+          animation: slideIn 0.3s ease;
+          overflow: hidden;
+        }
+        
+        .notification-content {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+          position: relative;
+          z-index: 2;
+        }
+        
+        .notification i {
+          font-size: 1.2rem;
+        }
+        
+        .notification-progress {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          height: 3px;
+          width: 100%;
+          background-color: rgba(0, 0, 0, 0.2);
+          border-radius: 0 0 var(--radius) var(--radius);
+          overflow: hidden;
+        }
+        
+        .notification-progress::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 100%;
+          background-color: var(--dark);
+          animation: progress 3s linear;
+        }
+        
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes progress {
+          from { transform: translateX(0); }
+          to { transform: translateX(100%); }
+        }
+      `;
+      
+      document.head.appendChild(style);
+      document.body.appendChild(notification);
+      
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        notification.style.opacity = '0';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.remove();
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    // Save data to local storage
+    function saveToLocalStorage() {
+      const data = {
+        subjects: subjects,
+        timestamp: new Date().toISOString()
+      };
+      
+      localStorage.setItem('raportSubjects', JSON.stringify(data));
+    }
+
+    // Load saved data from local storage
+    function loadSavedData() {
+      // Load subjects
+      const savedSubjects = localStorage.getItem('raportSubjects');
+      if (savedSubjects) {
+        try {
+          const data = JSON.parse(savedSubjects);
+          subjects = data.subjects || [];
+          
+          // Recreate subject cards
+          subjectsDiv.innerHTML = '';
+          subjects.forEach((subject, index) => {
+            const subjectCard = document.createElement('div');
+            subjectCard.className = 'subject-card';
+            subjectCard.style.animationDelay = `${index * 0.1}s`;
+            subjectCard.id = `subject-${subject.id}`;
+            
+            subjectCard.innerHTML = `
+              <div class="subject-header">
+                <div class="subject-name">
+                  <input type="text" value="${subject.name}" placeholder="Nama Mata Pelajaran" class="mapel" onchange="updateSubjectName(${subject.id}, this.value)">
+                </div>
+                <button class="remove-subject" onclick="removeSubject(${subject.id})">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <div class="scores-container">
+                ${subject.scores.map((score, i) => `
+                  <div class="score-input">
+                    <label>Semester ${i + 1}</label>
+                    <input type="number" min="0" max="100" value="${score !== null ? score : ''}" placeholder="0-100" class="nilai" onchange="updateSubjectScore(${subject.id}, ${i}, this.value)">
+                  </div>
+                `).join('')}
+              </div>
+            `;
+            
+            subjectsDiv.appendChild(subjectCard);
+          });
+          
+          // Re-enable add button if needed
+          if (subjects.length < 20) {
+            document.querySelector('.btn-primary').disabled = false;
+            document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Mapel';
+          }
+          
+          // Load history
+          const savedHistory = localStorage.getItem('raportHistory');
+          if (savedHistory) {
+            analysisHistory = JSON.parse(savedHistory) || [];
+            updateHistoryUI();
+          }
+          
+          // Update dashboard
+          updateDashboard();
+          
+          // If there are subjects, calculate and show results
+          if (subjects.length > 0) {
+            const validSubjects = subjects.filter(subject => 
+              subject.scores.some(score => score !== null && score !== undefined)
+            );
+            
+            if (validSubjects.length > 0) {
+              const stats = calculateStatistics(validSubjects);
+              currentStats = stats;
+              const motivation = getMotivation(stats.overallAvg, stats.trend, stats.diff);
+              const recommendations = generateRecommendations(validSubjects, stats);
+              
+              displayResults(stats, motivation, recommendations);
+              updateChart(validSubjects, stats);
+              updateGradeDistribution(validSubjects);
+              updateAchievement(stats);
+            }
+          }
+          
+          showNotification('Data berhasil dimuat dari penyimpanan lokal', 'success');
+        } catch (error) {
+          console.error('Error loading saved data:', error);
+          subjects = [];
+          subjectsDiv.innerHTML = '';
+          addSubject(); // Add one empty subject
+        }
+      }
+    }
+
+    // Close modals when clicking outside
+    window.addEventListener('click', function(event) {
+      const modals = ['tutorialModal', 'aboutModal', 'creatorModal', 'portfolioModal', 'exportModal'];
+      modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (event.target === modal) {
+          closeModal(modalId);
+        }
+      });
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(event) {
+      // Ctrl + N: Add new subject
+      if ((event.ctrlKey || event.metaKey) && event.key === 'n') {
+        event.preventDefault();
+        addSubject();
+      }
+      
+      // Ctrl + A: Analyze
+      if ((event.ctrlKey || event.metaKey) && event.key === 'a') {
+        event.preventDefault();
+        analyze();
+      }
+      
+      // Ctrl + S: Save
+      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+        event.preventDefault();
+        saveProgress();
+      }
+      
+      // Ctrl + D: Add sample data
+      if ((event.ctrlKey || event.metaKey) && event.key === 'd') {
+        event.preventDefault();
+        addSampleData();
+      }
+      
+      // Ctrl + E: Export
+      if ((event.ctrlKey || event.metaKey) && event.key === 'e') {
+        event.preventDefault();
+        showExportModal();
+      }
+      
+      // Escape: Close modals
+      if (event.key === 'Escape') {
+        const modals = ['tutorialModal', 'aboutModal', 'creatorModal', 'portfolioModal', 'exportModal'];
+        modals.forEach(modalId => {
+          closeModal(modalId);
+        });
+      }
+    });
+
+    // Add CSS for print
+    const printCSS = document.createElement('style');
+    printCSS.textContent = `
+      @media print {
+        .no-print, button, .theme-toggle, .remove-subject, .share-btn {
+          display: none !important;
+        }
+        
+        body, .card, .input-section, .result-section, .chart-section, .sidebar-card {
+          box-shadow: none !important;
+          border: 1px solid #ddd !important;
+          background-color: white !important;
+          color: black !important;
+        }
+        
+        .main-container {
+          grid-template-columns: 1fr !important;
+        }
+        
+        .sidebar {
+          display: none;
+        }
+        
+        .motivation-card {
+          background: #f0f0f0 !important;
+          color: black !important;
+        }
+        
+        .stat-value {
+          -webkit-text-fill-color: black !important;
+          color: black !important;
+        }
+        
+        .animated-bg, .floating-particles {
+          display: none !important;
+        }
+        
+        .logo {
+          background: #4361ee !important;
+        }
+        
+        .section-title i, .sidebar-title i {
+          color: #4361ee !important;
+        }
+      }
+    `;
+    document.head.appendChild(printCSS);
+  </script>
+</body>
+</html>
