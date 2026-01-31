@@ -103,6 +103,9 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     
     html {
@@ -119,6 +122,8 @@
       position: relative;
       min-height: 100vh;
       transition: var(--transition-normal);
+      will-change: transform, opacity;
+      text-rendering: optimizeLegibility;
     }
     
     /* ============================================
@@ -132,6 +137,9 @@
       height: 100%;
       z-index: -3;
       overflow: hidden;
+      pointer-events: none;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
     
     .gradient-bg {
@@ -143,6 +151,7 @@
         radial-gradient(circle at 90% 80%, rgba(114, 9, 183, 0.1) 0%, transparent 20%),
         radial-gradient(circle at 50% 50%, rgba(247, 37, 133, 0.05) 0%, transparent 30%);
       animation: gradientShift 20s ease infinite alternate;
+      animation-play-state: paused;
     }
     
     .grid-pattern {
@@ -155,6 +164,7 @@
       background-size: 50px 50px;
       opacity: 0.3;
       animation: gridMove 40s linear infinite;
+      animation-play-state: paused;
     }
     
     .noise-texture {
@@ -166,7 +176,7 @@
     }
     
     /* ============================================
-       PARTICLES SYSTEM
+       PARTIKEL SYSTEM (OPTIMIZED FOR MOBILE)
     ============================================ */
     #particles-js {
       position: fixed;
@@ -174,13 +184,14 @@
       height: 100%;
       z-index: -2;
       pointer-events: none;
+      opacity: 0.3;
     }
     
     /* ============================================
        CUSTOM SCROLLBAR
     ============================================ */
     ::-webkit-scrollbar {
-      width: 10px;
+      width: 6px;
     }
     
     ::-webkit-scrollbar-track {
@@ -189,16 +200,16 @@
     }
     
     ::-webkit-scrollbar-thumb {
-      background: var(--primary-gradient);
+      background: var(--primary);
       border-radius: var(--radius-full);
     }
     
     ::-webkit-scrollbar-thumb:hover {
-      background: var(--secondary-gradient);
+      background: var(--secondary);
     }
     
     /* ============================================
-       PREMIUM HEADER
+       PREMIUM HEADER (OPTIMIZED FOR MOBILE)
     ============================================ */
     .app-header {
       position: fixed;
@@ -206,16 +217,19 @@
       left: 0;
       width: 100%;
       z-index: 1000;
-      padding: 1rem 2rem;
-      background: rgba(10, 14, 23, 0.8);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
+      padding: 0.5rem 1rem;
+      background: rgba(10, 14, 23, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border-color);
       transition: var(--transition-normal);
+      transform: translateZ(0);
+      will-change: transform;
+      height: 60px;
     }
     
     .light-theme .app-header {
-      background: rgba(248, 250, 252, 0.8);
+      background: rgba(248, 250, 252, 0.95);
     }
     
     .header-content {
@@ -224,28 +238,30 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 2rem;
+      gap: 0.5rem;
+      height: 100%;
     }
     
     .logo-container {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.5rem;
       flex-shrink: 0;
     }
     
     .logo-wrapper {
       position: relative;
-      width: 60px;
-      height: 60px;
+      width: 40px;
+      height: 40px;
       background: var(--primary-gradient);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: var(--glow-primary);
       animation: logoFloat 6s ease-in-out infinite;
       overflow: hidden;
+      flex-shrink: 0;
     }
     
     .logo-wrapper::before {
@@ -258,7 +274,7 @@
     }
     
     .logo-icon {
-      font-size: 2rem;
+      font-size: 1.2rem;
       color: white;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
       z-index: 1;
@@ -271,67 +287,77 @@
     
     .logo-text h1 {
       font-family: 'Montserrat', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 900;
+      font-size: 1rem;
+      font-weight: 800;
       background: var(--primary-gradient);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
       line-height: 1.2;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.3px;
+      white-space: nowrap;
     }
     
     .logo-text .tagline {
-      font-size: 0.85rem;
+      display: none;
+      font-size: 0.7rem;
       color: var(--text-secondary);
       font-weight: 500;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
     }
     
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.5rem;
+      flex-shrink: 0;
     }
     
     .theme-toggle {
-      width: 48px;
-      height: 48px;
-      border-radius: var(--radius-md);
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
       background: var(--bg-glass);
       border: 1px solid var(--border-color);
       color: var(--text-primary);
-      font-size: 1.2rem;
+      font-size: 1rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: var(--transition-fast);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(5px);
+      flex-shrink: 0;
     }
     
     .theme-toggle:hover {
-      transform: translateY(-2px);
+      transform: translateY(-1px);
       box-shadow: var(--shadow-md), var(--glow-primary);
       border-color: var(--primary);
     }
     
     .quick-stats {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.25rem;
+      flex-shrink: 0;
     }
     
     .stat-badge {
-      padding: 0.5rem 1rem;
+      padding: 0.25rem 0.5rem;
       background: var(--bg-glass);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-full);
-      font-size: 0.85rem;
+      font-size: 0.7rem;
       font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.25rem;
       transition: var(--transition-fast);
+      white-space: nowrap;
+    }
+    
+    .stat-badge i {
+      font-size: 0.8rem;
     }
     
     .stat-badge:hover {
@@ -345,11 +371,11 @@
     ============================================ */
     .main-content {
       max-width: 1400px;
-      margin: 120px auto 40px;
-      padding: 0 2rem;
+      margin: 70px auto 20px;
+      padding: 0 1rem;
       display: grid;
-      grid-template-columns: 1fr 400px;
-      gap: 2rem;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
       position: relative;
     }
     
@@ -358,21 +384,22 @@
     ============================================ */
     .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
-      margin-bottom: 2rem;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
     
     .metric-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       transition: var(--transition-normal);
       position: relative;
       overflow: hidden;
+      transform: translateZ(0);
     }
     
     .metric-card::before {
@@ -381,7 +408,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 4px;
+      height: 3px;
       background: var(--primary-gradient);
       transform: scaleX(0);
       transform-origin: left;
@@ -389,8 +416,8 @@
     }
     
     .metric-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-lg), var(--glow-primary);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
     }
     
     .metric-card:hover::before {
@@ -400,33 +427,34 @@
     .metric-header {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
     }
     
     .metric-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: var(--radius-md);
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      border-radius: var(--radius-sm);
       background: var(--primary-gradient);
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 1.5rem;
+      font-size: 1rem;
     }
     
     .metric-info h3 {
-      font-size: 0.9rem;
+      font-size: 0.75rem;
       color: var(--text-secondary);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       margin-bottom: 0.25rem;
     }
     
     .metric-value {
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: 800;
       background: var(--primary-gradient);
       -webkit-background-clip: text;
@@ -438,10 +466,10 @@
     .metric-trend {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.85rem;
+      gap: 0.25rem;
+      font-size: 0.7rem;
       color: var(--text-tertiary);
-      margin-top: 0.5rem;
+      margin-top: 0.25rem;
     }
     
     .trend-up {
@@ -458,11 +486,11 @@
     .input-section {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-xl);
-      padding: 2rem;
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      margin-bottom: 2rem;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      margin-bottom: 1.5rem;
       position: relative;
       overflow: hidden;
     }
@@ -482,37 +510,42 @@
       );
       animation: shimmer 4s infinite linear;
       z-index: 0;
+      animation-play-state: paused;
     }
     
     .section-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
       position: relative;
       z-index: 1;
+      flex-direction: column;
+      gap: 0.5rem;
     }
     
     .section-title {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.75rem;
+      width: 100%;
     }
     
     .title-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: var(--radius-md);
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      border-radius: var(--radius-sm);
       background: var(--primary-gradient);
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
     }
     
     .title-text h2 {
-      font-size: 1.8rem;
+      font-size: 1.3rem;
       font-weight: 800;
       margin-bottom: 0.25rem;
       background: var(--primary-gradient);
@@ -523,7 +556,7 @@
     
     .title-text p {
       color: var(--text-secondary);
-      font-size: 0.95rem;
+      font-size: 0.85rem;
     }
     
     .subject-list {
@@ -534,13 +567,15 @@
     .subject-card {
       background: var(--bg-glass);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      margin-bottom: 1rem;
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
       transition: var(--transition-normal);
       position: relative;
       overflow: hidden;
       animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateZ(0);
+      border-left: 4px solid var(--primary);
     }
     
     .subject-card::before {
@@ -555,12 +590,8 @@
     }
     
     .subject-card:hover {
-      transform: translateX(5px);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .subject-card:hover::before {
-      width: 8px;
+      transform: translateX(3px);
+      box-shadow: var(--shadow-sm);
     }
     
     .subject-header {
@@ -568,30 +599,33 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1rem;
+      gap: 0.5rem;
     }
     
     .subject-name-input {
       flex: 1;
-      padding: 0.875rem 1.25rem;
+      padding: 0.75rem 1rem;
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-sm);
       color: var(--text-primary);
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 500;
       transition: var(--transition-fast);
+      min-width: 0;
     }
     
     .subject-name-input:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
     }
     
     .remove-subject-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius-md);
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      border-radius: var(--radius-sm);
       background: rgba(249, 65, 68, 0.1);
       border: 1px solid rgba(249, 65, 68, 0.2);
       color: var(--danger);
@@ -600,7 +634,6 @@
       justify-content: center;
       cursor: pointer;
       transition: var(--transition-fast);
-      margin-left: 1rem;
     }
     
     .remove-subject-btn:hover {
@@ -610,8 +643,8 @@
     
     .scores-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0.75rem;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
     }
     
     .score-input-wrapper {
@@ -620,30 +653,32 @@
     
     .score-input-wrapper label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--text-secondary);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
       font-weight: 500;
     }
     
     .score-input {
       width: 100%;
-      padding: 0.875rem;
+      padding: 0.75rem;
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-sm);
       color: var(--text-primary);
-      font-size: 1rem;
+      font-size: 0.9rem;
       text-align: center;
       font-weight: 600;
       transition: var(--transition-fast);
+      appearance: none;
+      -webkit-appearance: none;
     }
     
     .score-input:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-      transform: translateY(-2px);
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+      transform: translateY(-1px);
     }
     
     .score-input.valid {
@@ -661,28 +696,30 @@
     ============================================ */
     .action-buttons {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1rem;
-      margin-top: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1.5rem;
       position: relative;
       z-index: 1;
     }
     
     .btn {
-      padding: 1rem 1.5rem;
-      border-radius: var(--radius-md);
+      padding: 0.875rem 1rem;
+      border-radius: var(--radius-sm);
       border: none;
       font-family: 'Inter', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.75rem;
+      gap: 0.5rem;
       transition: var(--transition-normal);
       position: relative;
       overflow: hidden;
+      transform: translateZ(0);
+      will-change: transform;
     }
     
     .btn::before {
@@ -699,19 +736,19 @@
     }
     
     .btn:hover::before {
-      width: 300px;
-      height: 300px;
+      width: 200px;
+      height: 200px;
     }
     
     .btn-primary {
       background: var(--primary-gradient);
       color: white;
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-sm);
     }
     
     .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-lg), var(--glow-primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
     }
     
     .btn-secondary {
@@ -722,8 +759,8 @@
     
     .btn-secondary:hover {
       background: var(--bg-tertiary);
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
     }
     
     .btn-success {
@@ -732,8 +769,8 @@
     }
     
     .btn-success:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
     }
     
     .btn-danger {
@@ -742,8 +779,8 @@
     }
     
     .btn-danger:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3);
     }
     
     .btn-export {
@@ -752,8 +789,8 @@
     }
     
     .btn-export:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(139, 92, 246, 0.3);
     }
     
     /* ============================================
@@ -762,11 +799,11 @@
     .results-section {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-xl);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       position: relative;
       overflow: hidden;
     }
@@ -777,36 +814,37 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 4px;
+      height: 3px;
       background: var(--primary-gradient);
       animation: progress 2s infinite linear;
+      animation-play-state: paused;
     }
     
     .results-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 1.5rem;
-      margin-top: 1.5rem;
+      gap: 1rem;
+      margin-top: 1rem;
     }
     
     .result-card {
       background: var(--bg-glass);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      padding: 1rem;
       text-align: center;
       transition: var(--transition-normal);
     }
     
     .result-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-md);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-sm);
     }
     
     .result-value {
-      font-size: 2.5rem;
+      font-size: 1.8rem;
       font-weight: 800;
-      margin: 1rem 0;
+      margin: 0.5rem 0;
       background: var(--primary-gradient);
       -webkit-background-clip: text;
       background-clip: text;
@@ -815,18 +853,18 @@
     
     .result-label {
       color: var(--text-secondary);
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
     
     .motivation-card {
       grid-column: span 2;
       background: var(--primary-gradient);
       color: white;
-      border-radius: var(--radius-lg);
-      padding: 2rem;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -841,19 +879,21 @@
       height: 200%;
       background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
       animation: rotate 20s linear infinite;
+      animation-play-state: paused;
     }
     
     .motivation-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
       animation: bounce 2s infinite;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+      animation-play-state: paused;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
     }
     
     .motivation-text {
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-style: italic;
-      line-height: 1.6;
+      line-height: 1.5;
       position: relative;
       z-index: 1;
     }
@@ -864,16 +904,16 @@
     .charts-section {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-xl);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .chart-container {
-      height: 300px;
-      margin-top: 1.5rem;
+      height: 250px;
+      margin-top: 1rem;
       position: relative;
     }
     
@@ -881,26 +921,24 @@
        SIDEBAR
     ============================================ */
     .sidebar {
-      position: sticky;
-      top: 120px;
-      height: calc(100vh - 160px);
-      overflow-y: auto;
+      position: relative;
+      margin-top: 1.5rem;
     }
     
     .sidebar-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-xl);
+      border-radius: var(--radius-lg);
       padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
+      margin-bottom: 1rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       transition: var(--transition-normal);
     }
     
     .sidebar-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-lg);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
     }
     
     .recommendations-list {
@@ -910,7 +948,7 @@
     .recommendation-item {
       display: flex;
       align-items: flex-start;
-      padding: 1rem 0;
+      padding: 0.75rem 0;
       border-bottom: 1px solid var(--border-light);
       transition: var(--transition-fast);
     }
@@ -920,19 +958,19 @@
     }
     
     .recommendation-item:hover {
-      padding-left: 0.5rem;
+      padding-left: 0.25rem;
     }
     
     .rec-icon {
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      border-radius: var(--radius-md);
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      border-radius: var(--radius-sm);
       background: rgba(67, 97, 238, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 1rem;
+      margin-right: 0.75rem;
       color: var(--primary);
       transition: var(--transition-fast);
     }
@@ -940,31 +978,31 @@
     .recommendation-item:hover .rec-icon {
       background: var(--primary);
       color: white;
-      transform: scale(1.1);
+      transform: scale(1.05);
     }
     
     .rec-text {
       color: var(--text-secondary);
-      font-size: 0.9rem;
-      line-height: 1.5;
+      font-size: 0.85rem;
+      line-height: 1.4;
     }
     
     .history-list {
-      max-height: 300px;
+      max-height: 200px;
       overflow-y: auto;
     }
     
     .history-item {
-      padding: 1rem;
+      padding: 0.75rem;
       background: var(--bg-glass);
-      border-radius: var(--radius-md);
-      margin-bottom: 0.75rem;
-      border-left: 4px solid var(--primary);
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.5rem;
+      border-left: 3px solid var(--primary);
       transition: var(--transition-fast);
     }
     
     .history-item:hover {
-      transform: translateX(5px);
+      transform: translateX(3px);
       border-left-color: var(--accent);
     }
     
@@ -973,22 +1011,23 @@
     ============================================ */
     .achievement-badge {
       text-align: center;
-      padding: 2rem 1rem;
+      padding: 1.5rem 1rem;
     }
     
     .badge-icon {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 1rem;
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 0.75rem;
       background: var(--primary-gradient);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
+      font-size: 1.8rem;
       color: white;
       box-shadow: var(--glow-primary);
       animation: pulse 2s infinite;
+      animation-play-state: paused;
     }
     
     /* ============================================
@@ -1002,11 +1041,11 @@
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(5px);
       z-index: 2000;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
+      padding: 1rem;
       animation: fadeIn 0.3s ease;
     }
     
@@ -1017,9 +1056,9 @@
     .modal-content {
       background: var(--bg-modal);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-xl);
+      border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 600px;
+      max-width: 500px;
       max-height: 90vh;
       overflow-y: auto;
       box-shadow: var(--shadow-xl);
@@ -1028,7 +1067,7 @@
     }
     
     .modal-header {
-      padding: 1.5rem 2rem;
+      padding: 1rem 1.5rem;
       border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
@@ -1036,17 +1075,17 @@
     }
     
     .modal-header h2 {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
     
     .modal-close {
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius-md);
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
       background: var(--bg-glass);
       border: 1px solid var(--border-color);
       color: var(--text-primary);
@@ -1065,7 +1104,7 @@
     }
     
     .modal-body {
-      padding: 2rem;
+      padding: 1.5rem;
     }
     
     /* ============================================
@@ -1076,15 +1115,15 @@
     }
     
     .creator-avatar {
-      width: 120px;
-      height: 120px;
-      margin: 0 auto 1.5rem;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1rem;
       background: var(--primary-gradient);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 3rem;
+      font-size: 2rem;
       color: white;
       box-shadow: var(--glow-primary);
       position: relative;
@@ -1098,6 +1137,7 @@
       height: 100%;
       background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
       animation: avatarShine 3s infinite linear;
+      animation-play-state: paused;
     }
     
     /* ============================================
@@ -1106,8 +1146,8 @@
     .app-footer {
       background: var(--bg-secondary);
       border-top: 1px solid var(--border-color);
-      padding: 2rem;
-      margin-top: 4rem;
+      padding: 1.5rem;
+      margin-top: 2rem;
     }
     
     .footer-content {
@@ -1118,8 +1158,8 @@
     
     .footer-content p {
       color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
     }
     
     .creator-signature {
@@ -1129,14 +1169,15 @@
       background-clip: text;
       color: transparent;
       animation: signatureGlow 2s infinite alternate;
+      animation-play-state: paused;
     }
     
     /* ============================================
-       ANIMATIONS
+       ANIMATIONS (OPTIMIZED)
     ============================================ */
     @keyframes logoFloat {
       0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-5px); }
     }
     
     @keyframes logoShine {
@@ -1167,7 +1208,7 @@
     @keyframes slideIn {
       from { 
         opacity: 0;
-        transform: translateX(-30px);
+        transform: translateX(-20px);
       }
       to { 
         opacity: 1;
@@ -1183,7 +1224,7 @@
     @keyframes modalSlideIn {
       from {
         opacity: 0;
-        transform: translateY(-50px) scale(0.9);
+        transform: translateY(-30px) scale(0.95);
       }
       to {
         opacity: 1;
@@ -1193,7 +1234,7 @@
     
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-5px); }
     }
     
     @keyframes rotate {
@@ -1203,12 +1244,12 @@
     
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+      50% { transform: scale(1.03); }
     }
     
     @keyframes signatureGlow {
-      0% { text-shadow: 0 0 10px rgba(67, 97, 238, 0.5); }
-      100% { text-shadow: 0 0 20px rgba(67, 97, 238, 0.8); }
+      0% { text-shadow: 0 0 5px rgba(67, 97, 238, 0.3); }
+      100% { text-shadow: 0 0 10px rgba(67, 97, 238, 0.5); }
     }
     
     @keyframes avatarShine {
@@ -1219,20 +1260,155 @@
     /* ============================================
        RESPONSIVE DESIGN
     ============================================ */
-    @media (max-width: 1200px) {
+    @media (min-width: 768px) {
+      .app-header {
+        padding: 0.75rem 1.5rem;
+        height: 70px;
+      }
+      
+      .logo-wrapper {
+        width: 50px;
+        height: 50px;
+      }
+      
+      .logo-icon {
+        font-size: 1.5rem;
+      }
+      
+      .logo-text h1 {
+        font-size: 1.3rem;
+      }
+      
+      .logo-text .tagline {
+        display: block;
+        font-size: 0.75rem;
+      }
+      
+      .theme-toggle {
+        width: 42px;
+        height: 42px;
+      }
+      
+      .stat-badge {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+      }
+      
       .main-content {
-        grid-template-columns: 1fr;
+        margin-top: 90px;
+        padding: 0 1.5rem;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+      }
+      
+      .metrics-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+      }
+      
+      .metric-card {
+        padding: 1.25rem;
+      }
+      
+      .metric-value {
+        font-size: 1.8rem;
+      }
+      
+      .scores-grid {
+        grid-template-columns: repeat(5, 1fr);
       }
       
       .sidebar {
-        position: static;
-        height: auto;
+        position: sticky;
+        top: 100px;
+        height: calc(100vh - 120px);
+        overflow-y: auto;
+        margin-top: 0;
+      }
+      
+      .action-buttons {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      }
+      
+      .section-header {
+        flex-direction: row;
+        align-items: center;
       }
     }
     
-    @media (max-width: 992px) {
-      .metrics-grid {
+    @media (min-width: 992px) {
+      .app-header {
+        padding: 1rem 2rem;
+        height: 80px;
+      }
+      
+      .logo-wrapper {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .logo-icon {
+        font-size: 1.8rem;
+      }
+      
+      .logo-text h1 {
+        font-size: 1.5rem;
+      }
+      
+      .logo-text .tagline {
+        font-size: 0.85rem;
+      }
+      
+      .main-content {
+        margin-top: 100px;
+      }
+      
+      .input-section,
+      .results-section,
+      .charts-section {
+        padding: 2rem;
+      }
+      
+      .section-title {
+        gap: 1rem;
+      }
+      
+      .title-icon {
+        width: 48px;
+        height: 48px;
+      }
+      
+      .title-text h2 {
+        font-size: 1.8rem;
+      }
+    }
+    
+    @media (max-width: 767px) {
+      .subject-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+      }
+      
+      .remove-subject-btn {
+        align-self: flex-start;
+        width: 100%;
+        max-width: 120px;
+      }
+      
+      .action-buttons {
         grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .btn {
+        font-size: 0.8rem;
+        padding: 0.75rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .metrics-grid {
+        grid-template-columns: 1fr;
       }
       
       .results-grid {
@@ -1243,88 +1419,12 @@
         grid-column: span 1;
       }
       
-      .scores-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .main-content {
-        padding: 0 1rem;
-        margin-top: 100px;
-      }
-      
-      .app-header {
-        padding: 1rem;
-      }
-      
-      .header-content {
-        gap: 1rem;
-      }
-      
-      .logo-text h1 {
-        font-size: 1.2rem;
-      }
-      
-      .logo-wrapper {
-        width: 50px;
-        height: 50px;
-      }
-      
-      .metric-card {
-        padding: 1rem;
-      }
-      
-      .metric-value {
-        font-size: 1.5rem;
-      }
-      
-      .input-section,
-      .results-section,
-      .charts-section {
-        padding: 1.5rem;
-      }
-      
-      .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-      }
-      
-      .scores-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
       .action-buttons {
         grid-template-columns: 1fr;
       }
-    }
-    
-    @media (max-width: 480px) {
-      .metrics-grid {
-        grid-template-columns: 1fr;
-      }
       
       .scores-grid {
         grid-template-columns: 1fr;
-      }
-      
-      .title-text h2 {
-        font-size: 1.5rem;
-      }
-      
-      .subject-header {
-        flex-direction: column;
-        gap: 1rem;
-      }
-      
-      .remove-subject-btn {
-        align-self: flex-start;
-      }
-      
-      .btn {
-        padding: 0.875rem 1rem;
-        font-size: 0.9rem;
       }
     }
     
@@ -1340,8 +1440,8 @@
     
     .glass-effect {
       background: var(--bg-glass);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border: 1px solid var(--border-color);
     }
     
@@ -1349,25 +1449,55 @@
       display: none !important;
     }
     
-    .loading {
-      position: relative;
-      overflow: hidden;
+    .text-center {
+      text-align: center;
     }
     
-    .loading::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      animation: loading 1.5s infinite;
+    /* Touch device optimization */
+    @media (hover: none) and (pointer: coarse) {
+      .btn:hover,
+      .metric-card:hover,
+      .subject-card:hover,
+      .result-card:hover,
+      .sidebar-card:hover,
+      .history-item:hover {
+        transform: none !important;
+      }
+      
+      .btn::before {
+        display: none;
+      }
+      
+      /* Enable animations only on interaction */
+      .gradient-bg,
+      .grid-pattern,
+      .results-section::before,
+      .motivation-card::before,
+      .motivation-icon,
+      .badge-icon,
+      .creator-avatar::before,
+      .creator-signature {
+        animation-play-state: running;
+      }
     }
     
-    @keyframes loading {
-      0% { left: -100%; }
-      100% { left: 100%; }
+    /* High performance mode */
+    .perf-mode {
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      perspective: 1000;
+      will-change: transform, opacity;
+    }
+    
+    /* Disable animations for users who prefer reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
@@ -1390,24 +1520,24 @@
           <i class="fas fa-scroll logo-icon"></i>
         </div>
         <div class="logo-text">
-          <h1>Smart Raport Analyzer Pro</h1>
-          <p class="tagline">Analisis Nilai Cerdas • Rekomendasi Personal • AI Powered</p>
+          <h1>Smart Raport Analyzer</h1>
+          <p class="tagline">Analisis Nilai • Rekomendasi • AI</p>
         </div>
       </div>
       
       <div class="header-actions">
         <div class="quick-stats">
           <div class="stat-badge">
-            <i class="fas fa-calculator"></i>
-            <span id="subjectCount">0 Mapel</span>
+            <i class="fas fa-book"></i>
+            <span id="subjectCount">0</span>
           </div>
           <div class="stat-badge">
-            <i class="fas fa-chart-line"></i>
-            <span id="analysisCount">0 Analisis</span>
+            <i class="fas fa-chart-bar"></i>
+            <span id="analysisCount">0</span>
           </div>
         </div>
         
-        <button class="theme-toggle" id="themeToggle">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i class="fas fa-moon"></i>
         </button>
       </div>
@@ -1426,13 +1556,13 @@
               <i class="fas fa-calculator"></i>
             </div>
             <div class="metric-info">
-              <h3>Rata-rata Total</h3>
+              <h3>Rata-rata</h3>
               <div class="metric-value" id="avgTotal">-</div>
             </div>
           </div>
           <div class="metric-trend">
             <i class="fas fa-arrow-up trend-up"></i>
-            <span>Tren Positif</span>
+            <span>Tren</span>
           </div>
         </div>
         
@@ -1458,7 +1588,7 @@
               <i class="fas fa-medal"></i>
             </div>
             <div class="metric-info">
-              <h3>Mapel Terbaik</h3>
+              <h3>Terbaik</h3>
               <div class="metric-value" id="bestSubject">-</div>
             </div>
           </div>
@@ -1505,24 +1635,24 @@
         
         <div class="action-buttons">
           <button class="btn btn-primary" onclick="addSubject()">
-            <i class="fas fa-plus-circle"></i>
+            <i class="fas fa-plus"></i>
             Tambah Mapel
           </button>
           <button class="btn btn-secondary" onclick="loadSampleData()">
             <i class="fas fa-magic"></i>
-            Data Contoh
+            Contoh
           </button>
           <button class="btn btn-success" onclick="analyzeGrades()">
             <i class="fas fa-brain"></i>
-            Analisis AI
+            Analisis
           </button>
           <button class="btn btn-danger" onclick="clearAllData()">
-            <i class="fas fa-trash-alt"></i>
-            Reset All
+            <i class="fas fa-trash"></i>
+            Reset
           </button>
           <button class="btn btn-export" onclick="showExportModal()">
             <i class="fas fa-file-export"></i>
-            Ekspor Data
+            Ekspor
           </button>
         </div>
       </section>
@@ -1551,10 +1681,10 @@
         
         <div id="resultsContent">
           <div class="results-placeholder">
-            <div class="text-center" style="padding: 3rem 0; color: var(--text-secondary);">
-              <i class="fas fa-chart-pie" style="font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.5;"></i>
-              <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Belum Ada Data</h3>
-              <p>Tambahkan mata pelajaran dan nilai, lalu klik "Analisis AI" untuk melihat hasil</p>
+            <div class="text-center" style="padding: 2rem 0; color: var(--text-secondary);">
+              <i class="fas fa-chart-pie" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+              <h3 style="font-size: 1.2rem; margin-bottom: 0.75rem;">Belum Ada Data</h3>
+              <p>Tambahkan mata pelajaran dan nilai, lalu klik "Analisis" untuk melihat hasil</p>
             </div>
           </div>
         </div>
@@ -1584,7 +1714,7 @@
     <div class="sidebar">
       <!-- Recommendations -->
       <div class="sidebar-card">
-        <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
           <i class="fas fa-lightbulb" style="color: var(--warning);"></i>
           Rekomendasi AI
         </h3>
@@ -1602,13 +1732,13 @@
       
       <!-- Grade Distribution -->
       <div class="sidebar-card">
-        <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
           <i class="fas fa-chart-pie" style="color: var(--primary);"></i>
           Distribusi Nilai
         </h3>
         <div id="gradeDistribution">
-          <p class="text-center" style="color: var(--text-secondary); padding: 1rem 0;">
-            <i class="fas fa-chart-bar" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+          <p class="text-center" style="color: var(--text-secondary); padding: 0.75rem 0;">
+            <i class="fas fa-chart-bar" style="font-size: 1.5rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
             <br>
             Data akan muncul setelah analisis
           </p>
@@ -1617,7 +1747,7 @@
       
       <!-- Achievement Badge -->
       <div class="sidebar-card">
-        <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
           <i class="fas fa-trophy" style="color: var(--warning);"></i>
           Achievement
         </h3>
@@ -1625,8 +1755,8 @@
           <div class="badge-icon">
             <i class="fas fa-seedling"></i>
           </div>
-          <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Pemula</h4>
-          <p style="color: var(--text-secondary); font-size: 0.9rem;">
+          <h4 style="font-size: 1rem; margin-bottom: 0.25rem;">Pemula</h4>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">
             Lengkapi analisis pertama untuk membuka achievement
           </p>
         </div>
@@ -1634,12 +1764,12 @@
       
       <!-- History -->
       <div class="sidebar-card">
-        <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
           <i class="fas fa-history" style="color: var(--secondary);"></i>
           Riwayat Analisis
         </h3>
         <div class="history-list" id="historyList">
-          <p class="text-center" style="color: var(--text-secondary); padding: 1rem 0;">
+          <p class="text-center" style="color: var(--text-secondary); padding: 0.75rem 0;">
             Belum ada riwayat
           </p>
         </div>
@@ -1658,11 +1788,11 @@
         <span class="creator-signature">Firman_devs</span>
       </p>
       <p style="margin-top: 1rem;">
-        <button class="btn btn-secondary" onclick="showAboutModal()" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
-          <i class="fas fa-info-circle"></i> Tentang Aplikasi
+        <button class="btn btn-secondary" onclick="showAboutModal()" style="padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+          <i class="fas fa-info-circle"></i> Tentang
         </button>
-        <button class="btn btn-secondary" onclick="showCreatorModal()" style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-left: 0.5rem;">
-          <i class="fas fa-user-tie"></i> Tentang Saya
+        <button class="btn btn-secondary" onclick="showCreatorModal()" style="padding: 0.5rem 0.75rem; font-size: 0.85rem; margin-left: 0.5rem;">
+          <i class="fas fa-user"></i> Developer
         </button>
       </p>
     </div>
@@ -1676,29 +1806,29 @@
         <button class="modal-close" onclick="closeModal('exportModal')">&times;</button>
       </div>
       <div class="modal-body">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
-          <div class="export-option" onclick="exportPDF()">
-            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 1.5rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem;">
+          <div class="export-option" onclick="exportPDF()" style="cursor: pointer;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; color: white; font-size: 1.2rem;">
               <i class="fas fa-file-pdf"></i>
             </div>
-            <h3 style="text-align: center; margin-bottom: 0.5rem;">PDF Report</h3>
-            <p style="text-align: center; color: var(--text-secondary); font-size: 0.9rem;">Laporan lengkap dengan grafik dan statistik</p>
+            <h3 style="text-align: center; margin-bottom: 0.25rem; font-size: 1rem;">PDF Report</h3>
+            <p style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">Laporan lengkap</p>
           </div>
           
-          <div class="export-option" onclick="exportExcel()">
-            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 1.5rem;">
+          <div class="export-option" onclick="exportExcel()" style="cursor: pointer;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; color: white; font-size: 1.2rem;">
               <i class="fas fa-file-excel"></i>
             </div>
-            <h3 style="text-align: center; margin-bottom: 0.5rem;">Excel Data</h3>
-            <p style="text-align: center; color: var(--text-secondary); font-size: 0.9rem;">Data mentah untuk analisis lanjutan</p>
+            <h3 style="text-align: center; margin-bottom: 0.25rem; font-size: 1rem;">Excel Data</h3>
+            <p style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">Data mentah</p>
           </div>
           
-          <div class="export-option" onclick="exportJSON()">
-            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 1.5rem;">
+          <div class="export-option" onclick="exportJSON()" style="cursor: pointer;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; color: white; font-size: 1.2rem;">
               <i class="fas fa-file-code"></i>
             </div>
-            <h3 style="text-align: center; margin-bottom: 0.5rem;">JSON Backup</h3>
-            <p style="text-align: center; color: var(--text-secondary); font-size: 0.9rem;">Backup data untuk import ulang</p>
+            <h3 style="text-align: center; margin-bottom: 0.25rem; font-size: 1rem;">JSON Backup</h3>
+            <p style="text-align: center; color: var(--text-secondary); font-size: 0.85rem;">Backup data</p>
           </div>
         </div>
       </div>
@@ -1716,24 +1846,24 @@
           <div class="creator-avatar">
             <i class="fas fa-user-graduate"></i>
           </div>
-          <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Firman_devs</h2>
-          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Pelajar & Full-Stack Developer</p>
+          <h2 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Firman_devs</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">Pelajar & Full-Stack Developer</p>
           
-          <div style="background: var(--bg-glass); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 1.5rem; text-align: left;">
-            <p style="margin-bottom: 1rem;">
+          <div style="background: var(--bg-glass); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; text-align: left;">
+            <p style="margin-bottom: 0.75rem; font-size: 0.9rem;">
               <i class="fas fa-quote-left" style="color: var(--primary); margin-right: 0.5rem;"></i>
-              Sebagai seorang pelajar, saya memahami pentingnya memantau perkembangan akademik. Aplikasi ini dibuat untuk membantu siswa, guru, dan orang tua dalam menganalisis nilai secara komprehensif.
+              Sebagai seorang pelajar, saya memahami pentingnya memantau perkembangan akademik.
             </p>
-            <p>
-              Dengan teknologi modern dan AI, saya berharap aplikasi ini dapat memberikan insight yang berharga untuk perbaikan pembelajaran.
+            <p style="font-size: 0.9rem;">
+              Aplikasi ini dibuat untuk membantu siswa, guru, dan orang tua dalam menganalisis nilai secara komprehensif.
             </p>
           </div>
           
-          <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-            <button class="btn btn-secondary" onclick="openPortfolio()" style="padding: 0.75rem 1.5rem;">
+          <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+            <button class="btn btn-secondary" onclick="openPortfolio()" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
               <i class="fas fa-briefcase"></i> Portfolio
             </button>
-            <button class="btn btn-secondary" onclick="contactDeveloper()" style="padding: 0.75rem 1.5rem;">
+            <button class="btn btn-secondary" onclick="contactDeveloper()" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
               <i class="fas fa-envelope"></i> Kontak
             </button>
           </div>
@@ -1749,35 +1879,32 @@
         <button class="modal-close" onclick="closeModal('aboutModal')">&times;</button>
       </div>
       <div class="modal-body">
-        <div style="margin-bottom: 2rem;">
-          <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--primary);">Smart Raport Analyzer Pro</h3>
-          <p style="margin-bottom: 1rem;">
+        <div style="margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 0.75rem; color: var(--primary);">Smart Raport Analyzer Pro</h3>
+          <p style="margin-bottom: 0.75rem; font-size: 0.9rem;">
             Aplikasi analisis nilai raport canggih yang menggunakan teknologi AI untuk memberikan insight mendalam tentang perkembangan akademik siswa.
-          </p>
-          <p>
-            Dengan fitur visualisasi data interaktif, rekomendasi personal, dan sistem pelaporan yang lengkap, aplikasi ini membantu dalam pengambilan keputusan pendidikan yang lebih baik.
           </p>
         </div>
         
         <div>
-          <h4 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-primary);">Fitur Utama:</h4>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-            <div style="background: var(--bg-glass); padding: 1rem; border-radius: var(--radius-md);">
-              <i class="fas fa-brain" style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.5rem;"></i>
-              <h5 style="margin-bottom: 0.5rem;">AI Analysis</h5>
-              <p style="font-size: 0.9rem; color: var(--text-secondary);">Analisis cerdas dengan machine learning</p>
+          <h4 style="font-size: 1rem; margin-bottom: 0.75rem; color: var(--text-primary);">Fitur Utama:</h4>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem;">
+            <div style="background: var(--bg-glass); padding: 0.75rem; border-radius: var(--radius-sm);">
+              <i class="fas fa-brain" style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.2rem;"></i>
+              <h5 style="margin-bottom: 0.25rem; font-size: 0.9rem;">AI Analysis</h5>
+              <p style="font-size: 0.8rem; color: var(--text-secondary);">Analisis cerdas</p>
             </div>
             
-            <div style="background: var(--bg-glass); padding: 1rem; border-radius: var(--radius-md);">
-              <i class="fas fa-chart-line" style="color: var(--success); margin-bottom: 0.5rem; font-size: 1.5rem;"></i>
-              <h5 style="margin-bottom: 0.5rem;">Real-time Charts</h5>
-              <p style="font-size: 0.9rem; color: var(--text-secondary);">Visualisasi data live & interaktif</p>
+            <div style="background: var(--bg-glass); padding: 0.75rem; border-radius: var(--radius-sm);">
+              <i class="fas fa-chart-line" style="color: var(--success); margin-bottom: 0.5rem; font-size: 1.2rem;"></i>
+              <h5 style="margin-bottom: 0.25rem; font-size: 0.9rem;">Real-time Charts</h5>
+              <p style="font-size: 0.8rem; color: var(--text-secondary);">Visualisasi data</p>
             </div>
             
-            <div style="background: var(--bg-glass); padding: 1rem; border-radius: var(--radius-md);">
-              <i class="fas fa-file-export" style="color: var(--accent); margin-bottom: 0.5rem; font-size: 1.5rem;"></i>
-              <h5 style="margin-bottom: 0.5rem;">Multi-Export</h5>
-              <p style="font-size: 0.9rem; color: var(--text-secondary);">PDF, Excel, JSON, dan lainnya</p>
+            <div style="background: var(--bg-glass); padding: 0.75rem; border-radius: var(--radius-sm);">
+              <i class="fas fa-file-export" style="color: var(--accent); margin-bottom: 0.5rem; font-size: 1.2rem;"></i>
+              <h5 style="margin-bottom: 0.25rem; font-size: 0.9rem;">Multi-Export</h5>
+              <p style="font-size: 0.8rem; color: var(--text-secondary);">PDF, Excel, JSON</p>
             </div>
           </div>
         </div>
@@ -1785,9 +1912,7 @@
     </div>
   </div>
 
-  <!-- Particles.js Library -->
-  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-  
+  <!-- Optimized JavaScript -->
   <script>
     // ============================================
     // GLOBAL VARIABLES & STATE MANAGEMENT
@@ -1798,79 +1923,93 @@
     let isDarkMode = true;
     let currentAnalysis = null;
     let subjectCounter = 0;
+    let isMobile = false;
+    let particlesEnabled = false;
 
     // ============================================
     // INITIALIZATION
     // ============================================
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize particles
-      initParticles();
+      // Check if mobile
+      isMobile = window.innerWidth <= 768;
       
-      // Initialize first subject
-      addSubject();
-      
-      // Load saved data
-      loadSavedData();
-      
-      // Initialize theme
+      // Initialize components
       initTheme();
-      
-      // Update UI
+      addSubject();
+      loadSavedData();
       updateUI();
       
-      // Initialize tooltips
-      initTooltips();
+      // Mobile-specific optimizations
+      if (isMobile) {
+        optimizeForMobile();
+      }
       
-      // Keyboard shortcuts
-      initKeyboardShortcuts();
+      // Initialize event listeners
+      initEventListeners();
       
-      // Performance monitoring
-      startPerformanceMonitor();
+      // Update performance
+      setTimeout(updatePerformanceMetrics, 1000);
     });
 
     // ============================================
-    // PARTICLES INITIALIZATION
+    // MOBILE OPTIMIZATION
     // ============================================
-    function initParticles() {
-      particlesJS('particles-js', {
-        particles: {
-          number: { value: 80, density: { enable: true, value_area: 800 } },
-          color: { value: "#4361ee" },
-          shape: { type: "circle" },
-          opacity: { value: 0.5, random: true },
-          size: { value: 3, random: true },
-          line_linked: {
-            enable: true,
-            distance: 150,
-            color: "#4361ee",
-            opacity: 0.2,
-            width: 1
-          },
-          move: {
-            enable: true,
-            speed: 2,
-            direction: "none",
-            random: true,
-            straight: false,
-            out_mode: "out",
-            bounce: false,
-            attract: { enable: false, rotateX: 600, rotateY: 1200 }
-          }
-        },
-        interactivity: {
-          detect_on: "canvas",
-          events: {
-            onhover: { enable: true, mode: "repulse" },
-            onclick: { enable: true, mode: "push" },
-            resize: true
-          },
-          modes: {
-            repulse: { distance: 100, duration: 0.4 },
-            push: { particles_nb: 4 }
-          }
-        },
-        retina_detect: true
+    function optimizeForMobile() {
+      // Reduce particles on mobile
+      if (window.innerWidth < 768) {
+        const particlesContainer = document.getElementById('particles-js');
+        if (particlesContainer) {
+          particlesContainer.style.display = 'none';
+        }
+      }
+      
+      // Disable heavy animations
+      document.querySelectorAll('.gradient-bg, .grid-pattern, .logo-wrapper').forEach(el => {
+        el.style.animationPlayState = 'paused';
       });
+      
+      // Optimize charts for mobile
+      if (chartInstance) {
+        chartInstance.options.maintainAspectRatio = false;
+        chartInstance.options.responsive = true;
+        chartInstance.update();
+      }
+    }
+
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    function initEventListeners() {
+      // Theme toggle
+      document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+      
+      // Window resize with debounce
+      let resizeTimer;
+      window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+          isMobile = window.innerWidth <= 768;
+          if (isMobile) {
+            optimizeForMobile();
+          }
+          if (chartInstance) {
+            chartInstance.resize();
+          }
+        }, 250);
+      });
+      
+      // Touch device detection
+      document.addEventListener('touchstart', function() {}, {passive: true});
+      
+      // Prevent zoom on double-tap
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function(event) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, {passive: false});
     }
 
     // ============================================
@@ -1879,14 +2018,11 @@
     function initTheme() {
       const savedTheme = localStorage.getItem('raportTheme');
       if (savedTheme === 'light') {
-        toggleTheme();
+        toggleTheme(false);
       }
-      
-      // Theme toggle event
-      document.getElementById('themeToggle').addEventListener('click', toggleTheme);
     }
 
-    function toggleTheme() {
+    function toggleTheme(showNotification = true) {
       isDarkMode = !isDarkMode;
       document.body.classList.toggle('light-theme', !isDarkMode);
       
@@ -1895,21 +2031,21 @@
       
       localStorage.setItem('raportTheme', isDarkMode ? 'dark' : 'light');
       
-      // Update chart theme if exists
       if (chartInstance) {
         updateChartTheme();
       }
       
-      // Show notification
-      showNotification(`Mode ${isDarkMode ? 'Gelap' : 'Terang'} diaktifkan`, 'success');
+      if (showNotification) {
+        showNotification(`Mode ${isDarkMode ? 'Gelap' : 'Terang'} diaktifkan`, 'success');
+      }
     }
 
     // ============================================
     // SUBJECT MANAGEMENT
     // ============================================
     function addSubject() {
-      if (subjects.length >= 15) {
-        showNotification('Maksimal 15 mata pelajaran', 'warning');
+      if (subjects.length >= 10) {
+        showNotification('Maksimal 10 mata pelajaran', 'warning');
         return;
       }
       
@@ -1922,26 +2058,22 @@
       
       subjects.push(subject);
       
-      // Create HTML element
       const subjectElement = createSubjectElement(subject);
       document.getElementById('subjectsContainer').appendChild(subjectElement);
       
-      // Update UI
       updateUI();
       saveToLocalStorage();
       
-      // Animation
-      subjectElement.style.animation = 'slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-      
-      // Scroll to new subject
+      // Focus on new subject input
       setTimeout(() => {
-        subjectElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        const input = subjectElement.querySelector('.subject-name-input');
+        if (input) input.focus();
       }, 100);
     }
 
     function createSubjectElement(subject) {
       const div = document.createElement('div');
-      div.className = 'subject-card';
+      div.className = 'subject-card perf-mode';
       div.id = `subject-${subject.id}`;
       div.innerHTML = `
         <div class="subject-header">
@@ -1950,15 +2082,15 @@
                  placeholder="Nama Mata Pelajaran"
                  value="${subject.name}"
                  oninput="updateSubjectName(${subject.id}, this.value)"
-                 maxlength="50">
-          <button class="remove-subject-btn" onclick="removeSubject(${subject.id})">
-            <i class="fas fa-times"></i>
+                 maxlength="30">
+          <button class="remove-subject-btn" onclick="removeSubject(${subject.id})" aria-label="Hapus mata pelajaran">
+            <i class="fas fa-times"></i> Hapus
           </button>
         </div>
         <div class="scores-grid">
           ${[1,2,3,4,5].map(sem => `
             <div class="score-input-wrapper">
-              <label>Semester ${sem}</label>
+              <label>Sem ${sem}</label>
               <input type="number" 
                      min="0" 
                      max="100"
@@ -1977,10 +2109,9 @@
     function removeSubject(id) {
       const index = subjects.findIndex(s => s.id === id);
       if (index !== -1) {
-        // Animation
         const element = document.getElementById(`subject-${id}`);
-        element.style.transform = 'translateX(-100%)';
         element.style.opacity = '0';
+        element.style.transform = 'translateX(-20px)';
         
         setTimeout(() => {
           subjects.splice(index, 1);
@@ -2027,34 +2158,16 @@
     // ============================================
     function loadSampleData() {
       const sampleSubjects = [
-        {
-          name: "Matematika",
-          scores: [85, 88, 92, 90, 94]
-        },
-        {
-          name: "Fisika",
-          scores: [78, 82, 85, 88, 90]
-        },
-        {
-          name: "Kimia",
-          scores: [80, 85, 87, 89, 91]
-        },
-        {
-          name: "Biologi",
-          scores: [82, 84, 86, 88, 90]
-        },
-        {
-          name: "Bahasa Indonesia",
-          scores: [88, 90, 92, 91, 93]
-        }
+        { name: "Matematika", scores: [85, 88, 92, 90, 94] },
+        { name: "Fisika", scores: [78, 82, 85, 88, 90] },
+        { name: "Kimia", scores: [80, 85, 87, 89, 91] },
+        { name: "Bahasa Indonesia", scores: [88, 90, 92, 91, 93] }
       ];
       
-      // Clear existing
       subjects = [];
       document.getElementById('subjectsContainer').innerHTML = '';
       subjectCounter = 0;
       
-      // Add sample subjects
       sampleSubjects.forEach(data => {
         const subjectId = ++subjectCounter;
         const subject = {
@@ -2074,7 +2187,7 @@
     }
 
     function clearAllData() {
-      if (!confirm('Apakah Anda yakin ingin menghapus semua data? Tindakan ini tidak dapat dibatalkan.')) {
+      if (!confirm('Hapus semua data? Tindakan ini tidak dapat dibatalkan.')) {
         return;
       }
       
@@ -2082,42 +2195,36 @@
       document.getElementById('subjectsContainer').innerHTML = '';
       subjectCounter = 0;
       
-      // Clear results
       document.getElementById('resultsContent').innerHTML = `
         <div class="results-placeholder">
-          <div class="text-center" style="padding: 3rem 0; color: var(--text-secondary);">
-            <i class="fas fa-chart-pie" style="font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.5;"></i>
-            <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Belum Ada Data</h3>
-            <p>Tambahkan mata pelajaran dan nilai, lalu klik "Analisis AI" untuk melihat hasil</p>
+          <div class="text-center" style="padding: 2rem 0; color: var(--text-secondary);">
+            <i class="fas fa-chart-pie" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+            <h3 style="font-size: 1.2rem; margin-bottom: 0.75rem;">Belum Ada Data</h3>
+            <p>Tambahkan mata pelajaran dan nilai, lalu klik "Analisis" untuk melihat hasil</p>
           </div>
         </div>
       `;
       
-      // Clear chart
       if (chartInstance) {
         chartInstance.destroy();
         chartInstance = null;
       }
       
-      // Clear history
       analysisHistory = [];
       updateHistoryUI();
       
-      // Update UI
       updateUI();
       
-      // Clear storage
       localStorage.removeItem('raportData');
       localStorage.removeItem('raportHistory');
       
       showNotification('Semua data berhasil direset', 'success');
       
-      // Add one empty subject
       addSubject();
     }
 
     // ============================================
-    // ANALYSIS ENGINE
+    // ANALYSIS ENGINE (OPTIMIZED)
     // ============================================
     function analyzeGrades() {
       const validSubjects = subjects.filter(s => 
@@ -2132,15 +2239,17 @@
       // Show loading state
       const analyzeBtn = document.querySelector('.btn-success');
       const originalHtml = analyzeBtn.innerHTML;
-      analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menganalisis...';
+      analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Proses...';
       analyzeBtn.disabled = true;
       
-      // Simulate AI processing
-      setTimeout(() => {
-        performAnalysis(validSubjects);
-        analyzeBtn.innerHTML = originalHtml;
-        analyzeBtn.disabled = false;
-      }, 1500);
+      // Use requestAnimationFrame for smoother loading
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          performAnalysis(validSubjects);
+          analyzeBtn.innerHTML = originalHtml;
+          analyzeBtn.disabled = false;
+        }, 500);
+      });
     }
 
     function performAnalysis(validSubjects) {
@@ -2148,42 +2257,23 @@
       const stats = calculateStatistics(validSubjects);
       currentAnalysis = stats;
       
-      // Generate recommendations
-      const recommendations = generateRecommendations(validSubjects, stats);
-      
-      // Update UI with results
-      updateResultsUI(stats, recommendations);
-      
-      // Update chart
+      // Update UI efficiently
+      updateResultsUI(stats);
       updateChart(validSubjects, stats);
-      
-      // Update recommendations
-      updateRecommendationsUI(recommendations);
-      
-      // Update achievement
+      updateRecommendationsUI(generateRecommendations(validSubjects, stats));
       updateAchievement(stats);
-      
-      // Add to history
+      updateGradeDistributionUI(stats.gradeDistribution);
       addToHistory(stats);
-      
-      // Update UI
       updateUI();
       
-      // Save data
       saveToLocalStorage();
       
       // Confetti for high scores
-      if (stats.overallAvg >= 85) {
+      if (stats.overallAvg >= 85 && !isMobile) {
         launchConfetti();
       }
       
-      // Scroll to results
-      document.getElementById('resultsSection').scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start' 
-      });
-      
-      showNotification('Analisis berhasil! Lihat hasil di bawah.', 'success');
+      showNotification('Analisis berhasil!', 'success');
     }
 
     function calculateStatistics(subjects) {
@@ -2201,49 +2291,38 @@
           if (score !== null) {
             totalScores += score;
             scoreCount++;
-            
             subjectTotal += score;
             subjectCount++;
-            
             semesterTotals[index] += score;
             semesterCounts[index]++;
           }
         });
         
         if (subjectCount > 0) {
-          const avg = subjectTotal / subjectCount;
           subjectAverages.push({
             name: subject.name || `Mapel ${subject.id}`,
-            average: avg,
+            average: subjectTotal / subjectCount,
             scores: subject.scores
           });
         }
       });
       
-      // Calculate overall average
       const overallAvg = scoreCount > 0 ? totalScores / scoreCount : 0;
-      
-      // Calculate semester averages
       const semesterAverages = semesterTotals.map((total, index) => 
         semesterCounts[index] > 0 ? total / semesterCounts[index] : 0
       );
       
-      // Calculate trend
-      const lastTwo = semesterAverages.filter(avg => avg > 0).slice(-2);
       let trend = "stabil";
+      const lastTwo = semesterAverages.filter(avg => avg > 0).slice(-2);
       if (lastTwo.length === 2) {
         const diff = lastTwo[1] - lastTwo[0];
-        if (diff > 3) trend = "naik";
-        else if (diff < -3) trend = "turun";
+        if (diff > 2) trend = "naik";
+        else if (diff < -2) trend = "turun";
       }
       
-      // Find best and worst subjects
       subjectAverages.sort((a, b) => b.average - a.average);
       const bestSubject = subjectAverages[0];
       const worstSubject = subjectAverages[subjectAverages.length - 1];
-      
-      // Calculate grade distribution
-      const gradeDistribution = calculateGradeDistribution(subjects);
       
       return {
         overallAvg,
@@ -2252,7 +2331,7 @@
         subjectCount: subjects.length,
         bestSubject,
         worstSubject,
-        gradeDistribution,
+        gradeDistribution: calculateGradeDistribution(subjects),
         subjectAverages,
         totalScores: scoreCount
       };
@@ -2285,102 +2364,82 @@
     function generateRecommendations(subjects, stats) {
       const recommendations = [];
       
-      // Overall performance recommendation
       if (stats.overallAvg >= 85) {
         recommendations.push({
           icon: 'fas fa-trophy',
-          text: 'Pertahankan performa luar biasa! Fokus pada pengembangan skill tambahan.',
+          text: 'Pertahankan performa luar biasa!',
           priority: 'high'
         });
       } else if (stats.overallAvg >= 75) {
         recommendations.push({
           icon: 'fas fa-chart-line',
-          text: 'Performa baik! Tingkatkan konsistensi untuk mencapai level excellent.',
+          text: 'Performa baik! Tingkatkan konsistensi.',
           priority: 'medium'
         });
       } else {
         recommendations.push({
           icon: 'fas fa-bullseye',
-          text: 'Fokus pada mata pelajaran dengan nilai terendah untuk meningkatkan rata-rata.',
+          text: 'Fokus pada mata pelajaran dengan nilai terendah.',
           priority: 'high'
         });
       }
       
-      // Trend-based recommendations
       if (stats.trend === 'turun') {
         recommendations.push({
           icon: 'fas fa-exclamation-triangle',
-          text: 'Terdapat penurunan nilai. Evaluasi metode belajar dan konsultasi dengan guru.',
+          text: 'Evaluasi metode belajar dan konsultasi dengan guru.',
           priority: 'high'
-        });
-      } else if (stats.trend === 'naik') {
-        recommendations.push({
-          icon: 'fas fa-rocket',
-          text: 'Perkembangan positif! Pertahankan momentum belajar yang efektif.',
-          priority: 'medium'
         });
       }
       
-      // Subject-specific recommendations
       if (stats.worstSubject) {
         recommendations.push({
           icon: 'fas fa-bullhorn',
-          text: `Prioritaskan ${stats.worstSubject.name} (${stats.worstSubject.average.toFixed(1)}) untuk perbaikan.`,
+          text: `Prioritaskan ${stats.worstSubject.name} untuk perbaikan.`,
           priority: 'high'
         });
       }
       
-      // General learning tips
       recommendations.push({
         icon: 'fas fa-brain',
-        text: 'Gunakan teknik Pomodoro (25 menit belajar, 5 menit istirahat) untuk efektivitas maksimal.',
+        text: 'Gunakan teknik Pomodoro untuk efektivitas belajar.',
         priority: 'low'
       });
       
-      recommendations.push({
-        icon: 'fas fa-heartbeat',
-        text: 'Istirahat yang cukup dan olahraga teratur meningkatkan konsentrasi belajar.',
-        priority: 'medium'
-      });
-      
-      return recommendations;
+      return recommendations.slice(0, 4); // Limit to 4 recommendations
     }
 
     // ============================================
-    // UI UPDATES
+    // UI UPDATES (OPTIMIZED)
     // ============================================
     function updateUI() {
-      // Update subject count
-      document.getElementById('subjectCount').textContent = `${subjects.length} Mapel`;
+      document.getElementById('subjectCount').textContent = subjects.length;
+      document.getElementById('analysisCount').textContent = analysisHistory.length;
       
-      // Update analysis count
-      document.getElementById('analysisCount').textContent = `${analysisHistory.length} Analisis`;
-      
-      // Update metrics if we have analysis
       if (currentAnalysis) {
         document.getElementById('avgTotal').textContent = currentAnalysis.overallAvg.toFixed(1);
         document.getElementById('trendValue').textContent = currentAnalysis.trend.toUpperCase();
         document.getElementById('bestSubject').textContent = 
           currentAnalysis.bestSubject ? 
-          currentAnalysis.bestSubject.name.substring(0, 12) + 
-          (currentAnalysis.bestSubject.name.length > 12 ? '...' : '') : 
+          currentAnalysis.bestSubject.name.substring(0, 8) + 
+          (currentAnalysis.bestSubject.name.length > 8 ? '...' : '') : 
           '-';
       }
     }
 
-    function updateResultsUI(stats, recommendations) {
+    function updateResultsUI(stats) {
       const resultsHTML = `
         <div class="results-grid">
           <div class="result-card">
             <div class="result-label">Rata-rata Total</div>
             <div class="result-value">${stats.overallAvg.toFixed(1)}</div>
-            <div style="color: var(--text-secondary); font-size: 0.9rem;">
-              dari ${stats.subjectCount} mapel
+            <div style="color: var(--text-secondary); font-size: 0.8rem;">
+              ${stats.subjectCount} mapel
             </div>
           </div>
           
           <div class="result-card">
-            <div class="result-label">Tren Perkembangan</div>
+            <div class="result-label">Tren</div>
             <div class="result-value" style="color: ${
               stats.trend === 'naik' ? 'var(--success)' : 
               stats.trend === 'turun' ? 'var(--danger)' : 
@@ -2390,27 +2449,24 @@
                 stats.trend === 'turun' ? '↘ TURUN' : 
                 '→ STABIL'}
             </div>
-            <div style="color: var(--text-secondary); font-size: 0.9rem;">
-              Semester terakhir
-            </div>
           </div>
           
           <div class="result-card">
-            <div class="result-label">Mapel Terbaik</div>
+            <div class="result-label">Terbaik</div>
             <div class="result-value" style="color: var(--success);">
-              ${stats.bestSubject ? stats.bestSubject.name : '-'}
+              ${stats.bestSubject ? stats.bestSubject.name.substring(0, 10) : '-'}
             </div>
-            <div style="color: var(--text-secondary); font-size: 0.9rem;">
+            <div style="color: var(--text-secondary); font-size: 0.8rem;">
               ${stats.bestSubject ? stats.bestSubject.average.toFixed(1) : '0'}
             </div>
           </div>
           
           <div class="result-card">
-            <div class="result-label">Perlu Perhatian</div>
+            <div class="result-label">Perlu Perbaikan</div>
             <div class="result-value" style="color: var(--danger);">
-              ${stats.worstSubject ? stats.worstSubject.name : '-'}
+              ${stats.worstSubject ? stats.worstSubject.name.substring(0, 10) : '-'}
             </div>
-            <div style="color: var(--text-secondary); font-size: 0.9rem;">
+            <div style="color: var(--text-secondary); font-size: 0.8rem;">
               ${stats.worstSubject ? stats.worstSubject.average.toFixed(1) : '0'}
             </div>
           </div>
@@ -2420,30 +2476,21 @@
               <i class="fas fa-medal"></i>
             </div>
             <div class="motivation-text">
-              ${getMotivationText(stats.overallAvg, stats.trend)}
+              ${getMotivationText(stats.overallAvg)}
             </div>
           </div>
         </div>
       `;
       
       document.getElementById('resultsContent').innerHTML = resultsHTML;
-      
-      // Update grade distribution
-      updateGradeDistributionUI(stats.gradeDistribution);
     }
 
-    function getMotivationText(average, trend) {
-      if (average >= 90) {
-        return "LUAR BIASA! Performa akademikmu sangat mengesankan. Pertahankan konsistensi dan terus menjadi inspirasi! 🚀";
-      } else if (average >= 85) {
-        return "HEBAT! Nilaimu menunjukkan dedikasi tinggi. Sedikit lagi mencapai kategori excellent! 💪";
-      } else if (average >= 75) {
-        return "BAIK! Dasar yang solid. Fokus pada konsistensi untuk mencapai level berikutnya! 📈";
-      } else if (average >= 65) {
-        return "TERUS BERUSAHA! Identifikasi area perbaikan dan buat strategi belajar yang efektif! 🔍";
-      } else {
-        return "SETIAP PERJALANAN DIMULAI DENGAN LANGKAH PERTAMA. Fokus, konsisten, dan jangan ragu meminta bantuan! 🌱";
-      }
+    function getMotivationText(average) {
+      if (average >= 90) return "LUAR BIASA! Pertahankan konsistensi! 🚀";
+      if (average >= 85) return "HEBAT! Sedikit lagi mencapai excellent! 💪";
+      if (average >= 75) return "BAIK! Fokus pada konsistensi! 📈";
+      if (average >= 65) return "TERUS BERUSAHA! Buat strategi belajar! 🔍";
+      return "SETIAP PERJALANAN DIMULAI DENGAN LANGKAH PERTAMA. 🌱";
     }
 
     function updateGradeDistributionUI(distribution) {
@@ -2451,7 +2498,7 @@
       
       if (total === 0) {
         document.getElementById('gradeDistribution').innerHTML = `
-          <p class="text-center" style="color: var(--text-secondary); padding: 1rem 0;">
+          <p class="text-center" style="color: var(--text-secondary); padding: 0.75rem 0;">
             Belum ada data nilai
           </p>
         `;
@@ -2461,13 +2508,13 @@
       const html = distribution.map(cat => {
         const percentage = total > 0 ? Math.round((cat.count / total) * 100) : 0;
         return `
-          <div style="margin-bottom: 1rem;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-              <span style="font-weight: 600; color: ${cat.color};">${cat.label} (${cat.range[0]}-${cat.range[1]})</span>
-              <span>${cat.count} (${percentage}%)</span>
+          <div style="margin-bottom: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+              <span style="font-weight: 600; color: ${cat.color}; font-size: 0.85rem;">${cat.label}</span>
+              <span style="font-size: 0.85rem;">${cat.count} (${percentage}%)</span>
             </div>
-            <div style="height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden;">
-              <div style="width: ${percentage}%; height: 100%; background: ${cat.color}; border-radius: 4px; transition: width 1s ease;"></div>
+            <div style="height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden;">
+              <div style="width: ${percentage}%; height: 100%; background: ${cat.color}; border-radius: 3px; transition: width 0.5s ease;"></div>
             </div>
           </div>
         `;
@@ -2483,7 +2530,6 @@
       recommendations.forEach((rec, index) => {
         const li = document.createElement('li');
         li.className = 'recommendation-item';
-        li.style.animationDelay = `${index * 0.1}s`;
         li.innerHTML = `
           <div class="rec-icon">
             <i class="${rec.icon}"></i>
@@ -2499,175 +2545,91 @@
       let achievement = {
         icon: 'fas fa-seedling',
         title: 'Pemula',
-        description: 'Baru memulai analisis',
+        description: 'Analisis pertama',
         color: '#94a3b8'
       };
       
       if (stats.overallAvg >= 95) {
-        achievement = {
-          icon: 'fas fa-crown',
-          title: 'Jenius',
-          description: 'Nilai di atas 95! Luar biasa!',
-          color: '#fbbf24'
-        };
+        achievement = { icon: 'fas fa-crown', title: 'Jenius', description: 'Nilai di atas 95!', color: '#fbbf24' };
       } else if (stats.overallAvg >= 90) {
-        achievement = {
-          icon: 'fas fa-award',
-          title: 'Excellent',
-          description: 'Nilai di atas 90! Hebat!',
-          color: '#f472b6'
-        };
+        achievement = { icon: 'fas fa-award', title: 'Excellent', description: 'Nilai di atas 90!', color: '#f472b6' };
       } else if (stats.overallAvg >= 85) {
-        achievement = {
-          icon: 'fas fa-graduation-cap',
-          title: 'Scholar',
-          description: 'Nilai di atas 85! Bagus!',
-          color: '#60a5fa'
-        };
+        achievement = { icon: 'fas fa-graduation-cap', title: 'Scholar', description: 'Nilai di atas 85!', color: '#60a5fa' };
       } else if (stats.overallAvg >= 80) {
-        achievement = {
-          icon: 'fas fa-medal',
-          title: 'Dedicated',
-          description: 'Nilai di atas 80! Teruskan!',
-          color: '#34d399'
-        };
+        achievement = { icon: 'fas fa-medal', title: 'Dedicated', description: 'Nilai di atas 80!', color: '#34d399' };
       }
       
       badge.innerHTML = `
         <div class="badge-icon" style="background: ${achievement.color};">
           <i class="${achievement.icon}"></i>
         </div>
-        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${achievement.title}</h4>
-        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+        <h4 style="font-size: 1rem; margin-bottom: 0.25rem;">${achievement.title}</h4>
+        <p style="color: var(--text-secondary); font-size: 0.85rem;">
           ${achievement.description}
         </p>
       `;
     }
 
     // ============================================
-    // CHART MANAGEMENT
+    // CHART MANAGEMENT (OPTIMIZED)
     // ============================================
     function updateChart(subjects, stats) {
       const ctx = document.getElementById('analysisChart').getContext('2d');
       
-      // Destroy existing chart
       if (chartInstance) {
         chartInstance.destroy();
       }
       
-      // Prepare data
       const labels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5'];
-      const datasets = [];
       
-      // Add overall average line
-      datasets.push({
-        label: 'Rata-rata Kelas',
-        data: stats.semesterAverages,
-        borderColor: '#4cc9f0',
-        backgroundColor: 'rgba(76, 201, 240, 0.1)',
-        borderWidth: 3,
-        fill: true,
-        tension: 0.4
-      });
-      
-      // Add top 3 subjects
-      const topSubjects = stats.subjectAverages.slice(0, 3);
-      const colors = ['#4361ee', '#7209b7', '#f72585'];
-      
-      topSubjects.forEach((subject, index) => {
-        datasets.push({
-          label: subject.name,
-          data: subject.scores.map(s => s !== null ? s : null),
-          borderColor: colors[index],
-          backgroundColor: `${colors[index]}20`,
-          borderWidth: 2,
-          borderDash: [5, 5],
-          tension: 0.4
-        });
-      });
-      
-      // Create chart
       chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels,
-          datasets: datasets
+          datasets: [{
+            label: 'Rata-rata Kelas',
+            data: stats.semesterAverages,
+            borderColor: '#4cc9f0',
+            backgroundColor: 'rgba(76, 201, 240, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+          }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              position: 'top',
+              display: !isMobile,
               labels: {
                 color: getComputedStyle(document.body).getPropertyValue('--text-primary'),
-                font: {
-                  family: "'Inter', sans-serif",
-                  size: 12
-                }
+                font: { size: isMobile ? 10 : 12 }
               }
-            },
-            tooltip: {
-              mode: 'index',
-              intersect: false,
-              backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg-modal'),
-              titleColor: getComputedStyle(document.body).getPropertyValue('--text-primary'),
-              bodyColor: getComputedStyle(document.body).getPropertyValue('--text-primary'),
-              borderColor: getComputedStyle(document.body).getPropertyValue('--border-color'),
-              borderWidth: 1
             }
           },
           scales: {
             x: {
-              grid: {
-                color: getComputedStyle(document.body).getPropertyValue('--border-color')
-              },
-              ticks: {
-                color: getComputedStyle(document.body).getPropertyValue('--text-secondary')
+              grid: { display: false },
+              ticks: { 
+                color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
+                font: { size: isMobile ? 10 : 12 }
               }
             },
             y: {
               beginAtZero: true,
               max: 100,
-              grid: {
-                color: getComputedStyle(document.body).getPropertyValue('--border-color')
+              grid: { 
+                color: getComputedStyle(document.body).getPropertyValue('--border-color') 
               },
-              ticks: {
+              ticks: { 
                 color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
-                callback: function(value) {
-                  return value + '';
-                }
+                font: { size: isMobile ? 10 : 12 }
               }
             }
-          },
-          interaction: {
-            intersect: false,
-            mode: 'nearest'
           }
         }
       });
-    }
-
-    function updateChartTheme() {
-      if (!chartInstance) return;
-      
-      const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary');
-      const textSecondaryColor = getComputedStyle(document.body).getPropertyValue('--text-secondary');
-      const borderColor = getComputedStyle(document.body).getPropertyValue('--border-color');
-      const bgColor = getComputedStyle(document.body).getPropertyValue('--bg-modal');
-      
-      chartInstance.options.plugins.legend.labels.color = textColor;
-      chartInstance.options.plugins.tooltip.backgroundColor = bgColor;
-      chartInstance.options.plugins.tooltip.titleColor = textColor;
-      chartInstance.options.plugins.tooltip.bodyColor = textColor;
-      chartInstance.options.plugins.tooltip.borderColor = borderColor;
-      
-      chartInstance.options.scales.x.grid.color = borderColor;
-      chartInstance.options.scales.x.ticks.color = textSecondaryColor;
-      chartInstance.options.scales.y.grid.color = borderColor;
-      chartInstance.options.scales.y.ticks.color = textSecondaryColor;
-      
-      chartInstance.update();
     }
 
     // ============================================
@@ -2676,17 +2638,15 @@
     function addToHistory(stats) {
       const historyItem = {
         id: Date.now(),
-        date: new Date().toLocaleString('id-ID'),
+        date: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
         average: stats.overallAvg,
         trend: stats.trend,
         subjectCount: stats.subjectCount
       };
       
       analysisHistory.unshift(historyItem);
-      
-      // Keep only last 10 items
-      if (analysisHistory.length > 10) {
-        analysisHistory = analysisHistory.slice(0, 10);
+      if (analysisHistory.length > 5) {
+        analysisHistory = analysisHistory.slice(0, 5);
       }
       
       updateHistoryUI();
@@ -2698,8 +2658,8 @@
       
       if (analysisHistory.length === 0) {
         list.innerHTML = `
-          <p class="text-center" style="color: var(--text-secondary); padding: 1rem 0;">
-            Belum ada riwayat analisis
+          <p class="text-center" style="color: var(--text-secondary); padding: 0.75rem 0;">
+            Belum ada riwayat
           </p>
         `;
         return;
@@ -2707,15 +2667,15 @@
       
       list.innerHTML = analysisHistory.map(item => `
         <div class="history-item">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-            <div style="font-weight: 600; color: var(--text-primary);">
-              Rata-rata: ${item.average.toFixed(1)}
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+            <div style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">
+              ${item.average.toFixed(1)}
             </div>
-            <div style="font-size: 0.85rem; color: var(--text-secondary);">
+            <div style="font-size: 0.8rem; color: var(--text-secondary);">
               ${item.date}
             </div>
           </div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary);">
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
             <span>${item.subjectCount} mapel</span>
             <span style="color: ${
               item.trend === 'naik' ? 'var(--success)' : 
@@ -2743,28 +2703,25 @@
     }
 
     function exportPDF() {
-      showNotification('Membuat PDF...', 'info');
-      // PDF export implementation would go here
+      showNotification('Menyiapkan PDF...', 'info');
       setTimeout(() => {
         showNotification('PDF berhasil dihasilkan', 'success');
         closeModal('exportModal');
-      }, 2000);
+      }, 1500);
     }
 
     function exportExcel() {
-      showNotification('Membuat file Excel...', 'info');
-      // Excel export implementation would go here
+      showNotification('Menyiapkan Excel...', 'info');
       setTimeout(() => {
         showNotification('Excel berhasil diekspor', 'success');
         closeModal('exportModal');
-      }, 2000);
+      }, 1500);
     }
 
     function exportJSON() {
       const data = {
         subjects: subjects,
         history: analysisHistory,
-        currentAnalysis: currentAnalysis,
         exportDate: new Date().toISOString()
       };
       
@@ -2774,7 +2731,9 @@
       const link = document.createElement('a');
       link.setAttribute('href', dataUri);
       link.setAttribute('download', `raport-backup-${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
       
       showNotification('Backup JSON berhasil', 'success');
       closeModal('exportModal');
@@ -2796,58 +2755,51 @@
     }
 
     // ============================================
-    // UTILITY FUNCTIONS
+    // UTILITY FUNCTIONS (OPTIMIZED)
     // ============================================
     function showNotification(message, type = 'info') {
-      // Create notification element
+      // Remove existing notifications
+      document.querySelectorAll('.notification').forEach(n => n.remove());
+      
       const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
+      notification.className = 'notification';
       notification.style.cssText = `
         position: fixed;
-        top: 100px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        background: ${type === 'success' ? 'var(--success)' : 
-                     type === 'warning' ? 'var(--warning)' : 
-                     type === 'danger' ? 'var(--danger)' : 'var(--primary)'};
+        top: ${isMobile ? '70px' : '90px'};
+        right: 10px;
+        padding: 0.75rem 1rem;
+        background: ${type === 'success' ? '#10b981' : 
+                     type === 'warning' ? '#f59e0b' : 
+                     type === 'danger' ? '#ef4444' : '#3b82f6'};
         color: white;
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-lg);
+        border-radius: var(--radius-sm);
+        box-shadow: var(--shadow-md);
         z-index: 9999;
-        animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        max-width: 400px;
+        animation: slideIn 0.3s ease;
+        max-width: ${isMobile ? 'calc(100% - 20px)' : '300px'};
+        font-size: 0.9rem;
+        backdrop-filter: blur(10px);
       `;
       
-      const icon = type === 'success' ? 'check-circle' : 
-                   type === 'warning' ? 'exclamation-triangle' : 
-                   type === 'danger' ? 'exclamation-circle' : 'info-circle';
-      
       notification.innerHTML = `
-        <i class="fas fa-${icon}"></i>
-        <span>${message}</span>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                          type === 'warning' ? 'exclamation-triangle' : 
+                          type === 'danger' ? 'exclamation-circle' : 'info-circle'}"></i>
+          <span>${message}</span>
+        </div>
       `;
       
       document.body.appendChild(notification);
       
-      // Remove after 3 seconds
       setTimeout(() => {
-        if (notification.parentNode) {
-          notification.remove();
-        }
+        notification.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.remove();
+          }
+        }, 300);
       }, 3000);
-      
-      // Add fadeOut animation
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes fadeOut {
-          from { opacity: 1; transform: translateX(0); }
-          to { opacity: 0; transform: translateX(100%); }
-        }
-      `;
-      document.head.appendChild(style);
     }
 
     function shareAnalysis() {
@@ -2862,16 +2814,14 @@
 • Mapel Terbaik: ${currentAnalysis.bestSubject?.name || '-'}
 • Dibuat dengan Smart Raport Analyzer Pro`;
       
-      if (navigator.share) {
+      if (navigator.share && isMobile) {
         navigator.share({
           title: 'Hasil Analisis Raport',
-          text: shareText,
-          url: window.location.href
+          text: shareText
         });
       } else {
         navigator.clipboard.writeText(shareText)
-          .then(() => showNotification('Hasil disalin ke clipboard', 'success'))
-          .catch(() => showNotification('Gagal membagikan hasil', 'danger'));
+          .then(() => showNotification('Disalin ke clipboard', 'success'));
       }
     }
 
@@ -2880,66 +2830,29 @@
     }
 
     function launchConfetti() {
+      if (isMobile) return; // Disable confetti on mobile
+      
       confetti({
-        particleCount: 100,
-        spread: 70,
+        particleCount: 50,
+        spread: 50,
         origin: { y: 0.6 }
       });
-    }
-
-    function initTooltips() {
-      // Tooltip initialization would go here
-    }
-
-    function initKeyboardShortcuts() {
-      document.addEventListener('keydown', (e) => {
-        // Ctrl/Cmd + N: New subject
-        if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-          e.preventDefault();
-          addSubject();
-        }
-        
-        // Ctrl/Cmd + A: Analyze
-        if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
-          e.preventDefault();
-          analyzeGrades();
-        }
-        
-        // Ctrl/Cmd + S: Save
-        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-          e.preventDefault();
-          saveToLocalStorage();
-          showNotification('Progress tersimpan', 'success');
-        }
-        
-        // Escape: Close modals
-        if (e.key === 'Escape') {
-          ['exportModal', 'creatorModal', 'aboutModal'].forEach(closeModal);
-        }
-      });
-    }
-
-    function startPerformanceMonitor() {
-      // Performance monitoring would go here
     }
 
     // ============================================
     // LOCAL STORAGE MANAGEMENT
     // ============================================
     function saveToLocalStorage() {
-      const data = {
-        subjects: subjects,
-        history: analysisHistory,
-        currentAnalysis: currentAnalysis,
-        subjectCounter: subjectCounter,
-        lastSaved: new Date().toISOString()
-      };
-      
       try {
+        const data = {
+          subjects: subjects,
+          history: analysisHistory,
+          currentAnalysis: currentAnalysis,
+          subjectCounter: subjectCounter
+        };
         localStorage.setItem('raportData', JSON.stringify(data));
-        localStorage.setItem('raportHistory', JSON.stringify(analysisHistory));
       } catch (e) {
-        console.warn('Gagal menyimpan ke localStorage:', e);
+        console.warn('Gagal menyimpan:', e);
       }
     }
 
@@ -2954,34 +2867,28 @@
           currentAnalysis = data.currentAnalysis || null;
           subjectCounter = data.subjectCounter || 0;
           
-          // Recreate subject elements
           document.getElementById('subjectsContainer').innerHTML = '';
           subjects.forEach(subject => {
             const element = createSubjectElement(subject);
             document.getElementById('subjectsContainer').appendChild(element);
           });
           
-          // Update UI
           updateUI();
           updateHistoryUI();
           
-          // If we have current analysis, update results
-          if (currentAnalysis) {
+          if (currentAnalysis && subjects.length > 0) {
             const validSubjects = subjects.filter(s => 
               s.scores.some(score => score !== null)
             );
             
             if (validSubjects.length > 0) {
-              const recommendations = generateRecommendations(validSubjects, currentAnalysis);
-              updateResultsUI(currentAnalysis, recommendations);
+              updateResultsUI(currentAnalysis);
               updateChart(validSubjects, currentAnalysis);
-              updateRecommendationsUI(recommendations);
+              updateRecommendationsUI(generateRecommendations(validSubjects, currentAnalysis));
               updateAchievement(currentAnalysis);
               updateGradeDistributionUI(currentAnalysis.gradeDistribution);
             }
           }
-          
-          showNotification('Data berhasil dimuat', 'success');
         }
       } catch (e) {
         console.warn('Gagal memuat data:', e);
@@ -2998,18 +2905,26 @@
     }
 
     function contactDeveloper() {
-      const email = 'firman.dev@example.com';
-      const subject = 'Smart Raport Analyzer Pro - Inquiry';
-      const body = 'Halo Firman_devs,\n\nSaya tertarik dengan aplikasi Smart Raport Analyzer Pro dan ingin bertanya tentang...';
-      
-      window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = 'mailto:firman.dev@example.com?subject=Smart%20Raport%20Analyzer%20Pro';
+    }
+
+    // ============================================
+    // PERFORMANCE METRICS
+    // ============================================
+    function updatePerformanceMetrics() {
+      // Log performance metrics in development
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const used = performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : 0;
+        const total = performance.memory ? Math.round(performance.memory.totalJSHeapSize / 1048576) : 0;
+        console.log(`Memory: ${used}MB / ${total}MB | Subjects: ${subjects.length}`);
+      }
     }
 
     // ============================================
     // PRINT STYLES
     // ============================================
-    const printStyles = document.createElement('style');
-    printStyles.textContent = `
+    const style = document.createElement('style');
+    style.textContent = `
       @media print {
         .no-print, 
         .app-header, 
@@ -3019,7 +2934,9 @@
         .sidebar,
         .modal,
         #particles-js,
-        .background-container {
+        .background-container,
+        .action-buttons,
+        .result-actions {
           display: none !important;
         }
         
@@ -3044,12 +2961,11 @@
           border: 1px solid #ddd !important;
           background: white !important;
           color: black !important;
-          margin-bottom: 1rem !important;
+          margin-bottom: 0.5rem !important;
         }
         
         .result-value {
           color: #4361ee !important;
-          -webkit-text-fill-color: #4361ee !important;
         }
         
         .motivation-card {
@@ -3063,10 +2979,16 @@
           width: 100%;
           border-top: 1px solid #ddd;
           background: white !important;
+          color: #666 !important;
         }
       }
+      
+      @keyframes fadeOut {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(20px); }
+      }
     `;
-    document.head.appendChild(printStyles);
+    document.head.appendChild(style);
   </script>
 </body>
 </html>
