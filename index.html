@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Smart Raport Analyzer</title>
+  <title>Smart Raport Analyzer Pro</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -18,9 +18,9 @@
       --primary-dark: #3a56d4;
       --secondary: #7209b7;
       --accent: #f72585;
-      --success: #4cc9f0;
-      --warning: #f8961e;
-      --danger: #f94144;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
       --light: #f8f9fa;
       --dark: #212529;
       --dark-bg: #0f172a;
@@ -30,12 +30,16 @@
       --text-secondary: #94a3b8;
       --gradient: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
       --gradient-2: linear-gradient(135deg, #f72585 0%, #7209b7 100%);
-      --gradient-3: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
-      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-      --radius: 12px;
+      --gradient-3: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+      --radius: 10px;
+      --radius-sm: 6px;
       --transition: all 0.3s ease;
-      --neon-glow: 0 0 10px rgba(67, 97, 238, 0.7), 0 0 20px rgba(67, 97, 238, 0.5), 0 0 30px rgba(67, 97, 238, 0.3);
+      --neon-glow: 0 0 10px rgba(67, 97, 238, 0.7), 0 0 20px rgba(67, 97, 238, 0.5);
+      --glass-bg: rgba(30, 41, 59, 0.8);
+      --glass-border: rgba(255, 255, 255, 0.1);
     }
 
     /* Light theme variables */
@@ -44,12 +48,14 @@
       --dark: #f8f9fa;
       --dark-bg: #f1f5f9;
       --card-bg: #ffffff;
-      --border: #cbd5e1;
+      --border: #e2e8f0;
       --text: #1e293b;
       --text-secondary: #64748b;
-      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
       --neon-glow: 0 0 10px rgba(67, 97, 238, 0.5), 0 0 20px rgba(67, 97, 238, 0.3);
+      --glass-bg: rgba(255, 255, 255, 0.8);
+      --glass-border: rgba(0, 0, 0, 0.1);
     }
 
     /* Reset and Base Styles */
@@ -78,20 +84,36 @@
       position: relative;
       width: 100%;
       max-width: 100vw;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* FIX FOR MOBILE ZOOM OUT - Prevent horizontal scrolling */
-    .main-container, 
-    .dashboard-cards,
-    .input-section,
-    .result-section,
-    .chart-section,
-    .history-section,
-    .sidebar,
-    .header-content,
-    footer {
-      max-width: 100vw;
-      overflow-x: hidden;
+    /* Mobile boundary lines */
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent, var(--border), transparent);
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    body::before {
+      left: 5px;
+    }
+
+    body::after {
+      right: 5px;
+    }
+
+    @media (min-width: 768px) {
+      body::before,
+      body::after {
+        display: none;
+      }
     }
 
     /* Animated Background */
@@ -109,7 +131,7 @@
       position: absolute;
       border-radius: 50%;
       background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
-      opacity: 0.1;
+      opacity: 0.05;
       animation: float 20s infinite linear;
     }
 
@@ -119,7 +141,6 @@
       top: -100px;
       left: -100px;
       animation-delay: 0s;
-      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
     }
 
     .bg-circle:nth-child(2) {
@@ -142,16 +163,6 @@
       background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
     }
 
-    .bg-circle:nth-child(4) {
-      width: 350px;
-      height: 350px;
-      top: 20%;
-      left: 60%;
-      animation-delay: -15s;
-      animation-duration: 35s;
-      background: radial-gradient(circle, var(--success) 0%, transparent 70%);
-    }
-
     /* Floating Particles */
     .floating-particles {
       position: fixed;
@@ -165,23 +176,24 @@
 
     .particle {
       position: absolute;
-      width: 4px;
-      height: 4px;
+      width: 2px;
+      height: 2px;
       background-color: var(--primary);
       border-radius: 50%;
-      opacity: 0.5;
+      opacity: 0.3;
       animation: particle-float 20s infinite linear;
     }
 
-    /* Header Styles - IMPROVED FOR MOBILE */
+    /* Header Styles - Modern Compact Design */
     header {
-      background: var(--gradient);
-      padding: 1rem 1.5rem;
-      border-radius: 0 0 var(--radius) var(--radius);
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-      z-index: 10;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid var(--glass-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
       width: 100%;
     }
 
@@ -191,50 +203,40 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: relative;
-      z-index: 2;
-      flex-wrap: nowrap;
-      width: 100%;
       gap: 1rem;
     }
 
     .logo-container {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.6rem;
       flex: 1;
       min-width: 0;
-      overflow: hidden;
     }
 
     .logo {
-      font-size: 1.8rem;
-      color: white;
-      animation: pulse 2s infinite;
-      filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
-      background: rgba(255, 255, 255, 0.2);
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      background: var(--gradient);
       display: flex;
       align-items: center;
       justify-content: center;
-      backdrop-filter: blur(5px);
+      color: white;
+      font-size: 1.2rem;
       flex-shrink: 0;
     }
 
     .logo-text {
       flex: 1;
       min-width: 0;
-      overflow: hidden;
     }
 
     .logo-text h1 {
       font-family: 'Montserrat', sans-serif;
-      font-size: 1.3rem;
-      color: white;
-      margin-bottom: 0.15rem;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 0.1rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -242,164 +244,131 @@
     }
 
     .logo-text p {
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-size: 0.7rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       line-height: 1.2;
     }
 
-    .theme-toggle-container {
+    /* Header Actions - Compact */
+    .header-actions {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      flex-shrink: 0;
     }
 
-    .theme-toggle {
-      background: rgba(255, 255, 255, 0.2);
+    .theme-toggle, .header-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
       border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      color: white;
-      font-size: 1.2rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      font-size: 1rem;
       cursor: pointer;
       transition: var(--transition);
       display: flex;
       align-items: center;
       justify-content: center;
-      backdrop-filter: blur(5px);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
     }
 
-    .theme-toggle:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: scale(1.1);
-      box-shadow: var(--neon-glow);
+    .header-btn {
+      width: auto;
+      padding: 0 0.8rem;
+      font-size: 0.85rem;
+      font-weight: 500;
     }
 
-    /* Mobile header adjustments */
+    .theme-toggle:hover, .header-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .theme-toggle:active, .header-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Mobile menu button */
+    .mobile-menu-btn {
+      display: none;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
     @media (max-width: 768px) {
-      header {
-        padding: 0.8rem 1rem;
+      .mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       
-      .header-content {
-        gap: 0.5rem;
-      }
-      
-      .logo {
-        width: 44px;
-        height: 44px;
-        font-size: 1.5rem;
-      }
-      
-      .logo-text h1 {
-        font-size: 1.1rem;
-        line-height: 1.1;
-      }
-      
-      .logo-text p {
-        font-size: 0.7rem;
-        line-height: 1.1;
-      }
-      
-      .theme-toggle {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-      }
-      
-      .logo-container {
-        gap: 0.6rem;
+      .header-actions .header-btn:not(.mobile-menu-btn) {
+        display: none;
       }
     }
 
-    @media (max-width: 480px) {
-      .logo-text h1 {
-        font-size: 1rem;
-      }
-      
-      .logo-text p {
-        font-size: 0.65rem;
-      }
-      
-      .logo {
-        width: 40px;
-        height: 40px;
-        font-size: 1.3rem;
-      }
-    }
-
-    @media (max-width: 360px) {
-      .logo-text h1 {
-        font-size: 0.9rem;
-      }
-      
-      .logo-text p {
-        font-size: 0.6rem;
-      }
-      
-      .logo {
-        width: 36px;
-        height: 36px;
-        font-size: 1.2rem;
-      }
-      
-      .theme-toggle {
-        width: 32px;
-        height: 32px;
-      }
-    }
-
-    /* Main Container */
+    /* Main Container with safe area */
     .main-container {
       max-width: 1200px;
-      margin: 1.5rem auto;
+      margin: 1rem auto;
       padding: 0 1rem;
       display: grid;
-      grid-template-columns: 1fr 350px;
-      gap: 1.5rem;
+      grid-template-columns: 1fr 320px;
+      gap: 1.2rem;
       width: 100%;
     }
 
-    @media (max-width: 992px) {
+    @media (max-width: 1024px) {
       .main-container {
         grid-template-columns: 1fr;
-        padding: 0 1rem;
+        gap: 1rem;
       }
     }
 
     @media (max-width: 768px) {
       .main-container {
         padding: 0 0.8rem;
-        margin: 1rem auto;
-        gap: 1rem;
+        margin: 0.8rem auto;
       }
     }
 
-    /* Dashboard Cards - IMPROVED FOR MOBILE */
+    @media (max-width: 480px) {
+      .main-container {
+        padding: 0 0.6rem;
+        margin: 0.6rem auto;
+      }
+    }
+
+    /* Dashboard Cards - Compact Design */
     .dashboard-cards {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
       width: 100%;
     }
 
-    @media (max-width: 992px) {
+    @media (max-width: 1024px) {
       .dashboard-cards {
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media (max-width: 576px) {
+    @media (max-width: 640px) {
       .dashboard-cards {
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.8rem;
+        gap: 0.6rem;
       }
     }
 
@@ -410,191 +379,131 @@
     }
 
     .card {
-      background-color: var(--card-bg);
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-radius: var(--radius);
-      padding: 1.2rem;
+      padding: 1rem;
       box-shadow: var(--shadow);
       transition: var(--transition);
-      border: 1px solid var(--border);
+      border: 1px solid var(--glass-border);
       position: relative;
       overflow: hidden;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-      background: var(--gradient);
-      transition: var(--transition);
     }
 
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-lg), var(--neon-glow);
-    }
-
-    .card:hover::before {
-      width: 6px;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
     }
 
     .card-header {
       display: flex;
       align-items: center;
-      margin-bottom: 0.8rem;
-      width: 100%;
+      margin-bottom: 0.6rem;
     }
 
     .card-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.3rem;
-      margin-right: 0.8rem;
+      font-size: 1rem;
+      margin-right: 0.6rem;
       background: var(--gradient);
       color: white;
-      animation: bounce 2s infinite;
       flex-shrink: 0;
     }
 
     .card-title {
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       color: var(--text-secondary);
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.1rem;
       line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .card-value {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: 700;
       line-height: 1.2;
     }
 
-    @media (max-width: 768px) {
-      .card {
-        padding: 1rem;
-      }
-      
-      .card-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 1.2rem;
-        margin-right: 0.7rem;
-      }
-      
-      .card-title {
-        font-size: 0.8rem;
-      }
-      
-      .card-value {
-        font-size: 1.3rem;
-      }
+    .card-trend {
+      font-size: 0.7rem;
+      margin-top: 0.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
     }
 
-    @media (max-width: 480px) {
-      .card-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 1.1rem;
-      }
-      
-      .card-value {
-        font-size: 1.2rem;
-      }
+    .trend-up {
+      color: var(--success);
     }
 
-    /* Subject Input Section */
+    .trend-down {
+      color: var(--danger);
+    }
+
+    .trend-stable {
+      color: var(--text-secondary);
+    }
+
+    /* Subject Input Section - Compact */
     .input-section {
-      background-color: var(--card-bg);
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-radius: var(--radius);
-      padding: 1.5rem;
+      padding: 1.2rem;
       box-shadow: var(--shadow);
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--border);
+      margin-bottom: 1.2rem;
+      border: 1px solid var(--glass-border);
       position: relative;
       overflow: hidden;
-      width: 100%;
-    }
-
-    .input-section::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(
-        to right,
-        transparent 20%,
-        rgba(255, 255, 255, 0.1) 50%,
-        transparent 80%
-      );
-      transform: rotate(30deg);
-      animation: shimmer 3s infinite linear;
     }
 
     .section-title {
-      font-size: 1.3rem;
-      margin-bottom: 1.2rem;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
       color: var(--text);
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      position: relative;
-      z-index: 1;
     }
 
     .section-title i {
       color: var(--primary);
+      font-size: 1rem;
+    }
+
+    .section-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      line-height: 1.5;
     }
 
     #subjects {
-      margin-bottom: 1.2rem;
-      position: relative;
-      z-index: 1;
-      width: 100%;
+      margin-bottom: 1rem;
     }
 
     .subject-card {
-      background-color: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.05);
       border-radius: var(--radius);
-      padding: 1.2rem;
+      padding: 1rem;
       margin-bottom: 0.8rem;
       border: 1px solid var(--border);
       transition: var(--transition);
-      position: relative;
-      overflow: hidden;
-      animation: slideIn 0.5s ease-out;
-      width: 100%;
+      animation: slideIn 0.3s ease-out;
     }
 
     .subject-card:hover {
       border-color: var(--primary);
-      box-shadow: 0 0 15px rgba(67, 97, 238, 0.3);
-    }
-
-    .subject-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-      background: var(--gradient);
-      transition: var(--transition);
-    }
-
-    .subject-card:hover::before {
-      width: 6px;
-      background: var(--gradient-2);
+      box-shadow: 0 0 0 1px var(--primary);
     }
 
     .subject-header {
@@ -602,61 +511,65 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 0.8rem;
-      width: 100%;
       gap: 0.5rem;
     }
 
     .subject-name {
       flex: 1;
-      width: 100%;
-      min-width: 0;
     }
 
     .subject-name input {
       width: 100%;
-      padding: 0.7rem;
-      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      border-radius: var(--radius-sm);
       border: 1px solid var(--border);
-      background-color: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.05);
       color: var(--text);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       transition: var(--transition);
-      max-width: 100%;
     }
 
     .subject-name input:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2), 0 0 10px rgba(67, 97, 238, 0.5);
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
     }
 
-    .remove-subject {
-      background-color: rgba(248, 37, 133, 0.1);
-      color: var(--accent);
-      border: none;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
+    .subject-actions {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .subject-action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: var(--transition);
-      flex-shrink: 0;
     }
 
-    .remove-subject:hover {
-      background-color: rgba(248, 37, 133, 0.2);
-      transform: scale(1.1) rotate(90deg);
-      box-shadow: 0 0 10px rgba(248, 37, 133, 0.5);
+    .subject-action-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+
+    .subject-action-btn.remove:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border-color: var(--danger);
     }
 
     .scores-container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 0.6rem;
-      width: 100%;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 0.5rem;
     }
 
     @media (max-width: 768px) {
@@ -665,15 +578,9 @@
       }
     }
 
-    @media (max-width: 576px) {
+    @media (max-width: 480px) {
       .scores-container {
         grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 400px) {
-      .scores-container {
-        grid-template-columns: 1fr;
       }
     }
 
@@ -684,103 +591,104 @@
     .score-input label {
       display: block;
       margin-bottom: 0.2rem;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--text-secondary);
     }
 
     .score-input input {
       width: 100%;
-      padding: 0.7rem;
-      border-radius: 8px;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
       border: 1px solid var(--border);
-      background-color: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.05);
       color: var(--text);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       text-align: center;
       transition: var(--transition);
-      max-width: 100%;
     }
 
     .score-input input:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2), 0 0 10px rgba(67, 97, 238, 0.3);
-      transform: translateY(-2px);
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
     }
 
-    .score-input input:valid {
+    .score-input input.valid {
       border-color: var(--success);
-      background-color: rgba(76, 201, 240, 0.05);
+      background: rgba(16, 185, 129, 0.05);
     }
 
-    /* Buttons - IMPROVED FOR MOBILE */
-    .button-group {
+    .score-input input.warning {
+      border-color: var(--warning);
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    .score-input input.error {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    /* Action Buttons - Compact */
+    .action-buttons {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.8rem;
-      margin-top: 1.5rem;
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 1.2rem;
     }
 
     .btn {
-      padding: 0.8rem 1.5rem;
-      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      border-radius: var(--radius-sm);
       border: none;
       font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      font-size: 0.9rem;
+      font-weight: 500;
+      font-size: 0.85rem;
       cursor: pointer;
       transition: var(--transition);
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
       position: relative;
       overflow: hidden;
       flex: 1;
-      min-width: 140px;
-      text-align: center;
+      min-width: 120px;
+      white-space: nowrap;
     }
 
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.7s;
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+      min-width: auto;
     }
 
-    .btn:hover::before {
-      left: 100%;
+    .btn-icon {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      min-width: auto;
     }
 
     .btn-primary {
       background: var(--gradient);
       color: white;
-      box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+      box-shadow: 0 2px 4px rgba(67, 97, 238, 0.3);
     }
 
     .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(67, 97, 238, 0.4), var(--neon-glow);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(67, 97, 238, 0.4);
     }
 
     .btn-secondary {
-      background-color: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.1);
       color: var(--text);
       border: 1px solid var(--border);
     }
 
     .btn-secondary:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
     }
 
     .btn-success {
@@ -789,138 +697,123 @@
     }
 
     .btn-success:hover {
-      background: var(--gradient-3);
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(76, 201, 240, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
     }
 
-    .btn-export {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    .btn-warning {
+      background: var(--gradient-warning);
       color: white;
     }
 
-    .btn-export:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.4);
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
     }
 
     @media (max-width: 768px) {
-      .button-group {
-        gap: 0.6rem;
-      }
-      
       .btn {
-        padding: 0.7rem 1.2rem;
-        font-size: 0.85rem;
-        min-width: 120px;
+        min-width: 100px;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
       }
       
-      .btn i {
-        font-size: 0.9rem;
+      .action-buttons {
+        gap: 0.4rem;
       }
     }
 
-    @media (max-width: 576px) {
-      .button-group {
+    @media (max-width: 480px) {
+      .action-buttons {
         flex-direction: column;
       }
       
       .btn {
         width: 100%;
-        min-width: 100%;
       }
     }
 
-    /* Result Section */
+    /* Result Section - Professional Design */
     .result-section {
-      background-color: var(--card-bg);
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-radius: var(--radius);
-      padding: 1.5rem;
+      padding: 1.2rem;
       box-shadow: var(--shadow);
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-      width: 100%;
-    }
-
-    .result-section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: var(--gradient);
-      animation: progress 2s infinite linear;
+      margin-bottom: 1.2rem;
+      border: 1px solid var(--glass-border);
     }
 
     .result-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.2rem;
+      margin-bottom: 1rem;
       flex-wrap: wrap;
       gap: 0.8rem;
     }
 
     .result-title {
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       color: var(--text);
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
-    .share-btn {
-      background-color: rgba(67, 97, 238, 0.1);
-      color: var(--primary);
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: var(--transition);
+    .result-actions {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
     }
 
-    .share-btn:hover {
-      background-color: rgba(67, 97, 238, 0.2);
-      transform: scale(1.05);
-      box-shadow: 0 0 10px rgba(67, 97, 238, 0.3);
+    .action-btn {
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+
+    .action-btn.primary {
+      background: var(--gradient);
+      color: white;
+      border: none;
     }
 
     #result {
       min-height: 180px;
-      width: 100%;
     }
 
-    .result-content {
+    .result-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      width: 100%;
+      gap: 0.8rem;
+      margin-bottom: 1rem;
     }
 
     @media (max-width: 768px) {
-      .result-content {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.8rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .result-content {
+      .result-grid {
         grid-template-columns: 1fr;
+        gap: 0.6rem;
       }
     }
 
     .result-stat {
-      background-color: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.05);
       border-radius: var(--radius);
-      padding: 1.2rem;
+      padding: 1rem;
       text-align: center;
       transition: var(--transition);
       border: 1px solid transparent;
@@ -928,157 +821,113 @@
 
     .result-stat:hover {
       border-color: var(--primary);
-      transform: scale(1.02);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
     }
 
     .stat-value {
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 700;
       margin: 0.4rem 0;
       background: var(--gradient);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    @media (max-width: 768px) {
-      .stat-value {
-        font-size: 1.7rem;
-      }
     }
 
     .stat-label {
       color: var(--text-secondary);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-details {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
     }
 
     .motivation-card {
-      grid-column: 1 / -1;
       background: var(--gradient);
       border-radius: var(--radius);
-      padding: 1.5rem;
+      padding: 1rem;
       color: white;
       position: relative;
       overflow: hidden;
-      animation: pulse 2s infinite;
     }
 
-    .motivation-card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-      animation: rotate 20s infinite linear;
-    }
-
-    .motivation-icon {
-      font-size: 2.5rem;
-      margin-bottom: 0.8rem;
-      animation: bounce 2s infinite;
-      text-align: center;
-    }
-
-    .motivation-text {
-      font-size: 1rem;
-      font-style: italic;
-      line-height: 1.5;
+    .motivation-content {
       position: relative;
       z-index: 2;
       text-align: center;
     }
 
-    /* Chart Section */
-    .chart-section {
-      background-color: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      box-shadow: var(--shadow);
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-      width: 100%;
+    .motivation-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
     }
 
-    .chart-section::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: var(--gradient-2);
-      animation: progress 3s infinite linear reverse;
+    .motivation-text {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    /* Chart Section */
+    .chart-section {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.2rem;
+      border: 1px solid var(--glass-border);
     }
 
     .chart-container {
-      height: 280px;
+      height: 250px;
       position: relative;
-      margin-top: 1.2rem;
-      width: 100%;
+      margin-top: 1rem;
     }
 
-    @media (max-width: 768px) {
-      .chart-container {
-        height: 250px;
-      }
-    }
-
-    /* Sidebar */
+    /* Sidebar - Compact */
     .sidebar {
       position: sticky;
-      top: 1.5rem;
+      top: 1rem;
       height: fit-content;
-      width: 100%;
     }
 
-    @media (max-width: 992px) {
+    @media (max-width: 1024px) {
       .sidebar {
         position: static;
-        margin-top: 1.5rem;
+        margin-top: 1rem;
       }
     }
 
     .sidebar-card {
-      background-color: var(--card-bg);
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-radius: var(--radius);
-      padding: 1.2rem;
+      padding: 1rem;
       box-shadow: var(--shadow);
-      margin-bottom: 1rem;
-      border: 1px solid var(--border);
-      transition: var(--transition);
-      position: relative;
-      overflow: hidden;
-      width: 100%;
-    }
-
-    .sidebar-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .sidebar-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: var(--gradient);
+      margin-bottom: 0.8rem;
+      border: 1px solid var(--glass-border);
     }
 
     .sidebar-title {
-      font-size: 1.1rem;
+      font-size: 1rem;
       margin-bottom: 0.8rem;
       color: var(--text);
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
+    }
+
+    .sidebar-title i {
+      font-size: 0.9rem;
+      color: var(--primary);
     }
 
     .recommendation-list {
@@ -1088,15 +937,14 @@
     .recommendation-item {
       display: flex;
       align-items: flex-start;
-      padding: 0.7rem 0;
+      padding: 0.6rem 0;
       border-bottom: 1px solid var(--border);
       transition: var(--transition);
     }
 
     .recommendation-item:hover {
-      background-color: rgba(255, 255, 255, 0.05);
-      padding-left: 0.5rem;
-      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      padding-left: 0.3rem;
     }
 
     .recommendation-item:last-child {
@@ -1104,137 +952,196 @@
     }
 
     .rec-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background-color: rgba(67, 97, 238, 0.1);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(67, 97, 238, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 0.8rem;
+      margin-right: 0.6rem;
       color: var(--primary);
-      transition: var(--transition);
+      font-size: 0.8rem;
       flex-shrink: 0;
-      margin-top: 0.2rem;
-    }
-
-    .recommendation-item:hover .rec-icon {
-      background-color: rgba(67, 97, 238, 0.2);
-      transform: scale(1.1);
+      margin-top: 0.1rem;
     }
 
     .rec-text {
       flex: 1;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    /* Grade Distribution */
+    .grade-distribution {
+      margin-top: 0.5rem;
+    }
+
+    .grade-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+    }
+
+    .grade-label {
+      font-size: 0.8rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .grade-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .grade-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      margin: 0 0.8rem;
+      overflow: hidden;
+    }
+
+    .grade-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1s ease;
+    }
+
+    .grade-count {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      min-width: 40px;
+      text-align: right;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.4rem;
+    }
+
+    /* Achievement Badge */
+    .achievement-badge {
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .badge-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      margin: 0 auto 0.8rem;
+      box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+
+    .badge-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+
+    .badge-desc {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
       line-height: 1.4;
     }
 
     /* History Section */
     .history-section {
-      background-color: var(--card-bg);
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-radius: var(--radius);
-      padding: 1.5rem;
+      padding: 1.2rem;
       box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      position: relative;
-      width: 100%;
-    }
-
-    .history-section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 100px;
-      height: 100px;
-      background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
-      opacity: 0.1;
-      border-radius: 50%;
-      animation: pulse 4s infinite;
+      border: 1px solid var(--glass-border);
     }
 
     .history-list {
-      max-height: 280px;
+      max-height: 200px;
       overflow-y: auto;
-      margin-top: 1rem;
-      padding-right: 5px;
+      margin-top: 0.8rem;
     }
 
     .history-item {
-      background-color: rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
-      padding: 0.8rem;
-      margin-bottom: 0.6rem;
-      border-left: 4px solid var(--primary);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem;
+      margin-bottom: 0.4rem;
+      border-left: 3px solid var(--primary);
       transition: var(--transition);
-      animation: fadeInUp 0.5s ease-out;
     }
 
     .history-item:hover {
-      transform: translateX(5px);
-      border-left-color: var(--accent);
+      transform: translateX(2px);
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .history-date {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text-secondary);
       margin-bottom: 0.2rem;
     }
 
     .history-avg {
-      font-size: 1.1rem;
+      font-size: 0.9rem;
       font-weight: 600;
       color: var(--text);
     }
 
     /* Footer */
     footer {
-      background-color: var(--card-bg);
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       margin-top: 2rem;
-      padding: 1.5rem;
-      border-top: 1px solid var(--border);
+      padding: 1rem;
+      border-top: 1px solid var(--glass-border);
       text-align: center;
-      color: var(--text-secondary);
-      position: relative;
-      overflow: hidden;
-      width: 100%;
-    }
-
-    footer::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: var(--gradient);
     }
 
     .footer-content {
       max-width: 1200px;
       margin: 0 auto;
-      position: relative;
-      z-index: 1;
-      width: 100%;
+    }
+
+    .footer-text {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .footer-highlight {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 600;
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 0.8rem;
+      flex-wrap: wrap;
     }
 
     /* Animations */
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
     @keyframes float {
       0% { transform: translate(0, 0) rotate(0deg); }
       33% { transform: translate(30px, -30px) rotate(120deg); }
@@ -1250,23 +1157,18 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-20px); }
+      from { opacity: 0; transform: translateX(-10px); }
       to { opacity: 1; transform: translateX(0); }
-    }
-
-    @keyframes rotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
     }
 
     @keyframes progress {
@@ -1274,26 +1176,21 @@
       100% { transform: translateX(100%); }
     }
 
-    @keyframes shimmer {
-      0% { transform: translateX(-100%) rotate(30deg); }
-      100% { transform: translateX(100%) rotate(30deg); }
-    }
-
-    @keyframes neon-pulse {
-      0%, 100% { box-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary); }
-      50% { box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 30px var(--primary); }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
 
     .animate-fadeIn {
-      animation: fadeIn 0.5s ease forwards;
+      animation: fadeIn 0.3s ease forwards;
     }
 
     .animate-fadeInUp {
-      animation: fadeInUp 0.5s ease forwards;
+      animation: fadeInUp 0.3s ease forwards;
     }
 
     .animate-slideIn {
-      animation: slideIn 0.5s ease forwards;
+      animation: slideIn 0.3s ease forwards;
     }
 
     /* Utility Classes */
@@ -1317,63 +1214,34 @@
       text-align: center;
     }
 
+    .text-right {
+      text-align: right;
+    }
+
     .mt-1 { margin-top: 0.5rem; }
     .mt-2 { margin-top: 1rem; }
-    .mt-3 { margin-top: 1.5rem; }
     .mb-1 { margin-bottom: 0.5rem; }
     .mb-2 { margin-bottom: 1rem; }
     .mb-3 { margin-bottom: 1.5rem; }
 
     /* Custom Scrollbar */
     ::-webkit-scrollbar {
-      width: 8px;
+      width: 6px;
+      height: 6px;
     }
 
     ::-webkit-scrollbar-track {
       background: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
+      border-radius: 3px;
     }
 
     ::-webkit-scrollbar-thumb {
       background: var(--gradient);
-      border-radius: 10px;
+      border-radius: 3px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
       background: var(--gradient-2);
-      box-shadow: 0 0 10px rgba(67, 97, 238, 0.5);
-    }
-
-    /* Print Styles */
-    @media print {
-      .no-print, button, .theme-toggle, .remove-subject, .share-btn {
-        display: none !important;
-      }
-      
-      body, .card, .input-section, .result-section, .chart-section, .sidebar-card {
-        box-shadow: none !important;
-        border: 1px solid #ddd !important;
-        background-color: white !important;
-        color: black !important;
-      }
-      
-      .main-container {
-        grid-template-columns: 1fr !important;
-      }
-      
-      .sidebar {
-        display: none;
-      }
-      
-      .motivation-card {
-        background: #f0f0f0 !important;
-        color: black !important;
-      }
-      
-      .stat-value {
-        -webkit-text-fill-color: black !important;
-        color: black !important;
-      }
     }
 
     /* Modal Styles */
@@ -1384,7 +1252,8 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
       z-index: 1000;
       align-items: center;
       justify-content: center;
@@ -1397,31 +1266,21 @@
     }
 
     .modal-content {
-      background-color: var(--card-bg);
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-radius: var(--radius);
       width: 100%;
       max-width: 500px;
       max-height: 90vh;
       overflow-y: auto;
-      box-shadow: var(--shadow-lg), 0 0 30px rgba(67, 97, 238, 0.3);
-      border: 1px solid var(--border);
-      animation: slideIn 0.5s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .modal-content::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: var(--gradient);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--glass-border);
+      animation: slideIn 0.3s ease;
     }
 
     .modal-header {
-      padding: 1.2rem;
+      padding: 1rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
@@ -1429,7 +1288,7 @@
     }
 
     .modal-header h2 {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       color: var(--text);
       display: flex;
       align-items: center;
@@ -1443,45 +1302,45 @@
       color: var(--text-secondary);
       cursor: pointer;
       transition: var(--transition);
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
+      border-radius: var(--radius-sm);
     }
 
     .modal-close:hover {
-      color: var(--danger);
-      background-color: rgba(249, 65, 68, 0.1);
-      transform: rotate(90deg);
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
     }
 
     .modal-body {
-      padding: 1.2rem;
+      padding: 1rem;
       max-height: 60vh;
       overflow-y: auto;
     }
 
     .modal-footer {
-      padding: 1.2rem;
+      padding: 1rem;
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: flex-end;
+      gap: 0.6rem;
     }
 
-    /* Export Modal Specific */
+    /* Export Options */
     .export-options {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 1.2rem;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.8rem;
+      margin-top: 1rem;
     }
 
     .export-option {
       background: rgba(255, 255, 255, 0.05);
       border-radius: var(--radius);
-      padding: 1.2rem;
+      padding: 1rem;
       text-align: center;
       transition: var(--transition);
       border: 1px solid var(--border);
@@ -1490,387 +1349,223 @@
 
     .export-option:hover {
       border-color: var(--primary);
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
     }
 
     .export-option i {
-      font-size: 2.5rem;
-      margin-bottom: 0.8rem;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
       color: var(--primary);
     }
 
     .export-option h3 {
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
       color: var(--text);
     }
 
     .export-option p {
       color: var(--text-secondary);
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       line-height: 1.4;
     }
 
-    /* Creator Info Modal */
-    .creator-header {
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .creator-avatar {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: var(--gradient);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      color: white;
-      box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
-      flex-shrink: 0;
-    }
-
-    .creator-details h3 {
-      font-size: 1.5rem;
-      color: var(--text);
-      margin-bottom: 0.3rem;
-    }
-
-    .creator-title {
-      color: var(--text-secondary);
-      font-size: 0.85rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .creator-status {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      background: #4CAF50;
-      border-radius: 50%;
-      animation: pulse 1.5s infinite;
-    }
-
-    .status-text {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-
-    .creator-bio {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 1.2rem;
-      border-radius: var(--radius);
-      margin-bottom: 1.2rem;
-      border-left: 4px solid var(--primary);
-      position: relative;
-    }
-
-    .creator-bio p {
-      line-height: 1.6;
-      color: var(--text);
-      font-size: 0.9rem;
-    }
-
-    .quote-icon {
-      color: var(--primary);
-      opacity: 0.5;
-      font-size: 1.1rem;
-    }
-
-    .creator-skills {
-      margin-bottom: 1.2rem;
-    }
-
-    .creator-skills h4 {
-      color: var(--text);
-      margin-bottom: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 1.1rem;
-    }
-
-    .skills-grid {
-      display: grid;
-      gap: 0.8rem;
-    }
-
-    .skill-item {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    .skill-name {
-      color: var(--text);
-      font-size: 0.85rem;
-    }
-
-    .skill-bar {
-      grid-column: 1 / -1;
-      height: 6px;
+    /* Progress Bar */
+    .progress-bar {
+      width: 100%;
+      height: 4px;
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
+      border-radius: 2px;
       overflow: hidden;
+      margin: 1rem 0;
     }
 
-    .skill-progress {
+    .progress-fill {
       height: 100%;
       background: var(--gradient);
-      border-radius: 3px;
-      transition: width 1.5s ease;
+      border-radius: 2px;
+      transition: width 0.3s ease;
     }
 
-    .skill-percent {
-      color: var(--text-secondary);
-      font-size: 0.75rem;
-      font-weight: 600;
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 0.8rem 1rem;
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      animation: slideIn 0.3s ease;
+      max-width: 300px;
     }
 
-    .creator-contact {
-      margin-bottom: 1.2rem;
-    }
-
-    .creator-contact h4 {
-      color: var(--text);
-      margin-bottom: 0.8rem;
+    .notification-content {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 1.1rem;
-    }
-
-    .contact-links {
-      display: flex;
       gap: 0.6rem;
-      flex-wrap: wrap;
     }
 
-    .contact-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(67, 97, 238, 0.1);
+    .notification i {
+      font-size: 1.2rem;
+    }
+
+    .notification.success i {
+      color: var(--success);
+    }
+
+    .notification.warning i {
+      color: var(--warning);
+    }
+
+    .notification.error i {
+      color: var(--danger);
+    }
+
+    .notification.info i {
       color: var(--primary);
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 0.85rem;
-      transition: var(--transition);
-      border: none;
-      cursor: pointer;
     }
 
-    .contact-link:hover {
-      background: rgba(67, 97, 238, 0.2);
-      transform: translateY(-2px);
+    /* Loading Spinner */
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
     }
 
-    .creator-quote {
-      padding: 1.2rem;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: var(--radius);
-      text-align: center;
-      border-top: 2px solid var(--primary);
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
-    .creator-quote p {
-      font-style: italic;
-      color: var(--text);
-      line-height: 1.6;
-      margin-bottom: 0.5rem;
-      font-size: 0.9rem;
+    /* Mobile Navigation */
+    .mobile-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid var(--glass-border);
+      padding: 0.5rem;
+      z-index: 90;
+      display: none;
     }
 
-    .quote-author {
-      color: var(--text-secondary);
-      font-size: 0.8rem;
-      font-weight: 600;
+    .mobile-nav.active {
+      display: block;
     }
 
-    /* Portfolio Modal */
-    .portfolio-grid {
+    .nav-buttons {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.4rem;
     }
 
-    .portfolio-item {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 1.2rem;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      transition: var(--transition);
-      position: relative;
-    }
-
-    .portfolio-item:hover {
-      transform: translateY(-5px);
-      border-color: var(--primary);
-    }
-
-    .portfolio-icon {
-      width: 50px;
-      height: 50px;
-      background: var(--gradient);
-      border-radius: 10px;
+    .nav-btn {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: white;
-      margin-bottom: 0.8rem;
-    }
-
-    .portfolio-item h3 {
-      color: var(--text);
-      margin-bottom: 0.5rem;
-      font-size: 1.1rem;
-    }
-
-    .portfolio-item p {
+      gap: 0.2rem;
+      padding: 0.5rem;
+      border: none;
+      background: none;
       color: var(--text-secondary);
-      font-size: 0.85rem;
-      line-height: 1.5;
-      margin-bottom: 0.8rem;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border-radius: var(--radius-sm);
     }
 
-    .portfolio-status {
-      position: absolute;
-      top: 0.8rem;
-      right: 0.8rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 20px;
-      font-size: 0.65rem;
-      font-weight: 600;
+    .nav-btn:hover,
+    .nav-btn.active {
+      color: var(--primary);
+      background: rgba(67, 97, 238, 0.1);
     }
 
-    .portfolio-status:first-child {
-      background: rgba(76, 175, 80, 0.2);
-      color: #4CAF50;
+    .nav-btn i {
+      font-size: 1rem;
     }
 
-    .portfolio-status:nth-child(2) {
-      background: rgba(255, 152, 0, 0.2);
-      color: #FF9800;
-    }
-
-    .portfolio-status:nth-child(3) {
-      background: rgba(33, 150, 243, 0.2);
-      color: #2196F3;
-    }
-
-    /* Creator Highlight in Footer */
-    .creator-highlight {
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-weight: 700;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      animation: pulse 2s infinite;
-    }
-
-    /* Footer Actions */
-    .footer-actions {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-top: 0.8rem;
-    }
-
-    /* Mobile-specific optimizations */
     @media (max-width: 768px) {
-      /* Center align text in cards on mobile */
-      .dashboard-cards .card-header {
-        justify-content: center;
-        text-align: center;
-      }
-      
-      .card-icon {
-        margin-right: 0;
-        margin-bottom: 0.5rem;
-      }
-      
-      .card-header {
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      /* Center align buttons in button groups */
-      .button-group {
-        justify-content: center;
-      }
-      
-      /* Center align section titles */
-      .section-title, .result-title, .sidebar-title {
-        justify-content: center;
-        text-align: center;
-      }
-      
-      /* Center align motivation card content */
-      .motivation-card {
-        text-align: center;
-      }
-      
-      /* Center align result stats */
-      .result-stat {
-        text-align: center;
-      }
-      
-      /* Center align achievement badge */
-      #achievementContent {
-        text-align: center;
-      }
-      
-      /* Improve modal responsiveness */
-      .modal-content {
-        max-width: 95%;
-      }
-      
-      .creator-header {
-        flex-direction: column;
-        text-align: center;
-      }
-      
-      .contact-links {
-        justify-content: center;
+      .mobile-nav {
+        display: block;
       }
     }
-    
-    @media (max-width: 480px) {
-      .dashboard-cards {
-        grid-template-columns: 1fr;
+
+    /* Tooltip */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      width: 200px;
+      background: var(--card-bg);
+      color: var(--text);
+      text-align: center;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.8rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Print Styles */
+    @media print {
+      .no-print,
+      .mobile-nav,
+      .mobile-menu-btn,
+      button:not(.print-only),
+      .action-btn,
+      .theme-toggle,
+      .header-btn {
+        display: none !important;
       }
       
-      .export-options {
-        grid-template-columns: 1fr;
+      body {
+        background: white !important;
+        color: black !important;
       }
       
-      .portfolio-grid {
-        grid-template-columns: 1fr;
+      .card,
+      .input-section,
+      .result-section,
+      .chart-section,
+      .sidebar-card {
+        background: white !important;
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
       }
       
-      .footer-actions {
-        flex-direction: column;
-        align-items: center;
+      .main-container {
+        grid-template-columns: 1fr !important;
       }
       
-      .footer-actions .btn {
-        width: 100%;
-        margin-bottom: 0.5rem;
+      .sidebar {
+        display: none;
       }
     }
   </style>
@@ -1881,137 +1576,232 @@
     <div class="bg-circle"></div>
     <div class="bg-circle"></div>
     <div class="bg-circle"></div>
-    <div class="bg-circle"></div>
   </div>
   
   <!-- Floating Particles -->
   <div class="floating-particles" id="particles"></div>
 
-  <!-- Header - IMPROVED FOR MOBILE -->
+  <!-- Header -->
   <header>
     <div class="header-content">
       <div class="logo-container">
         <div class="logo">
-          <i class="fas fa-graduation-cap"></i>
+          <i class="fas fa-chart-line"></i>
         </div>
         <div class="logo-text">
-          <h1>📊 Smart Raport Analyzer Pro</h1>
-          <p>Analisis nilai raport semester 1–5 dengan AI & rekomendasi</p>
+          <h1>Smart Raport Analyzer</h1>
+          <p>Analisis Nilai Akademik</p>
         </div>
       </div>
-      <div class="theme-toggle-container">
+      
+      <div class="header-actions">
+        <button class="header-btn btn-sm" onclick="showTemplates()">
+          <i class="fas fa-layer-group"></i>
+          <span class="desktop-only">Template</span>
+        </button>
+        <button class="header-btn btn-sm" onclick="showSettings()">
+          <i class="fas fa-cog"></i>
+          <span class="desktop-only">Settings</span>
+        </button>
         <button class="theme-toggle" id="themeToggle">
           <i class="fas fa-moon"></i>
+        </button>
+        <button class="mobile-menu-btn" onclick="toggleMobileNav()">
+          <i class="fas fa-bars"></i>
         </button>
       </div>
     </div>
   </header>
 
+  <!-- Mobile Navigation -->
+  <nav class="mobile-nav" id="mobileNav">
+    <div class="nav-buttons">
+      <button class="nav-btn active" onclick="scrollToSection('dashboard')">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('input')">
+        <i class="fas fa-edit"></i>
+        <span>Input</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('results')">
+        <i class="fas fa-chart-bar"></i>
+        <span>Analisis</span>
+      </button>
+      <button class="nav-btn" onclick="showExportModal()">
+        <i class="fas fa-share"></i>
+        <span>Ekspor</span>
+      </button>
+    </div>
+  </nav>
+
   <!-- Main Content -->
   <div class="main-container">
     <main class="main-content">
-      <!-- Dashboard Cards - IMPROVED FOR MOBILE -->
-      <div class="dashboard-cards">
-        <div class="card animate-fadeIn" style="animation-delay: 0.1s">
-          <div class="card-header">
-            <div class="card-icon">
-              <i class="fas fa-calculator"></i>
+      <!-- Dashboard Cards -->
+      <section id="dashboard">
+        <div class="dashboard-cards">
+          <div class="card animate-fadeIn" style="animation-delay: 0.1s">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fas fa-calculator"></i>
+              </div>
+              <div>
+                <div class="card-title">Rata-rata</div>
+                <div class="card-value" id="avgTotal">0.0</div>
+                <div class="card-trend" id="avgTrend">
+                  <i class="fas fa-minus"></i>
+                  <span class="trend-stable">Stabil</span>
+                </div>
+              </div>
             </div>
-            <div>
-              <div class="card-title">Rata-rata Total</div>
-              <div class="card-value" id="avgTotal">-</div>
+          </div>
+          
+          <div class="card animate-fadeIn" style="animation-delay: 0.2s">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div>
+                <div class="card-title">Mapel Terbaik</div>
+                <div class="card-value" id="bestSubject">-</div>
+                <div class="card-trend">
+                  <i class="fas fa-star"></i>
+                  <span>Nilai Tertinggi</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card animate-fadeIn" style="animation-delay: 0.3s">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div>
+                <div class="card-title">Perlu Perbaikan</div>
+                <div class="card-value" id="worstSubject">-</div>
+                <div class="card-trend">
+                  <i class="fas fa-arrow-down"></i>
+                  <span class="trend-down">Perhatian</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card animate-fadeIn" style="animation-delay: 0.4s">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fas fa-book"></i>
+              </div>
+              <div>
+                <div class="card-title">Total Mapel</div>
+                <div class="card-value" id="subjectCount">0</div>
+                <div class="card-trend">
+                  <i class="fas fa-check"></i>
+                  <span>Aktif</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        
-        <div class="card animate-fadeIn" style="animation-delay: 0.2s">
-          <div class="card-header">
-            <div class="card-icon">
-              <i class="fas fa-chart-line"></i>
-            </div>
-            <div>
-              <div class="card-title">Tren Nilai</div>
-              <div class="card-value" id="trendValue">-</div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="card animate-fadeIn" style="animation-delay: 0.3s">
-          <div class="card-header">
-            <div class="card-icon">
-              <i class="fas fa-medal"></i>
-            </div>
-            <div>
-              <div class="card-title">Mapel Terbaik</div>
-              <div class="card-value" id="bestSubject">-</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
 
       <!-- Subject Input Section -->
-      <section class="input-section animate-fadeIn" style="animation-delay: 0.4s">
-        <h2 class="section-title"><i class="fas fa-book-open"></i> Input Nilai Mata Pelajaran</h2>
-        <p class="mb-2">Masukkan nilai untuk setiap mata pelajaran dari semester 1 hingga 5. Nilai harus antara 0-100.</p>
+      <section class="input-section animate-fadeIn" style="animation-delay: 0.5s" id="input">
+        <h2 class="section-title">
+          <i class="fas fa-edit"></i>
+          Input Nilai Mata Pelajaran
+        </h2>
+        <p class="section-subtitle">
+          Masukkan nilai untuk setiap mata pelajaran dari semester 1 hingga 5. 
+          <span class="tooltip">
+            <i class="fas fa-info-circle"></i>
+            <span class="tooltip-text">Nilai harus antara 0-100. Nilai di luar rentang akan disesuaikan secara otomatis.</span>
+          </span>
+        </p>
+        
+        <div class="action-buttons mb-2">
+          <button class="btn btn-primary" onclick="addSubject()">
+            <i class="fas fa-plus"></i>
+            Tambah Mapel
+          </button>
+          <button class="btn btn-secondary" onclick="addSampleData()">
+            <i class="fas fa-vial"></i>
+            Data Contoh
+          </button>
+          <button class="btn btn-success" onclick="analyze()" id="analyzeBtn">
+            <i class="fas fa-chart-pie"></i>
+            Analisis Nilai
+          </button>
+          <button class="btn btn-secondary" onclick="clearAll()">
+            <i class="fas fa-trash"></i>
+            Hapus Semua
+          </button>
+        </div>
         
         <div id="subjects">
           <!-- Subject cards will be added here dynamically -->
         </div>
         
-        <div class="button-group">
-          <button class="btn btn-primary" onclick="addSubject()">
-            <i class="fas fa-plus-circle"></i> Tambah Mapel
-          </button>
-          <button class="btn btn-secondary" onclick="addSampleData()">
-            <i class="fas fa-vial"></i> Data Contoh
-          </button>
-          <button class="btn btn-success" onclick="analyze()">
-            <i class="fas fa-chart-pie"></i> Analisis
-          </button>
-          <button class="btn btn-secondary" onclick="clearAll()">
-            <i class="fas fa-trash-alt"></i> Hapus
-          </button>
-          <button class="btn btn-export" onclick="showExportModal()">
-            <i class="fas fa-file-export"></i> Ekspor
-          </button>
+        <div class="progress-bar" id="progressBar" style="display: none;">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
         </div>
       </section>
 
       <!-- Result Section -->
-      <section class="result-section animate-fadeIn" style="animation-delay: 0.5s" id="resultSection">
+      <section class="result-section animate-fadeIn" style="animation-delay: 0.6s" id="results">
         <div class="result-header">
-          <h2 class="result-title"><i class="fas fa-chart-line"></i> Hasil Analisis</h2>
+          <h2 class="result-title">
+            <i class="fas fa-chart-line"></i>
+            Hasil Analisis
+          </h2>
           <div class="result-actions">
-            <button class="share-btn no-print" onclick="shareResults()">
-              <i class="fas fa-share-alt"></i> Bagikan
+            <button class="action-btn" onclick="shareResults()">
+              <i class="fas fa-share"></i>
+              Bagikan
             </button>
-            <button class="share-btn no-print" onclick="printResults()" style="margin-left: 10px;">
-              <i class="fas fa-print"></i> Cetak
+            <button class="action-btn" onclick="printResults()">
+              <i class="fas fa-print"></i>
+              Cetak
+            </button>
+            <button class="action-btn primary" onclick="showExportModal()">
+              <i class="fas fa-download"></i>
+              Ekspor
             </button>
           </div>
         </div>
         
         <div id="result">
           <div class="text-center" style="padding: 2rem 0; color: var(--text-secondary);">
-            <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 1rem; animation: bounce 2s infinite;"></i>
-            <p>Masukkan nilai mata pelajaran terlebih dahulu, lalu klik "Analisis Nilai" untuk melihat hasil analisis.</p>
+            <i class="fas fa-chart-bar" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+            <p style="font-size: 0.9rem;">Masukkan nilai mata pelajaran terlebih dahulu, lalu klik "Analisis Nilai" untuk melihat hasil analisis.</p>
           </div>
         </div>
       </section>
 
       <!-- Chart Section -->
-      <section class="chart-section animate-fadeIn" style="animation-delay: 0.6s" id="chartSection">
-        <h2 class="section-title"><i class="fas fa-chart-area"></i> Visualisasi Nilai</h2>
+      <section class="chart-section animate-fadeIn" style="animation-delay: 0.7s">
+        <h2 class="section-title">
+          <i class="fas fa-chart-area"></i>
+          Visualisasi Nilai
+        </h2>
         <div class="chart-container">
           <canvas id="gradeChart"></canvas>
         </div>
       </section>
 
       <!-- History Section -->
-      <section class="history-section animate-fadeIn" style="animation-delay: 0.7s" id="historySection">
-        <h2 class="section-title"><i class="fas fa-history"></i> Riwayat Analisis</h2>
+      <section class="history-section animate-fadeIn" style="animation-delay: 0.8s">
+        <h2 class="section-title">
+          <i class="fas fa-history"></i>
+          Riwayat Analisis
+        </h2>
         <div class="history-list" id="historyList">
-          <!-- History items will be added here dynamically -->
+          <div class="text-center" style="padding: 1rem 0; color: var(--text-secondary);">
+            <i class="fas fa-clock" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+            <p style="font-size: 0.85rem;">Belum ada riwayat analisis</p>
+          </div>
         </div>
       </section>
     </main>
@@ -2020,7 +1810,10 @@
     <aside class="sidebar">
       <!-- Recommendations -->
       <div class="sidebar-card animate-slideIn" style="animation-delay: 0.5s">
-        <h3 class="sidebar-title"><i class="fas fa-lightbulb"></i> Rekomendasi</h3>
+        <h3 class="sidebar-title">
+          <i class="fas fa-lightbulb"></i>
+          Rekomendasi AI
+        </h3>
         <ul class="recommendation-list" id="recommendations">
           <li class="recommendation-item">
             <div class="rec-icon">
@@ -2033,34 +1826,52 @@
 
       <!-- Grade Distribution -->
       <div class="sidebar-card animate-slideIn" style="animation-delay: 0.6s">
-        <h3 class="sidebar-title"><i class="fas fa-percentage"></i> Distribusi Nilai</h3>
-        <div id="gradeDistribution">
-          <p class="text-center" style="color: var(--text-secondary); padding: 1rem 0;">Tidak ada data</p>
+        <h3 class="sidebar-title">
+          <i class="fas fa-percentage"></i>
+          Distribusi Nilai
+        </h3>
+        <div class="grade-distribution" id="gradeDistribution">
+          <div class="text-center" style="padding: 1rem 0; color: var(--text-secondary);">
+            <i class="fas fa-chart-pie" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+            <p style="font-size: 0.85rem;">Tidak ada data</p>
+          </div>
         </div>
       </div>
 
       <!-- Quick Actions -->
       <div class="sidebar-card animate-slideIn" style="animation-delay: 0.7s">
-        <h3 class="sidebar-title"><i class="fas fa-bolt"></i> Aksi Cepat</h3>
-        <div class="button-group" style="flex-direction: column; gap: 0.5rem;">
-          <button class="btn btn-secondary" onclick="showExportModal()">
-            <i class="fas fa-file-export"></i> Ekspor Data
+        <h3 class="sidebar-title">
+          <i class="fas fa-bolt"></i>
+          Aksi Cepat
+        </h3>
+        <div class="quick-actions">
+          <button class="btn btn-secondary btn-sm" onclick="showTemplates()">
+            <i class="fas fa-layer-group"></i>
+            Template
           </button>
-          <button class="btn btn-secondary" onclick="saveProgress()">
-            <i class="fas fa-save"></i> Simpan Progress
+          <button class="btn btn-secondary btn-sm" onclick="saveProgress()">
+            <i class="fas fa-save"></i>
+            Simpan
           </button>
-          <button class="btn btn-secondary" onclick="showTutorial()">
-            <i class="fas fa-question-circle"></i> Panduan
+          <button class="btn btn-secondary btn-sm" onclick="showTutorial()">
+            <i class="fas fa-question-circle"></i>
+            Panduan
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="showAbout()">
+            <i class="fas fa-info-circle"></i>
+            Tentang
           </button>
         </div>
       </div>
 
       <!-- Achievement Badge -->
-      <div class="sidebar-card animate-slideIn" style="animation-delay: 0.8s" id="achievementCard">
-        <h3 class="sidebar-title"><i class="fas fa-trophy"></i> Penghargaan</h3>
-        <div class="text-center" id="achievementContent">
-          <i class="fas fa-medal" style="font-size: 3rem; color: var(--warning); margin-bottom: 0.8rem; animation: bounce 2s infinite;"></i>
-          <p style="font-size: 0.9rem;">Lengkapi analisis untuk mendapatkan penghargaan</p>
+      <div class="sidebar-card animate-slideIn" style="animation-delay: 0.8s">
+        <div class="achievement-badge" id="achievementContent">
+          <div class="badge-icon">
+            <i class="fas fa-medal"></i>
+          </div>
+          <div class="badge-title">Pemula</div>
+          <div class="badge-desc">Lengkapi analisis untuk mendapatkan penghargaan</div>
         </div>
       </div>
     </aside>
@@ -2069,25 +1880,26 @@
   <!-- Footer -->
   <footer>
     <div class="footer-content">
-      <p style="font-size: 0.9rem;">Smart Raport Analyzer Pro &copy; 2026 | Dibuat dengan <i class="fas fa-heart" style="color: var(--accent); animation: pulse 1s infinite;"></i> untuk pendidikan Indonesia</p>
-      <p class="mt-1" style="font-size: 0.85rem;">Oleh: <strong class="creator-highlight">Firman_devs</strong> | Versi 2.0 | Fitur: Analisis Nilai, Visualisasi Grafik, Rekomendasi Personal</p>
-      
-      <div class="footer-actions mt-2">
-        <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="showAbout()">
-          <i class="fas fa-info-circle"></i> Tentang Aplikasi
+      <p class="footer-text">
+        Smart Raport Analyzer Pro &copy; 2026 | 
+        <span class="footer-highlight">Firman_devs</span> | 
+        Versi 2.1
+      </p>
+      <div class="footer-actions">
+        <button class="btn btn-secondary btn-sm" onclick="showCreatorInfo()">
+          <i class="fas fa-user"></i> Pembuat
         </button>
-        <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; margin-left: 0.5rem;" onclick="showCreatorInfo()">
-          <i class="fas fa-user-tie"></i> Tentang Saya
+        <button class="btn btn-secondary btn-sm" onclick="showPrivacy()">
+          <i class="fas fa-shield-alt"></i> Privasi
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="showTerms()">
+          <i class="fas fa-file-contract"></i> Ketentuan
         </button>
       </div>
-      
-      <p class="footer-note mt-2" style="font-size: 0.8rem;">
-        <i class="fas fa-code"></i> Aplikasi ini dikembangkan dengan teknologi web modern untuk pengalaman pengguna yang optimal
-      </p>
     </div>
   </footer>
 
-  <!-- Export Modal -->
+  <!-- Modals -->
   <div class="modal" id="exportModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -2095,22 +1907,27 @@
         <button class="modal-close" onclick="closeModal('exportModal')">&times;</button>
       </div>
       <div class="modal-body">
-        <p style="text-align: center; margin-bottom: 1rem;">Pilih format ekspor yang diinginkan:</p>
+        <p style="text-align: center; margin-bottom: 1rem; font-size: 0.9rem;">Pilih format ekspor yang diinginkan:</p>
         <div class="export-options">
           <div class="export-option" onclick="exportToPDF()">
             <i class="fas fa-file-pdf"></i>
-            <h3>Ekspor ke PDF</h3>
-            <p>Simpan hasil analisis dalam format PDF yang mudah dibagikan</p>
+            <h3>PDF Report</h3>
+            <p>Laporan lengkap dengan grafik</p>
           </div>
           <div class="export-option" onclick="exportToExcel()">
             <i class="fas fa-file-excel"></i>
-            <h3>Ekspor ke Excel</h3>
-            <p>Simpan data nilai dalam format Excel untuk analisis lebih lanjut</p>
+            <h3>Excel Data</h3>
+            <p>Data mentah untuk analisis lanjutan</p>
           </div>
           <div class="export-option" onclick="exportToJSON()">
             <i class="fas fa-file-code"></i>
-            <h3>Ekspor ke JSON</h3>
-            <p>Simpan data dalam format JSON untuk backup atau penggunaan lainnya</p>
+            <h3>JSON Backup</h3>
+            <p>Backup data untuk penyimpanan</p>
+          </div>
+          <div class="export-option" onclick="exportToImage()">
+            <i class="fas fa-image"></i>
+            <h3>Grafik</h3>
+            <p>Simpan grafik sebagai gambar</p>
           </div>
         </div>
       </div>
@@ -2120,150 +1937,75 @@
     </div>
   </div>
 
-  <!-- Creator Info Modal -->
-  <div class="modal" id="creatorModal">
+  <!-- Templates Modal -->
+  <div class="modal" id="templatesModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2><i class="fas fa-user-tie"></i> Tentang Pembuat</h2>
-        <button class="modal-close" onclick="closeModal('creatorModal')">&times;</button>
+        <h2><i class="fas fa-layer-group"></i> Template Nilai</h2>
+        <button class="modal-close" onclick="closeModal('templatesModal')">&times;</button>
       </div>
       <div class="modal-body">
-        <div class="creator-info">
-          <div class="creator-header">
-            <div class="creator-avatar">
-              <i class="fas fa-user-graduate"></i>
-            </div>
-            <div class="creator-details">
-              <h3>Firman_devs</h3>
-              <p class="creator-title">Pelajar & Developer</p>
-              <div class="creator-status">
-                <span class="status-dot"></span>
-                <span class="status-text">Siswa SMA yang passionate tentang teknologi</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="creator-bio">
-            <p><i class="fas fa-quote-left quote-icon"></i> Halo! Saya Firman, seorang pelajar SMA yang memiliki ketertarikan mendalam dalam pengembangan web dan teknologi pendidikan. Sebagai siswa, saya sering menghadapi tantangan dalam menganalisis perkembangan nilai akademik saya sendiri. Dari pengalaman pribadi inilah, tercipta ide untuk membuat <strong>Smart Raport Analyzer Pro</strong>. <i class="fas fa-quote-right quote-icon"></i></p>
-            
-            <p style="margin-top: 1rem;">Saya percaya bahwa teknologi dapat menjadi alat yang powerful untuk membantu siswa, guru, dan orang tua dalam memantau perkembangan akademik secara lebih efektif.</p>
-          </div>
-          
-          <div class="creator-contact">
-            <h4><i class="fas fa-envelope"></i> Kontak & Portofolio</h4>
-            <div class="contact-links">
-              <button class="contact-link" onclick="sendEmail()">
-                <i class="fas fa-envelope"></i> Email
-              </button>
-              <button class="contact-link" onclick="openGitHub()">
-                <i class="fab fa-github"></i> GitHub
-              </button>
-              <button class="contact-link" onclick="showPortfolio()">
-                <i class="fas fa-briefcase"></i> Portofolio
-              </button>
-            </div>
-          </div>
+        <div class="template-list" id="templateList">
+          <!-- Templates will be loaded here -->
         </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary" onclick="closeModal('creatorModal')">Tutup</button>
+        <div class="mt-2">
+          <button class="btn btn-primary btn-sm" onclick="saveCurrentAsTemplate()">
+            <i class="fas fa-save"></i> Simpan sebagai Template
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Portfolio Modal -->
-  <div class="modal" id="portfolioModal">
+  <!-- Settings Modal -->
+  <div class="modal" id="settingsModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2><i class="fas fa-briefcase"></i> Portofolio Proyek</h2>
-        <button class="modal-close" onclick="closeModal('portfolioModal')">&times;</button>
+        <h2><i class="fas fa-cog"></i> Pengaturan</h2>
+        <button class="modal-close" onclick="closeModal('settingsModal')">&times;</button>
       </div>
       <div class="modal-body">
-        <div class="portfolio-grid">
-          <div class="portfolio-item">
-            <div class="portfolio-icon">
-              <i class="fas fa-chart-line"></i>
-            </div>
-            <h3>Smart Raport Analyzer</h3>
-            <p>Aplikasi analisis nilai raport dengan visualisasi data interaktif dan AI recommendations</p>
-            <span class="portfolio-status">Live</span>
-          </div>
-          
-          <div class="portfolio-item">
-            <div class="portfolio-icon">
-              <i class="fas fa-book-reader"></i>
-            </div>
-            <h3>E-Learning Platform</h3>
-            <p>Platform pembelajaran online dengan materi interaktif untuk siswa SMA</p>
-            <span class="portfolio-status">In Development</span>
-          </div>
+        <div class="setting-item">
+          <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <input type="checkbox" id="autoSave" checked>
+            <span>Simpan otomatis</span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <input type="checkbox" id="notifications" checked>
+            <span>Notifikasi</span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <input type="checkbox" id="animations" checked>
+            <span>Animasi</span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <label style="margin-bottom: 0.5rem; display: block;">Jumlah maksimal mata pelajaran:</label>
+          <select id="maxSubjects" style="width: 100%; padding: 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--card-bg); color: var(--text);">
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20" selected>20</option>
+            <option value="30">30</option>
+          </select>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="closeModal('portfolioModal')">Tutup</button>
+        <button class="btn btn-primary" onclick="saveSettings()">Simpan</button>
+        <button class="btn btn-secondary" onclick="closeModal('settingsModal')">Batal</button>
       </div>
     </div>
   </div>
 
-  <!-- Tutorial Modal -->
-  <div class="modal" id="tutorialModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2><i class="fas fa-graduation-cap"></i> Panduan Penggunaan</h2>
-        <button class="modal-close" onclick="closeModal('tutorialModal')">&times;</button>
-      </div>
+  <!-- Loading Overlay -->
+  <div class="modal" id="loadingModal">
+    <div class="modal-content" style="max-width: 200px; text-align: center;">
       <div class="modal-body">
-        <div class="tutorial-step" style="margin-bottom: 1rem;">
-          <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--primary);">1. Tambah Mata Pelajaran</h3>
-          <p>Klik tombol "Tambah Mapel" untuk menambahkan mata pelajaran baru.</p>
-        </div>
-        <div class="tutorial-step" style="margin-bottom: 1rem;">
-          <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--primary);">2. Input Nilai</h3>
-          <p>Isi nilai untuk setiap semester (0-100). Anda dapat menambahkan hingga 20 mata pelajaran.</p>
-        </div>
-        <div class="tutorial-step" style="margin-bottom: 1rem;">
-          <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--primary);">3. Analisis Nilai</h3>
-          <p>Klik "Analisis Nilai" untuk memproses data. Aplikasi akan memberikan statistik, tren, dan rekomendasi.</p>
-        </div>
-        <div class="tutorial-step">
-          <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--primary);">4. Simpan & Bagikan</h3>
-          <p>Gunakan fitur simpan progress, ekspor data (PDF/Excel), atau bagikan hasil analisis Anda.</p>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary" onclick="closeModal('tutorialModal')">Mengerti</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- About Modal -->
-  <div class="modal" id="aboutModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2><i class="fas fa-info-circle"></i> Tentang Aplikasi</h2>
-        <button class="modal-close" onclick="closeModal('aboutModal')">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p style="margin-bottom: 1rem;">Smart Raport Analyzer Pro adalah aplikasi berbasis web untuk menganalisis nilai raport siswa. Aplikasi ini membantu:</p>
-        <ul style="margin-bottom: 1rem; padding-left: 1.5rem;">
-          <li style="margin-bottom: 0.5rem;">Menganalisis perkembangan nilai dari waktu ke waktu</li>
-          <li style="margin-bottom: 0.5rem;">Mengidentifikasi mata pelajaran yang perlu perhatian lebih</li>
-          <li style="margin-bottom: 0.5rem;">Memberikan rekomendasi belajar personal</li>
-          <li style="margin-bottom: 0.5rem;">Memvisualisasikan data nilai dengan grafik interaktif</li>
-          <li>Mengekspor hasil analisis dalam format PDF dan Excel</li>
-        </ul>
-        <p><strong>Fitur Utama:</strong></p>
-        <ul style="padding-left: 1.5rem;">
-          <li style="margin-bottom: 0.5rem;">Analisis nilai dengan AI</li>
-          <li style="margin-bottom: 0.5rem;">Grafik interaktif dengan Chart.js</li>
-          <li style="margin-bottom: 0.5rem;">Sistem rekomendasi personal</li>
-          <li style="margin-bottom: 0.5rem;">Ekspor ke PDF dan Excel</li>
-          <li style="margin-bottom: 0.5rem;">Mode terang/gelap</li>
-          <li>Responsif untuk semua perangkat</li>
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary" onclick="closeModal('aboutModal')">Tutup</button>
+        <div class="spinner"></div>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">Memproses...</p>
       </div>
     </div>
   </div>
@@ -2278,6 +2020,13 @@
     let analysisHistory = [];
     let isLightMode = false;
     let currentStats = null;
+    let templates = [];
+    let settings = {
+      autoSave: true,
+      notifications: true,
+      animations: true,
+      maxSubjects: 20
+    };
 
     // DOM Elements
     const subjectsDiv = document.getElementById("subjects");
@@ -2286,6 +2035,9 @@
 
     // Initialize the app
     document.addEventListener('DOMContentLoaded', function() {
+      // Load settings
+      loadSettings();
+      
       // Add initial subject
       addSubject();
       
@@ -2301,34 +2053,60 @@
         toggleTheme();
       }
       
-      // Update dashboard with sample data initially
+      // Update dashboard
       updateDashboard();
       
-      // Add resize listener to fix mobile issues
-      window.addEventListener('resize', fixMobileLayout);
-      fixMobileLayout();
+      // Add event listeners for better UX
+      setupEventListeners();
+      
+      // Show welcome message
+      setTimeout(() => {
+        if (settings.notifications) {
+          showNotification('Selamat datang di Smart Raport Analyzer Pro!', 'info');
+        }
+      }, 1000);
     });
 
-    // Fix mobile layout issues
-    function fixMobileLayout() {
-      // Ensure all containers don't exceed viewport
-      const elements = document.querySelectorAll('.card, .input-section, .result-section, .chart-section, .sidebar-card');
-      elements.forEach(el => {
-        el.style.maxWidth = '100%';
-        el.style.width = '100%';
+    // Setup event listeners
+    function setupEventListeners() {
+      // Input validation on blur
+      document.addEventListener('blur', function(e) {
+        if (e.target.type === 'number' && e.target.classList.contains('nilai')) {
+          validateScore(e.target);
+        }
+      }, true);
+      
+      // Enter key to add new subject
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.target.classList.contains('mapel')) {
+          e.preventDefault();
+          addSubject();
+          setTimeout(() => {
+            const lastSubject = subjectsDiv.lastElementChild;
+            const input = lastSubject.querySelector('.mapel');
+            input.focus();
+          }, 100);
+        }
       });
+      
+      // Auto-save on input change
+      if (settings.autoSave) {
+        document.addEventListener('input', function() {
+          saveToLocalStorage();
+        }, { passive: true });
+      }
     }
 
     // Create floating particles
     function createParticles() {
-      const colors = ['#4361ee', '#7209b7', '#f72585', '#4cc9f0', '#f8961e'];
+      const colors = ['#4361ee', '#7209b7', '#f72585', '#10b981', '#f59e0b'];
       
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 20; i++) {
         const particle = document.createElement('div');
         particle.classList.add('particle');
         
         // Random properties
-        const size = Math.random() * 3 + 1;
+        const size = Math.random() * 2 + 1;
         const color = colors[Math.floor(Math.random() * colors.length)];
         const left = Math.random() * 100;
         const duration = Math.random() * 20 + 10;
@@ -2347,7 +2125,7 @@
       }
     }
 
-    // Toggle light/dark mode
+    // Toggle theme
     themeToggle.addEventListener('click', toggleTheme);
 
     function toggleTheme() {
@@ -2358,12 +2136,6 @@
       const icon = themeToggle.querySelector('i');
       icon.className = isLightMode ? 'fas fa-sun' : 'fas fa-moon';
       
-      // Animate the toggle button
-      themeToggle.style.transform = 'scale(1.2)';
-      setTimeout(() => {
-        themeToggle.style.transform = '';
-      }, 300);
-      
       // Save theme preference
       localStorage.setItem('raportTheme', isLightMode ? 'light' : 'dark');
       
@@ -2373,102 +2145,131 @@
       }
       
       // Show notification
-      showNotification(`Mode ${isLightMode ? 'Terang' : 'Gelap'} diaktifkan`, 'success');
+      if (settings.notifications) {
+        showNotification(`Mode ${isLightMode ? 'Terang' : 'Gelap'} diaktifkan`, 'success');
+      }
     }
 
-    // Add a new subject input
+    // Add subject
     function addSubject() {
-      const subjectId = Date.now(); // Unique ID for each subject
+      if (subjects.length >= settings.maxSubjects) {
+        showNotification(`Maksimum ${settings.maxSubjects} mata pelajaran tercapai`, 'warning');
+        return;
+      }
+      
+      const subjectId = Date.now();
       const subjectCard = document.createElement('div');
       subjectCard.className = 'subject-card animate-fadeIn';
       subjectCard.id = `subject-${subjectId}`;
-      subjectCard.style.animationDelay = `${subjects.length * 0.1}s`;
       
       subjectCard.innerHTML = `
         <div class="subject-header">
           <div class="subject-name">
-            <input type="text" placeholder="Nama Mata Pelajaran" class="mapel" onchange="updateSubjectName(${subjectId}, this.value)">
+            <input type="text" placeholder="Mata Pelajaran" class="mapel" onchange="updateSubjectName(${subjectId}, this.value)">
           </div>
-          <button class="remove-subject" onclick="removeSubject(${subjectId})">
-            <i class="fas fa-times"></i>
-          </button>
+          <div class="subject-actions">
+            <button class="subject-action-btn" onclick="duplicateSubject(${subjectId})" title="Duplikat">
+              <i class="fas fa-copy"></i>
+            </button>
+            <button class="subject-action-btn remove" onclick="removeSubject(${subjectId})" title="Hapus">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
         </div>
         <div class="scores-container">
-          <div class="score-input">
-            <label>Semester 1</label>
-            <input type="number" min="0" max="100" placeholder="0-100" class="nilai" onchange="updateSubjectScore(${subjectId}, 0, this.value)">
-          </div>
-          <div class="score-input">
-            <label>Semester 2</label>
-            <input type="number" min="0" max="100" placeholder="0-100" class="nilai" onchange="updateSubjectScore(${subjectId}, 1, this.value)">
-          </div>
-          <div class="score-input">
-            <label>Semester 3</label>
-            <input type="number" min="0" max="100" placeholder="0-100" class="nilai" onchange="updateSubjectScore(${subjectId}, 2, this.value)">
-          </div>
-          <div class="score-input">
-            <label>Semester 4</label>
-            <input type="number" min="0" max="100" placeholder="0-100" class="nilai" onchange="updateSubjectScore(${subjectId}, 3, this.value)">
-          </div>
-          <div class="score-input">
-            <label>Semester 5</label>
-            <input type="number" min="0" max="100" placeholder="0-100" class="nilai" onchange="updateSubjectScore(${subjectId}, 4, this.value)">
-          </div>
+          ${Array.from({length: 5}, (_, i) => `
+            <div class="score-input">
+              <label>Sem ${i + 1}</label>
+              <input type="number" min="0" max="100" placeholder="-" class="nilai" 
+                     onchange="updateSubjectScore(${subjectId}, ${i}, this.value)"
+                     oninput="validateScore(this)">
+            </div>
+          `).join('')}
         </div>
       `;
       
       subjectsDiv.appendChild(subjectCard);
       
-      // Add to subjects array
       subjects.push({
         id: subjectId,
         name: '',
         scores: [null, null, null, null, null]
       });
       
-      // Limit to 20 subjects
-      if (subjects.length >= 20) {
-        document.querySelector('.btn-primary').disabled = true;
-        document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-ban"></i> Maks 20 Mapel';
-        showNotification('Maksimum 20 mata pelajaran telah tercapai', 'warning');
-      }
-      
-      // Save to local storage
       saveToLocalStorage();
-      
-      // Scroll to the new subject
-      setTimeout(() => {
-        subjectCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 100);
+      updateDashboard();
     }
 
-    // Remove a subject
+    // Validate score input
+    function validateScore(input) {
+      const value = parseInt(input.value);
+      input.classList.remove('valid', 'warning', 'error');
+      
+      if (isNaN(value)) {
+        input.value = '';
+        return;
+      }
+      
+      // Clamp value between 0-100
+      if (value < 0) input.value = 0;
+      if (value > 100) input.value = 100;
+      
+      const clampedValue = Math.min(100, Math.max(0, value));
+      
+      if (clampedValue >= 85) {
+        input.classList.add('valid');
+      } else if (clampedValue >= 70) {
+        input.classList.add('warning');
+      } else {
+        input.classList.add('error');
+      }
+    }
+
+    // Duplicate subject
+    function duplicateSubject(id) {
+      const subjectIndex = subjects.findIndex(s => s.id === id);
+      if (subjectIndex === -1) return;
+      
+      const original = subjects[subjectIndex];
+      addSubject();
+      
+      const newSubject = subjects[subjects.length - 1];
+      newSubject.name = original.name + " (Salinan)";
+      newSubject.scores = [...original.scores];
+      
+      // Update UI
+      const subjectCard = document.getElementById(`subject-${newSubject.id}`);
+      const nameInput = subjectCard.querySelector('.mapel');
+      nameInput.value = newSubject.name;
+      
+      const scoreInputs = subjectCard.querySelectorAll('.nilai');
+      scoreInputs.forEach((input, i) => {
+        if (newSubject.scores[i] !== null) {
+          input.value = newSubject.scores[i];
+          validateScore(input);
+        }
+      });
+      
+      saveToLocalStorage();
+      updateDashboard();
+      showNotification('Mata pelajaran berhasil diduplikasi', 'success');
+    }
+
+    // Remove subject
     function removeSubject(id) {
       const subjectIndex = subjects.findIndex(s => s.id === id);
-      if (subjectIndex !== -1) {
-        subjects.splice(subjectIndex, 1);
-      }
+      if (subjectIndex === -1) return;
+      
+      subjects.splice(subjectIndex, 1);
       
       const subjectElement = document.getElementById(`subject-${id}`);
       if (subjectElement) {
-        subjectElement.style.transform = 'translateX(-100%)';
         subjectElement.style.opacity = '0';
-        
-        setTimeout(() => {
-          subjectElement.remove();
-        }, 300);
+        subjectElement.style.transform = 'translateX(-20px)';
+        setTimeout(() => subjectElement.remove(), 300);
       }
       
-      // Re-enable add button if needed
-      if (subjects.length < 20) {
-        document.querySelector('.btn-primary').disabled = false;
-        document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Mapel';
-      }
-      
-      // Save to local storage
       saveToLocalStorage();
-      
-      // Update dashboard
       updateDashboard();
     }
 
@@ -2486,50 +2287,34 @@
     function updateSubjectScore(id, semester, score) {
       const subjectIndex = subjects.findIndex(s => s.id === id);
       if (subjectIndex !== -1) {
-        // Validate score
         const numScore = parseInt(score);
-        if (isNaN(numScore) || numScore < 0 || numScore > 100) {
-          // Reset to empty if invalid
-          subjects[subjectIndex].scores[semester] = null;
-          
-          // Show error on input
-          const input = document.querySelector(`#subject-${id} .score-input:nth-child(${semester + 1}) input`);
-          input.style.borderColor = 'var(--danger)';
-          input.style.boxShadow = '0 0 10px rgba(249, 65, 68, 0.5)';
-          setTimeout(() => {
-            input.style.borderColor = '';
-            input.style.boxShadow = '';
-          }, 2000);
-        } else {
-          subjects[subjectIndex].scores[semester] = numScore;
-        }
-        
+        subjects[subjectIndex].scores[semester] = isNaN(numScore) ? null : Math.min(100, Math.max(0, numScore));
         saveToLocalStorage();
         updateDashboard();
       }
     }
 
-    // Add sample data for demonstration
+    // Add sample data
     function addSampleData() {
-      // Clear existing subjects
-      subjects = [];
-      subjectsDiv.innerHTML = '';
-      
-      // Sample subjects and scores
       const sampleData = [
         { name: "Matematika", scores: [85, 88, 90, 87, 92] },
         { name: "Bahasa Indonesia", scores: [80, 82, 85, 83, 88] },
         { name: "Bahasa Inggris", scores: [78, 80, 82, 85, 87] },
-        { name: "IPA", scores: [90, 92, 88, 91, 93] },
-        { name: "IPS", scores: [82, 85, 87, 84, 89] }
+        { name: "Fisika", scores: [82, 85, 80, 88, 90] },
+        { name: "Kimia", scores: [85, 87, 84, 89, 91] },
+        { name: "Biologi", scores: [88, 86, 89, 87, 92] },
+        { name: "Sejarah", scores: [75, 78, 80, 82, 85] },
+        { name: "Geografi", scores: [80, 82, 85, 83, 87] }
       ];
       
-      // Create subject cards for sample data
+      // Clear existing
+      subjects = [];
+      subjectsDiv.innerHTML = '';
+      
       sampleData.forEach((data, index) => {
         const subjectId = Date.now() + index;
         const subjectCard = document.createElement('div');
-        subjectCard.className = 'subject-card animate-fadeIn';
-        subjectCard.style.animationDelay = `${0.1 * index}s`;
+        subjectCard.className = 'subject-card';
         subjectCard.id = `subject-${subjectId}`;
         
         subjectCard.innerHTML = `
@@ -2537,15 +2322,22 @@
             <div class="subject-name">
               <input type="text" value="${data.name}" class="mapel" onchange="updateSubjectName(${subjectId}, this.value)">
             </div>
-            <button class="remove-subject" onclick="removeSubject(${subjectId})">
-              <i class="fas fa-times"></i>
-            </button>
+            <div class="subject-actions">
+              <button class="subject-action-btn" onclick="duplicateSubject(${subjectId})" title="Duplikat">
+                <i class="fas fa-copy"></i>
+              </button>
+              <button class="subject-action-btn remove" onclick="removeSubject(${subjectId})" title="Hapus">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
           </div>
           <div class="scores-container">
-            ${data.scores.map((score, semIndex) => `
+            ${data.scores.map((score, i) => `
               <div class="score-input">
-                <label>Semester ${semIndex + 1}</label>
-                <input type="number" min="0" max="100" value="${score}" class="nilai" onchange="updateSubjectScore(${subjectId}, ${semIndex}, this.value)">
+                <label>Sem ${i + 1}</label>
+                <input type="number" min="0" max="100" value="${score}" class="nilai" 
+                       onchange="updateSubjectScore(${subjectId}, ${i}, this.value)"
+                       oninput="validateScore(this)">
               </div>
             `).join('')}
           </div>
@@ -2553,7 +2345,6 @@
         
         subjectsDiv.appendChild(subjectCard);
         
-        // Add to subjects array
         subjects.push({
           id: subjectId,
           name: data.name,
@@ -2561,55 +2352,32 @@
         });
       });
       
-      // Re-enable add button
-      document.querySelector('.btn-primary').disabled = false;
-      document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Mapel';
-      
-      // Save to local storage
       saveToLocalStorage();
-      
-      // Update dashboard
       updateDashboard();
-      
-      // Show success message
-      showNotification('Data contoh berhasil dimuat!', 'success');
+      showNotification('Data contoh berhasil dimuat', 'success');
     }
 
     // Clear all subjects
     function clearAll() {
-      if (subjects.length === 0) {
-        showNotification('Tidak ada data untuk dihapus', 'warning');
-        return;
-      }
+      if (subjects.length === 0) return;
       
-      if (confirm('Apakah Anda yakin ingin menghapus semua data? Tindakan ini tidak dapat dibatalkan.')) {
+      if (confirm('Hapus semua data? Tindakan ini tidak dapat dibatalkan.')) {
         subjects = [];
         subjectsDiv.innerHTML = '';
         
-        // Re-enable add button
-        document.querySelector('.btn-primary').disabled = false;
-        document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Mapel';
-        
-        // Clear local storage
-        localStorage.removeItem('raportSubjects');
-        localStorage.removeItem('raportHistory');
-        
-        // Reset dashboard
-        resetDashboard();
+        // Clear results
+        document.getElementById('result').innerHTML = `
+          <div class="text-center" style="padding: 2rem 0; color: var(--text-secondary);">
+            <i class="fas fa-chart-bar" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+            <p style="font-size: 0.9rem;">Masukkan nilai mata pelajaran terlebih dahulu, lalu klik "Analisis Nilai" untuk melihat hasil analisis.</p>
+          </div>
+        `;
         
         // Clear chart
         if (chart) {
           chart.destroy();
           chart = null;
         }
-        
-        // Clear result section
-        document.getElementById('result').innerHTML = `
-          <div class="text-center" style="padding: 2rem 0; color: var(--text-secondary);">
-            <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 1rem; animation: bounce 2s infinite;"></i>
-            <p>Masukkan nilai mata pelajaran terlebih dahulu, lalu klik "Analisis Nilai" untuk melihat hasil analisis.</p>
-          </div>
-        `;
         
         // Clear recommendations
         document.getElementById('recommendations').innerHTML = `
@@ -2623,29 +2391,50 @@
         
         // Clear grade distribution
         document.getElementById('gradeDistribution').innerHTML = `
-          <p class="text-center" style="color: var(--text-secondary); padding: 1rem 0;">Tidak ada data</p>
+          <div class="text-center" style="padding: 1rem 0; color: var(--text-secondary);">
+            <i class="fas fa-chart-pie" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+            <p style="font-size: 0.85rem;">Tidak ada data</p>
+          </div>
         `;
         
-        // Clear history
-        document.getElementById('historyList').innerHTML = '';
+        // Clear history list
+        document.getElementById('historyList').innerHTML = `
+          <div class="text-center" style="padding: 1rem 0; color: var(--text-secondary);">
+            <i class="fas fa-clock" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+            <p style="font-size: 0.85rem;">Belum ada riwayat analisis</p>
+          </div>
+        `;
         
-        // Reset current stats
-        currentStats = null;
+        // Reset achievement
+        document.getElementById('achievementContent').innerHTML = `
+          <div class="badge-icon">
+            <i class="fas fa-medal"></i>
+          </div>
+          <div class="badge-title">Pemula</div>
+          <div class="badge-desc">Lengkapi analisis untuk mendapatkan penghargaan</div>
+        `;
+        
+        // Reset dashboard
+        document.getElementById('avgTotal').textContent = '0.0';
+        document.getElementById('bestSubject').textContent = '-';
+        document.getElementById('worstSubject').textContent = '-';
+        document.getElementById('subjectCount').textContent = '0';
+        document.getElementById('avgTrend').innerHTML = `
+          <i class="fas fa-minus"></i>
+          <span class="trend-stable">Stabil</span>
+        `;
+        
+        // Clear local storage
+        localStorage.removeItem('raportSubjects');
         
         showNotification('Semua data berhasil dihapus', 'success');
       }
     }
 
-    // Main analysis function
-    function analyze() {
-      if (subjects.length === 0) {
-        showNotification('Tambahkan setidaknya satu mata pelajaran', 'warning');
-        return;
-      }
-      
-      // Filter subjects with at least one score
+    // Analyze function with loading animation
+    async function analyze() {
       const validSubjects = subjects.filter(subject => 
-        subject.scores.some(score => score !== null && score !== undefined)
+        subject.scores.some(score => score !== null)
       );
       
       if (validSubjects.length === 0) {
@@ -2653,80 +2442,53 @@
         return;
       }
       
+      // Show loading
+      document.getElementById('progressBar').style.display = 'block';
+      const progressFill = document.getElementById('progressFill');
+      const analyzeBtn = document.getElementById('analyzeBtn');
+      const originalBtnHTML = analyzeBtn.innerHTML;
+      
+      analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+      analyzeBtn.disabled = true;
+      
+      // Simulate progress
+      let progress = 0;
+      const progressInterval = setInterval(() => {
+        progress += 10;
+        progressFill.style.width = `${progress}%`;
+        if (progress >= 100) clearInterval(progressInterval);
+      }, 100);
+      
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       // Calculate statistics
       const stats = calculateStatistics(validSubjects);
       currentStats = stats;
       
-      // Generate motivation
-      const motivation = getMotivation(stats.overallAvg, stats.trend, stats.diff);
-      
-      // Generate recommendations
-      const recommendations = generateRecommendations(validSubjects, stats);
-      
-      // Update UI with results
-      displayResults(stats, motivation, recommendations);
-      
-      // Update chart
+      // Update UI
+      displayResults(stats);
       updateChart(validSubjects, stats);
-      
-      // Update dashboard
       updateDashboard();
-      
-      // Update grade distribution
       updateGradeDistribution(validSubjects);
-      
-      // Add to history
       addToHistory(stats);
-      
-      // Update achievement
       updateAchievement(stats);
       
-      // Save to local storage
-      saveToLocalStorage();
+      // Hide loading
+      clearInterval(progressInterval);
+      progressFill.style.width = '100%';
       
-      // Scroll to results
-      document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      
-      // Show success message with animation
-      showNotification('Analisis berhasil dilakukan!', 'success');
-      
-      // Add celebration effect for high scores
-      if (stats.overallAvg >= 85) {
-        celebrationEffect();
-      }
-    }
-
-    // Celebration effect for high scores
-    function celebrationEffect() {
-      const colors = ['#4361ee', '#7209b7', '#f72585', '#4cc9f0', '#f8961e'];
-      
-      for (let i = 0; i < 15; i++) {
-        const confetti = document.createElement('div');
-        confetti.style.position = 'fixed';
-        confetti.style.width = '8px';
-        confetti.style.height = '8px';
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.borderRadius = '50%';
-        confetti.style.left = Math.random() * 100 + 'vw';
-        confetti.style.top = '-20px';
-        confetti.style.zIndex = '9999';
-        confetti.style.pointerEvents = 'none';
-        confetti.style.boxShadow = '0 0 10px currentColor';
+      setTimeout(() => {
+        document.getElementById('progressBar').style.display = 'none';
+        progressFill.style.width = '0%';
+        analyzeBtn.innerHTML = originalBtnHTML;
+        analyzeBtn.disabled = false;
         
-        document.body.appendChild(confetti);
+        // Scroll to results
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         
-        // Animation
-        const animation = confetti.animate([
-          { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
-          { transform: `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
-        ], {
-          duration: Math.random() * 2000 + 1000,
-          easing: 'cubic-bezier(0.215, 0.610, 0.355, 1)'
-        });
-        
-        // Remove after animation
-        animation.onfinish = () => confetti.remove();
-      }
+        showNotification('Analisis berhasil!', 'success');
+      }, 300);
     }
 
     // Calculate statistics
@@ -2740,7 +2502,7 @@
       validSubjects.forEach(subject => {
         const scores = subject.scores.filter(score => score !== null);
         
-        if (scores.length >= 1) {
+        if (scores.length > 0) {
           const subjectTotal = scores.reduce((a, b) => a + b, 0);
           const subjectAvg = subjectTotal / scores.length;
           
@@ -2752,244 +2514,174 @@
             average: subjectAvg
           });
           
-          // For trend calculation, use last two scores if available
+          // Calculate trend
           if (scores.length >= 2) {
             lastTotal += scores[scores.length - 1];
             prevTotal += scores[scores.length - 2];
-          } else {
-            // If only one score, use it for both
-            lastTotal += scores[0];
-            prevTotal += scores[0];
           }
         }
       });
       
       const avgAll = totalAll / countAll;
-      const diff = Math.abs(lastTotal - prevTotal);
+      const diff = lastTotal - prevTotal;
       
       let trend = "stabil";
-      if (lastTotal > prevTotal + 5) trend = "naik";
-      else if (lastTotal < prevTotal - 5) trend = "turun";
+      let trendIcon = "minus";
+      if (diff > 5) {
+        trend = "naik";
+        trendIcon = "arrow-up";
+      } else if (diff < -5) {
+        trend = "turun";
+        trendIcon = "arrow-down";
+      }
       
       // Find best and worst subjects
       subjectAverages.sort((a, b) => b.average - a.average);
       const bestSubject = subjectAverages.length > 0 ? subjectAverages[0] : null;
       const worstSubject = subjectAverages.length > 0 ? subjectAverages[subjectAverages.length - 1] : null;
       
-      // Calculate improvement needed
-      const improvementNeeded = worstSubject ? Math.max(0, 85 - worstSubject.average) : 0;
-      
       return {
         overallAvg: avgAll,
         trend: trend,
+        trendIcon: trendIcon,
         diff: diff,
         bestSubject: bestSubject,
         worstSubject: worstSubject,
-        improvementNeeded: improvementNeeded,
         subjectCount: validSubjects.length,
         subjectAverages: subjectAverages
       };
     }
 
-    // Generate motivation based on statistics
-    function getMotivation(avg, trend, diff) {
-      const motivations = [
-        {
-          condition: avg >= 90,
-          text: "Luar biasa! Nilaimu sangat memukau. Pertahankan kerja keras dan konsistensimu, kamu berada di jalur yang tepat untuk meraih kesuksesan besar! 🚀",
-          icon: "fas fa-star"
-        },
-        {
-          condition: avg >= 85 && avg < 90,
-          text: "Hebat! Nilaimu sangat baik dan menunjukkan pemahaman yang solid. Dengan sedikit peningkatan, kamu bisa mencapai tingkat yang lebih tinggi lagi! 💪",
-          icon: "fas fa-trophy"
-        },
-        {
-          condition: avg >= 75 && avg < 85,
-          text: "Bagus! Kamu memiliki dasar yang kuat. Fokus pada area yang perlu ditingkatkan, dan kamu akan melihat kemajuan yang signifikan. Terus semangat! 📈",
-          icon: "fas fa-chart-line"
-        },
-        {
-          condition: avg >= 65 && avg < 75,
-          text: "Kamu sudah menunjukkan usaha yang baik. Identifikasi mata pelajaran yang butuh perhatian lebih dan buat strategi belajar yang efektif. Kamu pasti bisa! 🔍",
-          icon: "fas fa-lightbulb"
-        },
-        {
-          condition: avg < 65,
-          text: "Setiap perjalanan dimulai dengan langkah pertama. Nilai saat ini adalah titik awal untuk perbaikan. Fokus, konsisten, dan jangan ragu meminta bantuan! 🌱",
-          icon: "fas fa-seedling"
-        }
-      ];
-      
-      // Find matching motivation
-      let motivation = motivations.find(m => m.condition) || motivations[motivations.length - 1];
-      
-      // Adjust based on trend
-      if (trend === "naik") {
-        motivation.text += " Tren naik menunjukkan perkembangan positif. Pertahankan momentum ini! ↗️";
-      } else if (trend === "turun") {
-        motivation.text += " Ada penurunan yang perlu diperhatikan. Evaluasi metode belajarmu dan cari solusi. 📉";
-      } else {
-        motivation.text += " Konsistensi adalah kunci. Pertahankan ritme belajarmu! ⚖️";
-      }
-      
-      return motivation;
-    }
-
-    // Generate personalized recommendations
-    function generateRecommendations(validSubjects, stats) {
-      const recommendations = [];
-      
-      // Recommendation based on overall average
-      if (stats.overallAvg < 75) {
-        recommendations.push({
-          text: "Fokus pada mata pelajaran dengan nilai terendah untuk meningkatkan rata-rata keseluruhan",
-          icon: "fas fa-bullseye"
-        });
-        
-        recommendations.push({
-          text: "Buat jadwal belajar rutin dengan waktu khusus untuk mata pelajaran yang sulit",
-          icon: "fas fa-calendar-check"
-        });
-      } else if (stats.overallAvg < 85) {
-        recommendations.push({
-          text: "Tingkatkan pemahaman konsep dasar untuk mata pelajaran dengan nilai rata-rata",
-          icon: "fas fa-layer-group"
-        });
-      } else {
-        recommendations.push({
-          text: "Coba tantang diri dengan materi yang lebih advance atau ikut kompetisi akademik",
-          icon: "fas fa-rocket"
-        });
-      }
-      
-      // Recommendation based on trend
-      if (stats.trend === "turun") {
-        recommendations.push({
-          text: "Evaluasi penyebab penurunan nilai dan buat strategi perbaikan segera",
-          icon: "fas fa-search"
-        });
-      }
-      
-      // Recommendation for worst subject if exists
-      if (stats.worstSubject) {
-        recommendations.push({
-          text: `Prioritaskan perbaikan pada ${stats.worstSubject.name} (nilai: ${stats.worstSubject.average.toFixed(1)})`,
-          icon: "fas fa-exclamation-triangle"
-        });
-      }
-      
-      // General recommendations
-      recommendations.push({
-        text: "Gunakan teknik belajar aktif seperti mind mapping atau Feynman technique",
-        icon: "fas fa-brain"
-      });
-      
-      recommendations.push({
-        text: "Istirahat yang cukup dan jaga kesehatan untuk optimalkan konsentrasi belajar",
-        icon: "fas fa-heartbeat"
-      });
-      
-      return recommendations;
-    }
-
-    // Display results in the UI
-    function displayResults(stats, motivation, recommendations) {
+    // Display results
+    function displayResults(stats) {
       const resultDiv = document.getElementById('result');
       
-      // Format statistics
-      const avgFormatted = stats.overallAvg.toFixed(2);
-      const diffFormatted = stats.diff.toFixed(2);
-      const bestSubjectText = stats.bestSubject ? 
-        `${stats.bestSubject.name} (${stats.bestSubject.average.toFixed(1)})` : 
-        '-';
-      const worstSubjectText = stats.worstSubject ? 
-        `${stats.worstSubject.name} (${stats.worstSubject.average.toFixed(1)})` : 
-        '-';
+      const avgColor = stats.overallAvg >= 85 ? 'success' : 
+                      stats.overallAvg >= 70 ? 'warning' : 'danger';
       
-      // Determine color for average
-      let avgColorClass = '';
-      if (stats.overallAvg >= 85) avgColorClass = 'success';
-      else if (stats.overallAvg >= 75) avgColorClass = 'warning';
-      else avgColorClass = 'danger';
+      const trendColor = stats.trend === 'naik' ? 'success' : 
+                        stats.trend === 'turun' ? 'danger' : 'warning';
       
-      // Determine color for trend
-      let trendColorClass = '';
-      if (stats.trend === 'naik') trendColorClass = 'success';
-      else if (stats.trend === 'turun') trendColorClass = 'danger';
-      else trendColorClass = '';
-      
-      // Create result HTML
       resultDiv.innerHTML = `
-        <div class="result-content">
+        <div class="result-grid">
           <div class="result-stat">
             <div class="stat-label">Rata-rata Total</div>
-            <div class="stat-value ${avgColorClass}">${avgFormatted}</div>
-            <div class="stat-label">dari ${stats.subjectCount} mapel</div>
+            <div class="stat-value ${avgColor}">${stats.overallAvg.toFixed(1)}</div>
+            <div class="stat-details">${stats.subjectCount} mata pelajaran</div>
           </div>
           
           <div class="result-stat">
             <div class="stat-label">Tren Nilai</div>
-            <div class="stat-value ${trendColorClass}">
-              ${stats.trend === 'naik' ? '↗ Naik' : stats.trend === 'turun' ? '↘ Turun' : '→ Stabil'}
+            <div class="stat-value ${trendColor}">
+              <i class="fas fa-${stats.trendIcon}"></i>
+              ${stats.trend === 'naik' ? 'Naik' : stats.trend === 'turun' ? 'Turun' : 'Stabil'}
             </div>
-            <div class="stat-label">Perkembangan terakhir</div>
+            <div class="stat-details">${Math.abs(stats.diff).toFixed(1)} poin</div>
           </div>
           
           <div class="result-stat">
             <div class="stat-label">Mapel Terbaik</div>
-            <div class="stat-value success">${bestSubjectText}</div>
-            <div class="stat-label">Nilai tertinggi</div>
+            <div class="stat-value success">
+              ${stats.bestSubject ? stats.bestSubject.name.substring(0, 15) + (stats.bestSubject.name.length > 15 ? '...' : '') : '-'}
+            </div>
+            <div class="stat-details">${stats.bestSubject ? stats.bestSubject.average.toFixed(1) : '0.0'}</div>
           </div>
           
           <div class="result-stat">
             <div class="stat-label">Perlu Perhatian</div>
-            <div class="stat-value danger">${worstSubjectText}</div>
-            <div class="stat-label">Butuh peningkatan</div>
+            <div class="stat-value danger">
+              ${stats.worstSubject ? stats.worstSubject.name.substring(0, 15) + (stats.worstSubject.name.length > 15 ? '...' : '') : '-'}
+            </div>
+            <div class="stat-details">${stats.worstSubject ? stats.worstSubject.average.toFixed(1) : '0.0'}</div>
           </div>
-          
-          <div class="motivation-card">
+        </div>
+        
+        <div class="motivation-card mt-2">
+          <div class="motivation-content">
             <div class="motivation-icon">
-              <i class="${motivation.icon}"></i>
+              ${stats.overallAvg >= 85 ? '🏆' : stats.overallAvg >= 70 ? '⭐' : '📈'}
             </div>
             <div class="motivation-text">
-              ${motivation.text}
+              ${getMotivationText(stats.overallAvg, stats.trend)}
             </div>
           </div>
         </div>
       `;
       
-      // Update recommendations in sidebar
-      const recommendationsList = document.getElementById('recommendations');
-      recommendationsList.innerHTML = '';
+      // Update recommendations
+      updateRecommendations(stats);
+    }
+
+    // Get motivation text
+    function getMotivationText(avg, trend) {
+      if (avg >= 90) {
+        return "Luar biasa! Pertahankan konsistensi dan terus tingkatkan prestasi Anda!";
+      } else if (avg >= 85) {
+        return "Hebat! Nilai Anda sangat baik. Fokus pada area yang masih bisa ditingkatkan.";
+      } else if (avg >= 75) {
+        return "Bagus! Anda memiliki dasar yang solid. Terus tingkatkan pemahaman konsep.";
+      } else if (avg >= 65) {
+        return "Ada ruang untuk perbaikan. Identifikasi kelemahan dan buat strategi belajar.";
+      } else {
+        return "Jangan menyerah! Setiap perbaikan dimulai dari mengenali area yang perlu diperbaiki.";
+      }
+    }
+
+    // Update recommendations
+    function updateRecommendations(stats) {
+      const recommendationsDiv = document.getElementById('recommendations');
+      const recommendations = [];
       
-      recommendations.forEach(rec => {
-        const li = document.createElement('li');
-        li.className = 'recommendation-item animate-fadeIn';
-        li.innerHTML = `
+      if (stats.overallAvg < 75) {
+        recommendations.push({
+          icon: 'fas fa-bullseye',
+          text: 'Fokus pada mata pelajaran dengan nilai terendah'
+        });
+        recommendations.push({
+          icon: 'fas fa-clock',
+          text: 'Tambah waktu belajar untuk konsep yang sulit'
+        });
+      }
+      
+      if (stats.trend === 'turun') {
+        recommendations.push({
+          icon: 'fas fa-search',
+          text: 'Evaluasi penyebab penurunan nilai'
+        });
+      }
+      
+      recommendations.push({
+        icon: 'fas fa-brain',
+        text: 'Gunakan teknik belajar aktif seperti mind mapping'
+      });
+      
+      recommendations.push({
+        icon: 'fas fa-heart',
+        text: 'Jaga kesehatan dan istirahat yang cukup'
+      });
+      
+      recommendationsDiv.innerHTML = recommendations.map(rec => `
+        <li class="recommendation-item">
           <div class="rec-icon">
             <i class="${rec.icon}"></i>
           </div>
           <div class="rec-text">${rec.text}</div>
-        `;
-        recommendationsList.appendChild(li);
-      });
+        </li>
+      `).join('');
     }
 
-    // Update the chart with subject data
+    // Update chart
     function updateChart(validSubjects, stats) {
       const ctx = document.getElementById('gradeChart').getContext('2d');
       
-      // Destroy existing chart if it exists
       if (chart) {
         chart.destroy();
       }
       
-      // Prepare data for chart
-      const labels = ['S1', 'S2', 'S3', 'S4', 'S5'];
-      
-      // Calculate average per semester
+      // Prepare data
+      const labels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5'];
       const semesterAverages = [];
+      
       for (let i = 0; i < 5; i++) {
         let total = 0;
         let count = 0;
@@ -3001,234 +2693,136 @@
           }
         });
         
-        semesterAverages.push(count > 0 ? total / count : 0);
+        semesterAverages.push(count > 0 ? total / count : null);
       }
       
-      // Get top 3 subjects for individual lines
-      const topSubjects = stats.subjectAverages.slice(0, 3);
-      const subjectDatasets = topSubjects.map((subject, index) => {
-        const colors = [
-          'rgba(67, 97, 238, 0.8)',
-          'rgba(114, 9, 183, 0.8)',
-          'rgba(247, 37, 133, 0.8)'
-        ];
-        
-        const borderColors = [
-          'rgb(67, 97, 238)',
-          'rgb(114, 9, 183)',
-          'rgb(247, 37, 133)'
-        ];
-        
-        // Get scores for this subject
-        const subjectData = validSubjects.find(s => s.name === subject.name);
-        const scores = subjectData ? subjectData.scores.map(score => score !== null ? score : null) : [];
-        
-        return {
-          label: subject.name,
-          data: scores,
-          borderColor: borderColors[index],
-          backgroundColor: colors[index],
-          borderWidth: 2,
-          fill: false,
-          tension: 0.4,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          pointBackgroundColor: borderColors[index],
-          pointBorderColor: '#fff',
-          pointBorderWidth: 2
-        };
-      });
+      // Filter out null values for trend line
+      const validAverages = semesterAverages.filter(avg => avg !== null);
+      const validLabels = labels.filter((_, i) => semesterAverages[i] !== null);
       
-      // Create chart
       chart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Rata-rata Semua Mapel',
-              data: semesterAverages,
-              borderColor: 'rgb(76, 201, 240)',
-              backgroundColor: 'rgba(76, 201, 240, 0.1)',
-              borderWidth: 3,
-              fill: true,
-              tension: 0.4,
-              pointRadius: 5,
-              pointHoverRadius: 8,
-              pointBackgroundColor: 'rgb(76, 201, 240)',
-              pointBorderColor: '#fff',
-              pointBorderWidth: 2
-            },
-            ...subjectDatasets
-          ]
+          labels: validLabels,
+          datasets: [{
+            label: 'Rata-rata Semester',
+            data: validAverages,
+            borderColor: '#4361ee',
+            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              position: 'top',
-              labels: {
-                color: getComputedStyle(document.body).getPropertyValue('--text'),
-                font: {
-                  family: "'Poppins', sans-serif",
-                  size: window.innerWidth < 768 ? 10 : 12
-                }
-              }
+              display: false
             },
             tooltip: {
               mode: 'index',
-              intersect: false,
-              backgroundColor: getComputedStyle(document.body).getPropertyValue('--card-bg'),
-              titleColor: getComputedStyle(document.body).getPropertyValue('--text'),
-              bodyColor: getComputedStyle(document.body).getPropertyValue('--text'),
-              borderColor: getComputedStyle(document.body).getPropertyValue('--border'),
-              borderWidth: 1,
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+              intersect: false
             }
           },
           scales: {
-            x: {
-              grid: {
-                color: getComputedStyle(document.body).getPropertyValue('--border'),
-                drawBorder: false
-              },
+            y: {
+              beginAtZero: false,
+              min: 0,
+              max: 100,
               ticks: {
-                color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
-                font: {
-                  family: "'Poppins', sans-serif",
-                  size: window.innerWidth < 768 ? 10 : 12
-                }
+                stepSize: 20
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
               }
             },
-            y: {
-              beginAtZero: true,
-              max: 100,
+            x: {
               grid: {
-                color: getComputedStyle(document.body).getPropertyValue('--border'),
-                drawBorder: false
-              },
-              ticks: {
-                color: getComputedStyle(document.body).getPropertyValue('--text-secondary'),
-                font: {
-                  family: "'Poppins', sans-serif",
-                  size: window.innerWidth < 768 ? 10 : 12
-                },
-                callback: function(value) {
-                  return value + '';
-                }
+                color: 'rgba(255, 255, 255, 0.1)'
               }
-            }
-          },
-          interaction: {
-            intersect: false,
-            mode: 'nearest'
-          },
-          animations: {
-            tension: {
-              duration: 1000,
-              easing: 'linear'
             }
           }
         }
       });
     }
 
-    // Update chart theme when theme changes
+    // Update chart theme
     function updateChartTheme() {
       if (!chart) return;
       
-      // Update chart colors based on theme
-      const textColor = getComputedStyle(document.body).getPropertyValue('--text');
-      const textSecondaryColor = getComputedStyle(document.body).getPropertyValue('--text-secondary');
-      const borderColor = getComputedStyle(document.body).getPropertyValue('--border');
-      const cardBgColor = getComputedStyle(document.body).getPropertyValue('--card-bg');
+      const gridColor = isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
       
-      chart.options.plugins.legend.labels.color = textColor;
-      chart.options.plugins.tooltip.backgroundColor = cardBgColor;
-      chart.options.plugins.tooltip.titleColor = textColor;
-      chart.options.plugins.tooltip.bodyColor = textColor;
-      chart.options.plugins.tooltip.borderColor = borderColor;
-      
-      chart.options.scales.x.grid.color = borderColor;
-      chart.options.scales.x.ticks.color = textSecondaryColor;
-      chart.options.scales.y.grid.color = borderColor;
-      chart.options.scales.y.ticks.color = textSecondaryColor;
+      chart.options.scales.x.grid.color = gridColor;
+      chart.options.scales.y.grid.color = gridColor;
       
       chart.update();
     }
 
-    // Update dashboard with current data
+    // Update dashboard
     function updateDashboard() {
       const validSubjects = subjects.filter(subject => 
-        subject.scores.some(score => score !== null && score !== undefined)
+        subject.scores.some(score => score !== null)
       );
       
       if (validSubjects.length > 0) {
         const stats = calculateStatistics(validSubjects);
         
-        // Update average total
+        // Update values
         document.getElementById('avgTotal').textContent = stats.overallAvg.toFixed(1);
-        
-        // Update trend value
-        let trendText = '';
-        let trendClass = '';
-        
-        if (stats.trend === 'naik') {
-          trendText = '↗ Naik';
-          trendClass = 'success';
-        } else if (stats.trend === 'turun') {
-          trendText = '↘ Turun';
-          trendClass = 'danger';
-        } else {
-          trendText = '→ Stabil';
-          trendClass = '';
-        }
-        
-        document.getElementById('trendValue').textContent = trendText;
-        document.getElementById('trendValue').className = `card-value ${trendClass}`;
+        document.getElementById('subjectCount').textContent = validSubjects.length;
         
         // Update best subject
         if (stats.bestSubject) {
-          document.getElementById('bestSubject').textContent = stats.bestSubject.name.length > 12 ? 
-            stats.bestSubject.name.substring(0, 10) + '...' : stats.bestSubject.name;
-        } else {
-          document.getElementById('bestSubject').textContent = '-';
+          document.getElementById('bestSubject').textContent = 
+            stats.bestSubject.name.length > 10 ? 
+            stats.bestSubject.name.substring(0, 8) + '...' : 
+            stats.bestSubject.name;
         }
-      } else {
-        // Reset dashboard if no data
-        resetDashboard();
+        
+        // Update worst subject
+        if (stats.worstSubject) {
+          document.getElementById('worstSubject').textContent = 
+            stats.worstSubject.name.length > 10 ? 
+            stats.worstSubject.name.substring(0, 8) + '...' : 
+            stats.worstSubject.name;
+        }
+        
+        // Update trend
+        const trendDiv = document.getElementById('avgTrend');
+        const trendClass = stats.trend === 'naik' ? 'trend-up' : 
+                          stats.trend === 'turun' ? 'trend-down' : 'trend-stable';
+        const trendText = stats.trend === 'naik' ? 'Naik' : 
+                         stats.trend === 'turun' ? 'Turun' : 'Stabil';
+        
+        trendDiv.innerHTML = `
+          <i class="fas fa-${stats.trendIcon}"></i>
+          <span class="${trendClass}">${trendText}</span>
+        `;
       }
     }
 
-    // Reset dashboard to default state
-    function resetDashboard() {
-      document.getElementById('avgTotal').textContent = '-';
-      document.getElementById('trendValue').textContent = '-';
-      document.getElementById('trendValue').className = 'card-value';
-      document.getElementById('bestSubject').textContent = '-';
-    }
-
-    // Update grade distribution chart
+    // Update grade distribution
     function updateGradeDistribution(validSubjects) {
       const distributionDiv = document.getElementById('gradeDistribution');
       
-      // Count grades by category
+      // Count scores by category
       const categories = [
-        { name: 'A (85-100)', min: 85, max: 100, color: '#4cc9f0', count: 0 },
-        { name: 'B (70-84)', min: 70, max: 84, color: '#4361ee', count: 0 },
-        { name: 'C (60-69)', min: 60, max: 69, color: '#f8961e', count: 0 },
-        { name: 'D (<60)', min: 0, max: 59, color: '#f94144', count: 0 }
+        { name: 'A (85-100)', min: 85, max: 100, color: '#10b981', count: 0 },
+        { name: 'B (70-84)', min: 70, max: 84, color: '#3b82f6', count: 0 },
+        { name: 'C (60-69)', min: 60, max: 69, color: '#f59e0b', count: 0 },
+        { name: 'D (<60)', min: 0, max: 59, color: '#ef4444', count: 0 }
       ];
       
-      // Count all scores
       let totalScores = 0;
       
       validSubjects.forEach(subject => {
         subject.scores.forEach(score => {
           if (score !== null) {
             totalScores++;
-            
             for (const category of categories) {
               if (score >= category.min && score <= category.max) {
                 category.count++;
@@ -3240,54 +2834,54 @@
       });
       
       if (totalScores === 0) {
-        distributionDiv.innerHTML = `<p class="text-center" style="color: var(--text-secondary); padding: 1rem 0;">Tidak ada data</p>`;
+        distributionDiv.innerHTML = `
+          <div class="text-center" style="padding: 1rem 0; color: var(--text-secondary);">
+            <i class="fas fa-chart-pie" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+            <p style="font-size: 0.85rem;">Tidak ada data</p>
+          </div>
+        `;
         return;
       }
       
-      // Create distribution visualization
-      let distributionHTML = '<div class="distribution-container">';
-      
-      categories.forEach(category => {
+      distributionDiv.innerHTML = categories.map(category => {
         const percentage = totalScores > 0 ? Math.round((category.count / totalScores) * 100) : 0;
-        
-        distributionHTML += `
-          <div class="distribution-item" style="margin-bottom: 0.8rem;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
-              <span style="color: ${category.color}; font-weight: 600; font-size: 0.85rem;">${category.name}</span>
-              <span style="font-size: 0.85rem;">${category.count} (${percentage}%)</span>
+        return `
+          <div class="grade-item">
+            <div class="grade-label">
+              <span class="grade-dot" style="background-color: ${category.color};"></span>
+              <span>${category.name}</span>
             </div>
-            <div style="height: 6px; background-color: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; position: relative;">
-              <div style="width: ${percentage}%; height: 100%; background-color: ${category.color}; border-radius: 3px; transition: width 1s ease;"></div>
+            <div class="grade-bar">
+              <div class="grade-fill" style="width: ${percentage}%; background-color: ${category.color};"></div>
             </div>
+            <div class="grade-count">${category.count} (${percentage}%)</div>
           </div>
         `;
-      });
-      
-      distributionHTML += '</div>';
-      distributionDiv.innerHTML = distributionHTML;
+      }).join('');
     }
 
-    // Add analysis to history
+    // Add to history
     function addToHistory(stats) {
       const historyItem = {
-        date: new Date().toLocaleString('id-ID'),
+        date: new Date().toLocaleString('id-ID', { 
+          day: '2-digit', 
+          month: 'short', 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }),
         average: stats.overallAvg,
         trend: stats.trend,
         subjectCount: stats.subjectCount
       };
       
-      // Add to beginning of array
       analysisHistory.unshift(historyItem);
       
-      // Keep only last 10 items
-      if (analysisHistory.length > 10) {
-        analysisHistory = analysisHistory.slice(0, 10);
+      // Keep only last 5 items
+      if (analysisHistory.length > 5) {
+        analysisHistory = analysisHistory.slice(0, 5);
       }
       
-      // Update history UI
       updateHistoryUI();
-      
-      // Save to local storage
       localStorage.setItem('raportHistory', JSON.stringify(analysisHistory));
     }
 
@@ -3295,132 +2889,110 @@
     function updateHistoryUI() {
       const historyList = document.getElementById('historyList');
       
-      if (analysisHistory.length === 0) {
-        historyList.innerHTML = '<p class="text-center" style="color: var(--text-secondary); padding: 1rem 0;">Belum ada riwayat analisis</p>';
-        return;
-      }
+      if (analysisHistory.length === 0) return;
       
-      historyList.innerHTML = '';
-      
-      analysisHistory.forEach((item, index) => {
-        const historyItem = document.createElement('div');
-        historyItem.className = 'history-item animate-fadeInUp';
-        historyItem.style.animationDelay = `${index * 0.1}s`;
+      historyList.innerHTML = analysisHistory.map((item, index) => {
+        const trendIcon = item.trend === 'naik' ? 'arrow-up' : 
+                         item.trend === 'turun' ? 'arrow-down' : 'minus';
+        const trendClass = item.trend === 'naik' ? 'success' : 
+                          item.trend === 'turun' ? 'danger' : 'warning';
         
-        let trendIcon = '→';
-        if (item.trend === 'naik') trendIcon = '↗';
-        else if (item.trend === 'turun') trendIcon = '↘';
-        
-        historyItem.innerHTML = `
-          <div class="history-date">${item.date}</div>
-          <div class="history-avg">Rata-rata: ${item.average.toFixed(1)} ${trendIcon}</div>
-          <div style="font-size: 0.75rem; color: var(--text-secondary);">${item.subjectCount} mapel</div>
+        return `
+          <div class="history-item animate-fadeIn" style="animation-delay: ${index * 0.1}s">
+            <div class="history-date">
+              <i class="fas fa-${trendIcon} text-${trendClass}"></i>
+              ${item.date}
+            </div>
+            <div class="history-avg">
+              Rata-rata: ${item.average.toFixed(1)} | ${item.subjectCount} mapel
+            </div>
+          </div>
         `;
-        
-        historyList.appendChild(historyItem);
-      });
+      }).join('');
     }
 
-    // Update achievement badge
+    // Update achievement
     function updateAchievement(stats) {
       const achievementContent = document.getElementById('achievementContent');
       let achievement = {
-        title: 'Pemula',
-        description: 'Baru memulai analisis',
         icon: 'fas fa-seedling',
+        title: 'Pemula',
+        desc: 'Baru memulai analisis',
         color: '#94a3b8'
       };
       
-      // Determine achievement based on stats
       if (stats.overallAvg >= 95) {
         achievement = {
-          title: 'Jenius',
-          description: 'Nilai di atas 95! Luar biasa!',
           icon: 'fas fa-crown',
+          title: 'Jenius',
+          desc: 'Nilai di atas 95! Luar biasa!',
           color: '#fbbf24'
         };
       } else if (stats.overallAvg >= 90) {
         achievement = {
-          title: 'Excellent',
-          description: 'Nilai di atas 90! Hebat!',
           icon: 'fas fa-award',
+          title: 'Excellent',
+          desc: 'Nilai di atas 90! Hebat!',
           color: '#f472b6'
         };
       } else if (stats.overallAvg >= 85) {
         achievement = {
-          title: 'Scholar',
-          description: 'Nilai di atas 85! Bagus!',
           icon: 'fas fa-graduation-cap',
+          title: 'Scholar',
+          desc: 'Nilai di atas 85! Bagus!',
           color: '#60a5fa'
         };
       } else if (stats.overallAvg >= 80) {
         achievement = {
-          title: 'Dedicated',
-          description: 'Nilai di atas 80! Teruskan!',
           icon: 'fas fa-medal',
+          title: 'Dedicated',
+          desc: 'Nilai di atas 80! Teruskan!',
           color: '#34d399'
         };
       } else if (stats.overallAvg >= 75) {
         achievement = {
-          title: 'Hard Worker',
-          description: 'Nilai di atas 75! Semangat!',
           icon: 'fas fa-fist-raised',
+          title: 'Hard Worker',
+          desc: 'Nilai di atas 75! Semangat!',
           color: '#f59e0b'
         };
       }
       
       achievementContent.innerHTML = `
-        <div class="text-center">
-          <i class="${achievement.icon}" style="font-size: 3rem; color: ${achievement.color}; margin-bottom: 0.5rem; animation: bounce 2s infinite;"></i>
-          <h4 style="color: ${achievement.color}; margin-bottom: 0.3rem; font-size: 1.1rem;">${achievement.title}</h4>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">${achievement.description}</p>
+        <div class="badge-icon" style="background: linear-gradient(135deg, ${achievement.color} 0%, ${achievement.color}80 100%);">
+          <i class="${achievement.icon}"></i>
         </div>
+        <div class="badge-title">${achievement.title}</div>
+        <div class="badge-desc">${achievement.desc}</div>
       `;
     }
 
     // Share results
     function shareResults() {
-      const stats = currentStats;
-      
-      if (!stats) {
+      if (!currentStats) {
         showNotification('Tidak ada hasil untuk dibagikan', 'warning');
         return;
       }
       
       const shareText = `Hasil analisis raport saya:
-Rata-rata: ${stats.overallAvg.toFixed(1)}
-Tren: ${stats.trend === 'naik' ? 'Naik' : stats.trend === 'turun' ? 'Turun' : 'Stabil'}
-Mapel terbaik: ${stats.bestSubject ? stats.bestSubject.name : '-'}
-Mapel perlu perhatian: ${stats.worstSubject ? stats.worstSubject.name : '-'}
+Rata-rata: ${currentStats.overallAvg.toFixed(1)}
+Tren: ${currentStats.trend === 'naik' ? 'Naik' : currentStats.trend === 'turun' ? 'Turun' : 'Stabil'}
+Mapel terbaik: ${currentStats.bestSubject ? currentStats.bestSubject.name : '-'}
+Mapel perlu perhatian: ${currentStats.worstSubject ? currentStats.worstSubject.name : '-'}
 
 Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       
-      // Check if Web Share API is available
       if (navigator.share) {
         navigator.share({
           title: 'Hasil Analisis Raport',
           text: shareText,
           url: window.location.href
-        })
-        .then(() => showNotification('Berhasil membagikan hasil', 'success'))
-        .catch(error => {
-          console.log('Error sharing:', error);
-          copyToClipboard(shareText);
         });
       } else {
-        // Fallback to clipboard
-        copyToClipboard(shareText);
+        navigator.clipboard.writeText(shareText)
+          .then(() => showNotification('Hasil disalin ke clipboard', 'success'))
+          .catch(() => showNotification('Gagal menyalin hasil', 'error'));
       }
-    }
-
-    // Copy text to clipboard
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text)
-        .then(() => showNotification('Hasil disalin ke clipboard', 'success'))
-        .catch(err => {
-          console.error('Failed to copy: ', err);
-          showNotification('Gagal menyalin ke clipboard', 'danger');
-        });
     }
 
     // Print results
@@ -3430,228 +3002,323 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
 
     // Show export modal
     function showExportModal() {
-      if (subjects.length === 0) {
-        showNotification('Tidak ada data untuk diekspor', 'warning');
-        return;
-      }
       document.getElementById('exportModal').classList.add('active');
     }
 
     // Export to PDF
     async function exportToPDF() {
       try {
-        showNotification('Membuat PDF...', 'success');
+        showLoading();
         
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Add title
-        doc.setFontSize(18);
-        doc.setTextColor(67, 97, 238);
-        doc.text('Smart Raport Analyzer Pro', 105, 20, null, null, 'center');
+        // Add content
+        doc.setFontSize(16);
+        doc.text('Laporan Analisis Raport', 105, 20, null, null, 'center');
         
-        // Add date
-        doc.setFontSize(11);
-        doc.setTextColor(100, 100, 100);
+        doc.setFontSize(10);
         doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 105, 28, null, null, 'center');
         
-        // Add overall stats if available
+        // Add statistics
         if (currentStats) {
-          doc.setFontSize(14);
-          doc.setTextColor(0, 0, 0);
-          doc.text('Statistik Utama', 20, 40);
+          doc.setFontSize(12);
+          doc.text('Statistik Utama:', 20, 40);
           
           doc.setFontSize(10);
-          doc.text(`Rata-rata Total: ${currentStats.overallAvg.toFixed(2)}`, 20, 48);
-          doc.text(`Tren: ${currentStats.trend === 'naik' ? 'Naik' : currentStats.trend === 'turun' ? 'Turun' : 'Stabil'}`, 20, 54);
-          doc.text(`Jumlah Mata Pelajaran: ${currentStats.subjectCount}`, 20, 60);
+          doc.text(`Rata-rata Total: ${currentStats.overallAvg.toFixed(2)}`, 30, 48);
+          doc.text(`Tren: ${currentStats.trend === 'naik' ? 'Naik' : currentStats.trend === 'turun' ? 'Turun' : 'Stabil'}`, 30, 54);
+          doc.text(`Jumlah Mata Pelajaran: ${currentStats.subjectCount}`, 30, 60);
           
           if (currentStats.bestSubject) {
-            doc.text(`Mata Pelajaran Terbaik: ${currentStats.bestSubject.name} (${currentStats.bestSubject.average.toFixed(1)})`, 20, 66);
+            doc.text(`Mata Pelajaran Terbaik: ${currentStats.bestSubject.name} (${currentStats.bestSubject.average.toFixed(1)})`, 30, 66);
           }
-          
-          if (currentStats.worstSubject) {
-            doc.text(`Perlu Perhatian: ${currentStats.worstSubject.name} (${currentStats.worstSubject.average.toFixed(1)})`, 20, 72);
-          }
-        }
-        
-        // Add table of subjects
-        let yPosition = 85;
-        doc.setFontSize(12);
-        doc.setTextColor(0, 0, 0);
-        doc.text('Data Nilai Mata Pelajaran', 20, yPosition);
-        yPosition += 8;
-        
-        // Filter valid subjects
-        const validSubjects = subjects.filter(subject => 
-          subject.scores.some(score => score !== null && score !== undefined)
-        );
-        
-        if (validSubjects.length > 0) {
-          // Prepare table data
-          const tableData = [];
-          const headers = ['No', 'Mata Pelajaran', 'S1', 'S2', 'S3', 'S4', 'S5', 'Rata-rata'];
-          
-          validSubjects.forEach((subject, index) => {
-            const scores = subject.scores.map(score => score !== null ? score : '-');
-            const avg = subject.scores.filter(s => s !== null).reduce((a, b) => a + b, 0) / subject.scores.filter(s => s !== null).length;
-            
-            tableData.push([
-              index + 1,
-              subject.name || 'Tanpa Nama',
-              ...scores,
-              isNaN(avg) ? '-' : avg.toFixed(1)
-            ]);
-          });
-          
-          // Add table
-          doc.autoTable({
-            startY: yPosition,
-            head: [headers],
-            body: tableData,
-            theme: 'grid',
-            headStyles: { fillColor: [67, 97, 238] },
-            margin: { left: 20 }
-          });
         }
         
         // Save PDF
         doc.save(`raport-analysis-${new Date().toISOString().slice(0, 10)}.pdf`);
+        
         closeModal('exportModal');
-        showNotification('PDF berhasil diekspor!', 'success');
+        hideLoading();
+        showNotification('PDF berhasil diekspor', 'success');
       } catch (error) {
-        console.error('Error exporting to PDF:', error);
-        showNotification('Gagal mengekspor ke PDF', 'danger');
+        hideLoading();
+        showNotification('Gagal mengekspor ke PDF', 'error');
       }
     }
 
     // Export to Excel
     function exportToExcel() {
       try {
-        showNotification('Membuat file Excel...', 'success');
+        showLoading();
         
-        // Filter valid subjects
         const validSubjects = subjects.filter(subject => 
-          subject.scores.some(score => score !== null && score !== undefined)
+          subject.scores.some(score => score !== null)
         );
         
         if (validSubjects.length === 0) {
+          hideLoading();
           showNotification('Tidak ada data untuk diekspor', 'warning');
           return;
         }
         
-        // Prepare data for Excel
-        const wb = XLSX.utils.book_new();
-        
-        // Create data sheet
+        // Prepare data
         const data = [];
+        data.push(['No', 'Mata Pelajaran', 'Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Rata-rata']);
         
-        // Add headers
-        data.push(['Smart Raport Analyzer Pro', '', '', '', '', '', '']);
-        data.push(['Tanggal', new Date().toLocaleDateString('id-ID'), '', '', '', '', '']);
-        data.push(['', '', '', '', '', '', '']);
-        
-        if (currentStats) {
-          data.push(['Statistik Utama', '', '', '', '', '', '']);
-          data.push(['Rata-rata Total', currentStats.overallAvg.toFixed(2), '', '', '', '', '']);
-          data.push(['Tren', currentStats.trend === 'naik' ? 'Naik' : currentStats.trend === 'turun' ? 'Turun' : 'Stabil', '', '', '', '', '']);
-          data.push(['Jumlah Mata Pelajaran', currentStats.subjectCount, '', '', '', '', '']);
-          
-          if (currentStats.bestSubject) {
-            data.push(['Mata Pelajaran Terbaik', `${currentStats.bestSubject.name} (${currentStats.bestSubject.average.toFixed(1)})`, '', '', '', '', '']);
-          }
-          
-          if (currentStats.worstSubject) {
-            data.push(['Perlu Perhatian', `${currentStats.worstSubject.name} (${currentStats.worstSubject.average.toFixed(1)})`, '', '', '', '', '']);
-          }
-          
-          data.push(['', '', '', '', '', '', '']);
-        }
-        
-        // Add subject data headers
-        data.push(['No', 'Mata Pelajaran', 'Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Rata-rata']);
-        
-        // Add subject data
         validSubjects.forEach((subject, index) => {
           const scores = subject.scores.map(score => score !== null ? score : '');
-          const avg = subject.scores.filter(s => s !== null).reduce((a, b) => a + b, 0) / subject.scores.filter(s => s !== null).length;
+          const avg = subject.scores.filter(s => s !== null).length > 0 ? 
+                     subject.scores.filter(s => s !== null).reduce((a, b) => a + b, 0) / 
+                     subject.scores.filter(s => s !== null).length : 0;
           
           data.push([
             index + 1,
             subject.name || 'Tanpa Nama',
             ...scores,
-            isNaN(avg) ? '' : avg.toFixed(1)
+            avg.toFixed(1)
           ]);
         });
         
+        // Create worksheet
         const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Analisis Raport');
         
         // Save Excel file
         XLSX.writeFile(wb, `raport-analysis-${new Date().toISOString().slice(0, 10)}.xlsx`);
+        
         closeModal('exportModal');
-        showNotification('File Excel berhasil diekspor!', 'success');
+        hideLoading();
+        showNotification('Excel berhasil diekspor', 'success');
       } catch (error) {
-        console.error('Error exporting to Excel:', error);
-        showNotification('Gagal mengekspor ke Excel', 'danger');
+        hideLoading();
+        showNotification('Gagal mengekspor ke Excel', 'error');
       }
     }
 
     // Export to JSON
     function exportToJSON() {
-      if (subjects.length === 0) {
-        showNotification('Tidak ada data untuk diekspor', 'warning');
-        return;
-      }
-      
       const data = {
         subjects: subjects,
         exportDate: new Date().toISOString(),
-        appVersion: '2.0',
         stats: currentStats
       };
       
       const dataStr = JSON.stringify(data, null, 2);
       const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
       
-      const exportFileDefaultName = `raport-data-${new Date().toISOString().slice(0, 10)}.json`;
-      
-      const linkElement = document.createElement('a');
-      linkElement.setAttribute('href', dataUri);
-      linkElement.setAttribute('download', exportFileDefaultName);
-      linkElement.click();
+      const link = document.createElement('a');
+      link.setAttribute('href', dataUri);
+      link.setAttribute('download', `raport-data-${new Date().toISOString().slice(0, 10)}.json`);
+      link.click();
       
       closeModal('exportModal');
-      showNotification('Data JSON berhasil diekspor', 'success');
+      showNotification('JSON berhasil diekspor', 'success');
     }
 
-    // Save progress to local storage
+    // Export to Image
+    function exportToImage() {
+      if (!chart) {
+        showNotification('Tidak ada grafik untuk diekspor', 'warning');
+        return;
+      }
+      
+      const link = document.createElement('a');
+      link.download = `grafik-raport-${new Date().toISOString().slice(0, 10)}.png`;
+      link.href = chart.canvas.toDataURL('image/png');
+      link.click();
+      
+      closeModal('exportModal');
+      showNotification('Gambar berhasil diekspor', 'success');
+    }
+
+    // Save progress
     function saveProgress() {
       saveToLocalStorage();
       showNotification('Progress berhasil disimpan', 'success');
     }
 
-    // Show tutorial modal
+    // Show templates modal
+    function showTemplates() {
+      loadTemplates();
+      document.getElementById('templatesModal').classList.add('active');
+    }
+
+    // Load templates
+    function loadTemplates() {
+      const savedTemplates = localStorage.getItem('raportTemplates');
+      templates = savedTemplates ? JSON.parse(savedTemplates) : [];
+      
+      const templateList = document.getElementById('templateList');
+      
+      if (templates.length === 0) {
+        templateList.innerHTML = '<p class="text-center" style="color: var(--text-secondary);">Belum ada template</p>';
+        return;
+      }
+      
+      templateList.innerHTML = templates.map((template, index) => `
+        <div class="template-item" style="background: rgba(255, 255, 255, 0.05); border-radius: var(--radius-sm); padding: 0.8rem; margin-bottom: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong>${template.name}</strong>
+              <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                ${template.subjects.length} mata pelajaran
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.3rem;">
+              <button class="btn btn-secondary btn-sm" onclick="loadTemplate(${index})">
+                <i class="fas fa-check"></i>
+              </button>
+              <button class="btn btn-danger btn-sm" onclick="deleteTemplate(${index})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Save current as template
+    function saveCurrentAsTemplate() {
+      const name = prompt('Nama template:', `Template ${new Date().toLocaleDateString('id-ID')}`);
+      if (!name) return;
+      
+      const template = {
+        name: name,
+        subjects: subjects,
+        date: new Date().toISOString()
+      };
+      
+      templates.push(template);
+      localStorage.setItem('raportTemplates', JSON.stringify(templates));
+      
+      loadTemplates();
+      showNotification('Template berhasil disimpan', 'success');
+    }
+
+    // Load template
+    function loadTemplate(index) {
+      if (templates[index]) {
+        const template = templates[index];
+        
+        // Clear current
+        subjects = [];
+        subjectsDiv.innerHTML = '';
+        
+        // Load template subjects
+        template.subjects.forEach(subjectData => {
+          const subjectId = Date.now() + Math.random();
+          const subjectCard = document.createElement('div');
+          subjectCard.className = 'subject-card';
+          subjectCard.id = `subject-${subjectId}`;
+          
+          subjectCard.innerHTML = `
+            <div class="subject-header">
+              <div class="subject-name">
+                <input type="text" value="${subjectData.name}" class="mapel" onchange="updateSubjectName(${subjectId}, this.value)">
+              </div>
+              <div class="subject-actions">
+                <button class="subject-action-btn" onclick="duplicateSubject(${subjectId})" title="Duplikat">
+                  <i class="fas fa-copy"></i>
+                </button>
+                <button class="subject-action-btn remove" onclick="removeSubject(${subjectId})" title="Hapus">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="scores-container">
+              ${subjectData.scores.map((score, i) => `
+                <div class="score-input">
+                  <label>Sem ${i + 1}</label>
+                  <input type="number" min="0" max="100" value="${score !== null ? score : ''}" class="nilai" 
+                         onchange="updateSubjectScore(${subjectId}, ${i}, this.value)"
+                         oninput="validateScore(this)">
+                </div>
+              `).join('')}
+            </div>
+          `;
+          
+          subjectsDiv.appendChild(subjectCard);
+          
+          subjects.push({
+            id: subjectId,
+            name: subjectData.name,
+            scores: subjectData.scores
+          });
+        });
+        
+        saveToLocalStorage();
+        updateDashboard();
+        closeModal('templatesModal');
+        showNotification('Template berhasil dimuat', 'success');
+      }
+    }
+
+    // Delete template
+    function deleteTemplate(index) {
+      if (confirm('Hapus template ini?')) {
+        templates.splice(index, 1);
+        localStorage.setItem('raportTemplates', JSON.stringify(templates));
+        loadTemplates();
+        showNotification('Template berhasil dihapus', 'success');
+      }
+    }
+
+    // Show settings
+    function showSettings() {
+      document.getElementById('autoSave').checked = settings.autoSave;
+      document.getElementById('notifications').checked = settings.notifications;
+      document.getElementById('animations').checked = settings.animations;
+      document.getElementById('maxSubjects').value = settings.maxSubjects;
+      
+      document.getElementById('settingsModal').classList.add('active');
+    }
+
+    // Save settings
+    function saveSettings() {
+      settings.autoSave = document.getElementById('autoSave').checked;
+      settings.notifications = document.getElementById('notifications').checked;
+      settings.animations = document.getElementById('animations').checked;
+      settings.maxSubjects = parseInt(document.getElementById('maxSubjects').value);
+      
+      localStorage.setItem('raportSettings', JSON.stringify(settings));
+      
+      closeModal('settingsModal');
+      showNotification('Pengaturan berhasil disimpan', 'success');
+    }
+
+    // Load settings
+    function loadSettings() {
+      const savedSettings = localStorage.getItem('raportSettings');
+      if (savedSettings) {
+        settings = JSON.parse(savedSettings);
+      }
+    }
+
+    // Show tutorial
     function showTutorial() {
-      document.getElementById('tutorialModal').classList.add('active');
+      showNotification('Fitur tutorial akan segera hadir!', 'info');
     }
 
-    // Show about modal
+    // Show about
     function showAbout() {
-      document.getElementById('aboutModal').classList.add('active');
+      showNotification('Smart Raport Analyzer Pro v2.1 oleh Firman_devs', 'info');
     }
 
-    // Show creator info modal
+    // Show creator info
     function showCreatorInfo() {
-      document.getElementById('creatorModal').classList.add('active');
+      showNotification('Dikembangkan oleh Firman_devs - Pelajar & Developer', 'info');
     }
 
-    // Show portfolio modal
-    function showPortfolio() {
-      closeModal('creatorModal');
-      setTimeout(() => {
-        document.getElementById('portfolioModal').classList.add('active');
-      }, 300);
+    // Show privacy
+    function showPrivacy() {
+      showNotification('Data disimpan secara lokal di perangkat Anda', 'info');
+    }
+
+    // Show terms
+    function showTerms() {
+      showNotification('Gunakan aplikasi ini untuk tujuan pendidikan', 'info');
     }
 
     // Close modal
@@ -3659,127 +3326,77 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       document.getElementById(modalId).classList.remove('active');
     }
 
-    // Send email
-    function sendEmail() {
-      const email = 'firman.developer@example.com';
-      const subject = 'Inquiry about Smart Raport Analyzer Pro';
-      const body = 'Halo Firman_devs,\n\nSaya tertarik dengan aplikasi Smart Raport Analyzer Pro dan ingin bertanya tentang...';
-      
-      window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    // Show loading
+    function showLoading() {
+      document.getElementById('loadingModal').classList.add('active');
     }
 
-    // Open GitHub
-    function openGitHub() {
-      window.open('https://github.com/firman_devs', '_blank');
+    // Hide loading
+    function hideLoading() {
+      document.getElementById('loadingModal').classList.remove('active');
     }
 
     // Show notification
-    function showNotification(message, type) {
-      // Remove existing notification if any
-      const existingNotification = document.querySelector('.notification');
-      if (existingNotification) {
-        existingNotification.remove();
-      }
+    function showNotification(message, type = 'info') {
+      if (!settings.notifications) return;
       
-      // Create notification element
+      // Remove existing notification
+      const existing = document.querySelector('.notification');
+      if (existing) existing.remove();
+      
       const notification = document.createElement('div');
-      notification.className = `notification animate-fadeIn`;
-      
-      // Icon based on type
-      let icon = 'info-circle';
-      if (type === 'success') icon = 'check-circle';
-      else if (type === 'warning') icon = 'exclamation-triangle';
-      else if (type === 'danger') icon = 'exclamation-circle';
-      
+      notification.className = `notification ${type}`;
       notification.innerHTML = `
         <div class="notification-content">
-          <i class="fas fa-${icon}"></i>
+          <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i>
           <span>${message}</span>
         </div>
-        <div class="notification-progress"></div>
       `;
       
-      // Add styles for notification
-      const style = document.createElement('style');
-      style.textContent = `
-        .notification {
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background-color: ${type === 'success' ? 'var(--success)' : type === 'warning' ? 'var(--warning)' : type === 'danger' ? 'var(--danger)' : 'var(--primary)'};
-          color: var(--dark);
-          padding: 0.8rem 1.2rem;
-          border-radius: var(--radius);
-          box-shadow: var(--shadow-lg), 0 0 20px ${type === 'success' ? 'rgba(76, 201, 240, 0.5)' : type === 'warning' ? 'rgba(248, 150, 30, 0.5)' : type === 'danger' ? 'rgba(249, 65, 68, 0.5)' : 'rgba(67, 97, 238, 0.5)'};
-          z-index: 1001;
-          max-width: 300px;
-          animation: slideIn 0.3s ease;
-          overflow: hidden;
-        }
-        
-        .notification-content {
-          display: flex;
-          align-items: center;
-          gap: 0.6rem;
-          position: relative;
-          z-index: 2;
-          font-size: 0.9rem;
-        }
-        
-        .notification i {
-          font-size: 1.1rem;
-        }
-        
-        .notification-progress {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          height: 3px;
-          width: 100%;
-          background-color: rgba(0, 0, 0, 0.2);
-          border-radius: 0 0 var(--radius) var(--radius);
-          overflow: hidden;
-        }
-        
-        .notification-progress::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          height: 100%;
-          width: 100%;
-          background-color: var(--dark);
-          animation: progress 3s linear;
-        }
-        
-        @keyframes slideIn {
-          from { transform: translateX(100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes progress {
-          from { transform: translateX(0); }
-          to { transform: translateX(100%); }
-        }
-      `;
-      
-      document.head.appendChild(style);
       document.body.appendChild(notification);
       
-      // Remove notification after 3 seconds
+      // Auto remove after 3 seconds
       setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
-        notification.style.opacity = '0';
-        setTimeout(() => {
-          if (notification.parentNode) {
-            notification.remove();
-          }
-        }, 300);
+        if (notification.parentNode) {
+          notification.style.opacity = '0';
+          notification.style.transform = 'translateY(-20px)';
+          setTimeout(() => notification.remove(), 300);
+        }
       }, 3000);
     }
 
-    // Save data to local storage
+    // Toggle mobile navigation
+    function toggleMobileNav() {
+      const nav = document.getElementById('mobileNav');
+      nav.classList.toggle('active');
+    }
+
+    // Scroll to section
+    function scrollToSection(sectionId) {
+      const sections = {
+        dashboard: 0,
+        input: document.querySelector('.input-section'),
+        results: document.querySelector('.result-section')
+      };
+      
+      if (sectionId === 'dashboard') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (sections[sectionId]) {
+        sections[sectionId].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      
+      // Update active nav button
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`[onclick="scrollToSection('${sectionId}')"]`).classList.add('active');
+      
+      // Close mobile nav
+      document.getElementById('mobileNav').classList.remove('active');
+    }
+
+    // Save to local storage
     function saveToLocalStorage() {
+      if (!settings.autoSave) return;
+      
       const data = {
         subjects: subjects,
         timestamp: new Date().toISOString()
@@ -3788,16 +3405,16 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       localStorage.setItem('raportSubjects', JSON.stringify(data));
     }
 
-    // Load saved data from local storage
+    // Load saved data
     function loadSavedData() {
-      // Load subjects
       const savedSubjects = localStorage.getItem('raportSubjects');
+      const savedHistory = localStorage.getItem('raportHistory');
+      
       if (savedSubjects) {
         try {
           const data = JSON.parse(savedSubjects);
           subjects = data.subjects || [];
           
-          // Recreate subject cards
           subjectsDiv.innerHTML = '';
           subjects.forEach((subject, index) => {
             const subjectCard = document.createElement('div');
@@ -3808,17 +3425,24 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
             subjectCard.innerHTML = `
               <div class="subject-header">
                 <div class="subject-name">
-                  <input type="text" value="${subject.name}" placeholder="Nama Mata Pelajaran" class="mapel" onchange="updateSubjectName(${subject.id}, this.value)">
+                  <input type="text" value="${subject.name}" placeholder="Mata Pelajaran" class="mapel" onchange="updateSubjectName(${subject.id}, this.value)">
                 </div>
-                <button class="remove-subject" onclick="removeSubject(${subject.id})">
-                  <i class="fas fa-times"></i>
-                </button>
+                <div class="subject-actions">
+                  <button class="subject-action-btn" onclick="duplicateSubject(${subject.id})" title="Duplikat">
+                    <i class="fas fa-copy"></i>
+                  </button>
+                  <button class="subject-action-btn remove" onclick="removeSubject(${subject.id})" title="Hapus">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
               </div>
               <div class="scores-container">
                 ${subject.scores.map((score, i) => `
                   <div class="score-input">
-                    <label>Semester ${i + 1}</label>
-                    <input type="number" min="0" max="100" value="${score !== null ? score : ''}" placeholder="0-100" class="nilai" onchange="updateSubjectScore(${subject.id}, ${i}, this.value)">
+                    <label>Sem ${i + 1}</label>
+                    <input type="number" min="0" max="100" value="${score !== null ? score : ''}" class="nilai" 
+                           onchange="updateSubjectScore(${subject.id}, ${i}, this.value)"
+                           oninput="validateScore(this)">
                   </div>
                 `).join('')}
               </div>
@@ -3827,116 +3451,103 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
             subjectsDiv.appendChild(subjectCard);
           });
           
-          // Re-enable add button if needed
-          if (subjects.length < 20) {
-            document.querySelector('.btn-primary').disabled = false;
-            document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Mapel';
-          }
-          
-          // Load history
-          const savedHistory = localStorage.getItem('raportHistory');
           if (savedHistory) {
-            analysisHistory = JSON.parse(savedHistory) || [];
+            analysisHistory = JSON.parse(savedHistory);
             updateHistoryUI();
           }
           
-          // Update dashboard
           updateDashboard();
           
-          // If there are subjects, calculate and show results
-          if (subjects.length > 0) {
-            const validSubjects = subjects.filter(subject => 
-              subject.scores.some(score => score !== null && score !== undefined)
-            );
-            
-            if (validSubjects.length > 0) {
+          // Auto analyze if there are valid subjects
+          const validSubjects = subjects.filter(subject => 
+            subject.scores.some(score => score !== null)
+          );
+          
+          if (validSubjects.length > 0) {
+            setTimeout(() => {
               const stats = calculateStatistics(validSubjects);
               currentStats = stats;
-              const motivation = getMotivation(stats.overallAvg, stats.trend, stats.diff);
-              const recommendations = generateRecommendations(validSubjects, stats);
-              
-              displayResults(stats, motivation, recommendations);
+              displayResults(stats);
               updateChart(validSubjects, stats);
               updateGradeDistribution(validSubjects);
               updateAchievement(stats);
-            }
+            }, 500);
           }
           
-          showNotification('Data berhasil dimuat dari penyimpanan lokal', 'success');
         } catch (error) {
           console.error('Error loading saved data:', error);
           subjects = [];
-          subjectsDiv.innerHTML = '';
-          addSubject(); // Add one empty subject
+          addSubject();
         }
       }
     }
 
-    // Close modals when clicking outside
-    window.addEventListener('click', function(event) {
-      const modals = ['tutorialModal', 'aboutModal', 'creatorModal', 'portfolioModal', 'exportModal'];
-      modals.forEach(modalId => {
-        const modal = document.getElementById(modalId);
-        if (event.target === modal) {
-          closeModal(modalId);
-        }
-      });
-    });
-
     // Keyboard shortcuts
-    document.addEventListener('keydown', function(event) {
-      // Ctrl + N: Add new subject
-      if ((event.ctrlKey || event.metaKey) && event.key === 'n') {
-        event.preventDefault();
+    document.addEventListener('keydown', function(e) {
+      // Ctrl/Cmd + N: New subject
+      if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault();
         addSubject();
       }
       
-      // Ctrl + A: Analyze
-      if ((event.ctrlKey || event.metaKey) && event.key === 'a') {
-        event.preventDefault();
-        analyze();
-      }
-      
-      // Ctrl + S: Save
-      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
-        event.preventDefault();
+      // Ctrl/Cmd + S: Save
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
         saveProgress();
       }
       
-      // Ctrl + D: Add sample data
-      if ((event.ctrlKey || event.metaKey) && event.key === 'd') {
-        event.preventDefault();
+      // Ctrl/Cmd + A: Analyze
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+        e.preventDefault();
+        analyze();
+      }
+      
+      // Ctrl/Cmd + D: Sample data
+      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault();
         addSampleData();
       }
       
-      // Ctrl + E: Export
-      if ((event.ctrlKey || event.metaKey) && event.key === 'e') {
-        event.preventDefault();
+      // Ctrl/Cmd + E: Export
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+        e.preventDefault();
         showExportModal();
       }
       
       // Escape: Close modals
-      if (event.key === 'Escape') {
-        const modals = ['tutorialModal', 'aboutModal', 'creatorModal', 'portfolioModal', 'exportModal'];
-        modals.forEach(modalId => {
-          closeModal(modalId);
-        });
+      if (e.key === 'Escape') {
+        const modals = ['exportModal', 'templatesModal', 'settingsModal'];
+        modals.forEach(modalId => closeModal(modalId));
       }
     });
 
-    // Add CSS for print
+    // Print styles
     const printCSS = document.createElement('style');
     printCSS.textContent = `
       @media print {
-        .no-print, button, .theme-toggle, .remove-subject, .share-btn {
+        .no-print,
+        .mobile-nav,
+        .mobile-menu-btn,
+        button:not(.print-only),
+        .action-btn,
+        .theme-toggle,
+        .header-btn {
           display: none !important;
         }
         
-        body, .card, .input-section, .result-section, .chart-section, .sidebar-card {
-          box-shadow: none !important;
-          border: 1px solid #ddd !important;
-          background-color: white !important;
+        body {
+          background: white !important;
           color: black !important;
+        }
+        
+        .card,
+        .input-section,
+        .result-section,
+        .chart-section,
+        .sidebar-card {
+          background: white !important;
+          border: 1px solid #ddd !important;
+          box-shadow: none !important;
         }
         
         .main-container {
@@ -3947,26 +3558,14 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
           display: none;
         }
         
-        .motivation-card {
-          background: #f0f0f0 !important;
-          color: black !important;
-        }
-        
         .stat-value {
           -webkit-text-fill-color: black !important;
           color: black !important;
         }
         
-        .animated-bg, .floating-particles {
-          display: none !important;
-        }
-        
-        .logo {
-          background: #4361ee !important;
-        }
-        
-        .section-title i, .sidebar-title i {
-          color: #4361ee !important;
+        .motivation-card {
+          background: #f0f0f0 !important;
+          color: black !important;
         }
       }
     `;
