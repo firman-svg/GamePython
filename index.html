@@ -443,6 +443,67 @@
       transform: translateY(0);
     }
 
+    /* User Welcome Section */
+    .user-welcome {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin: 1rem auto;
+      max-width: 1200px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid var(--glass-border);
+      animation: fadeIn 0.5s ease;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    .user-details h3 {
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+      color: var(--text);
+    }
+
+    .user-details p {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .user-edit-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .user-edit-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+
     /* Hide settings button on mobile */
     @media (max-width: 768px) {
       .header-btn.desktop-only {
@@ -458,6 +519,21 @@
         height: 36px;
         padding: 0;
         justify-content: center;
+      }
+      
+      .user-welcome {
+        margin: 0.8rem;
+        padding: 0.8rem;
+      }
+      
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+      
+      .user-details h3 {
+        font-size: 0.9rem;
       }
     }
 
@@ -769,6 +845,30 @@
     .score-input input.error {
       border-color: var(--danger);
       background: rgba(239, 68, 68, 0.05);
+    }
+
+    .score-input input.empty {
+      border-color: var(--text-secondary);
+      background: rgba(148, 163, 184, 0.05);
+    }
+
+    .validation-message {
+      display: block;
+      font-size: 0.7rem;
+      margin-top: 0.2rem;
+      min-height: 0.9rem;
+    }
+
+    .validation-message.error {
+      color: var(--danger);
+    }
+
+    .validation-message.warning {
+      color: var(--warning);
+    }
+
+    .validation-message.success {
+      color: var(--success);
     }
 
     /* Action Buttons - Compact */
@@ -1355,6 +1455,16 @@
       100% { transform: scale(4); opacity: 0; }
     }
 
+    @keyframes loading {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes analyzing {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+
     .animate-fadeIn {
       animation: fadeIn 0.3s ease forwards;
     }
@@ -1377,6 +1487,10 @@
 
     .animate-shake {
       animation: shake 0.5s ease;
+    }
+
+    .animate-analyzing {
+      animation: analyzing 1.5s infinite ease-in-out;
     }
 
     /* Utility Classes */
@@ -1860,6 +1974,114 @@
       background: var(--primary);
       transform: scale(1.2);
     }
+
+    /* Analyzing Animation */
+    .analyzing-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+
+    .analyzing-animation {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin-bottom: 1.5rem;
+    }
+
+    .analyzing-circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      opacity: 0.7;
+    }
+
+    .analyzing-circle:nth-child(1) {
+      background: conic-gradient(from 0deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+      animation: loading 2s linear infinite;
+    }
+
+    .analyzing-circle:nth-child(2) {
+      background: var(--dark-bg);
+      width: 80%;
+      height: 80%;
+      top: 10%;
+      left: 10%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .analyzing-icon {
+      font-size: 2rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: analyzing 2s infinite ease-in-out;
+    }
+
+    .analyzing-text {
+      text-align: center;
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .analyzing-subtext {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      max-width: 300px;
+    }
+
+    /* Data Validation Styles */
+    .validation-summary {
+      background: rgba(239, 68, 68, 0.1);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--danger);
+      animation: slideIn 0.3s ease;
+    }
+
+    .validation-summary.warning {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: var(--warning);
+    }
+
+    .validation-summary-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--danger);
+    }
+
+    .validation-summary.warning .validation-summary-header {
+      color: var(--warning);
+    }
+
+    .validation-summary-list {
+      list-style: none;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .validation-summary-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .validation-summary-item i {
+      margin-top: 0.1rem;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -1947,6 +2169,22 @@
       </div>
     </div>
   </header>
+
+  <!-- User Welcome Section -->
+  <div class="user-welcome" id="userWelcome">
+    <div class="user-info">
+      <div class="user-avatar">
+        <i class="fas fa-user-graduate"></i>
+      </div>
+      <div class="user-details">
+        <h3 id="userGreeting">Selamat Datang, Siswa!</h3>
+        <p id="userMessage">Masukkan nama Anda untuk memulai analisis</p>
+      </div>
+    </div>
+    <button class="user-edit-btn" onclick="showUserModal()">
+      <i class="fas fa-edit"></i>
+    </button>
+  </div>
 
   <!-- Mobile Navigation -->
   <nav class="mobile-nav" id="mobileNav">
@@ -2056,6 +2294,14 @@
           </span>
         </p>
         
+        <div id="validationSummary" class="validation-summary hidden">
+          <div class="validation-summary-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h4>Perhatian: Terdapat masalah dengan data input</h4>
+          </div>
+          <ul class="validation-summary-list" id="validationList"></ul>
+        </div>
+        
         <div class="action-buttons mb-2">
           <button class="btn btn-primary" onclick="addSubject()">
             <i class="fas fa-plus"></i>
@@ -2065,7 +2311,7 @@
             <i class="fas fa-vial"></i>
             Data Contoh
           </button>
-          <button class="btn btn-success" onclick="analyze()" id="analyzeBtn">
+          <button class="btn btn-success" onclick="validateAndAnalyze()" id="analyzeBtn">
             <i class="fas fa-chart-pie"></i>
             Analisis Nilai
           </button>
@@ -2272,6 +2518,63 @@
     </div>
   </div>
 
+  <!-- User Modal -->
+  <div class="modal" id="userModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-user-edit"></i> Profil Siswa</h2>
+        <button class="modal-close" onclick="closeModal('userModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <div class="user-avatar" style="margin: 0 auto 1rem; width: 80px; height: 80px;">
+            <i class="fas fa-user-graduate" style="font-size: 2rem;"></i>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">Masukkan data diri untuk pengalaman personal</p>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; color: var(--text); font-size: 0.9rem;">
+            <i class="fas fa-user"></i> Nama Lengkap
+          </label>
+          <input type="text" id="userNameInput" placeholder="Contoh: Budi Santoso" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: rgba(255, 255, 255, 0.05); color: var(--text); font-size: 0.95rem;">
+          <div class="validation-message" id="nameValidation"></div>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; color: var(--text); font-size: 0.9rem;">
+            <i class="fas fa-graduation-cap"></i> Kelas
+          </label>
+          <select id="userClassInput" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: rgba(255, 255, 255, 0.05); color: var(--text); font-size: 0.95rem;">
+            <option value="">Pilih Kelas</option>
+            <option value="10">Kelas 10</option>
+            <option value="11">Kelas 11</option>
+            <option value="12">Kelas 12</option>
+            <option value="other">Lainnya</option>
+          </select>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; color: var(--text); font-size: 0.9rem;">
+            <i class="fas fa-school"></i> Sekolah
+          </label>
+          <input type="text" id="userSchoolInput" placeholder="Nama Sekolah" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: rgba(255, 255, 255, 0.05); color: var(--text); font-size: 0.95rem;">
+        </div>
+        
+        <div style="background: rgba(67, 97, 238, 0.1); padding: 0.8rem; border-radius: var(--radius-sm); margin-top: 1.5rem;">
+          <p style="font-size: 0.85rem; color: var(--primary);">
+            <i class="fas fa-info-circle"></i> 
+            <strong>Informasi:</strong> Data Anda disimpan secara lokal di perangkat dan tidak dikirim ke server manapun.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('userModal')">Batal</button>
+        <button class="btn btn-primary" onclick="saveUserProfile()">Simpan Profil</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Templates Modal -->
   <div class="modal" id="templatesModal">
     <div class="modal-content">
@@ -2316,6 +2619,12 @@
           <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
             <input type="checkbox" id="animations" checked>
             <span>Animasi</span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <input type="checkbox" id="validation" checked>
+            <span>Validasi otomatis</span>
           </label>
         </div>
         <div class="setting-item">
@@ -2513,10 +2822,18 @@
 
   <!-- Loading Overlay -->
   <div class="modal" id="loadingModal">
-    <div class="modal-content" style="max-width: 200px; text-align: center;">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
       <div class="modal-body">
-        <div class="spinner"></div>
-        <p style="margin-top: 1rem; font-size: 0.9rem;">Memproses...</p>
+        <div class="analyzing-container">
+          <div class="analyzing-animation">
+            <div class="analyzing-circle"></div>
+            <div class="analyzing-circle">
+              <i class="fas fa-brain analyzing-icon"></i>
+            </div>
+          </div>
+          <div class="analyzing-text" id="analyzingText">Menganalisis Data Nilai</div>
+          <div class="analyzing-subtext" id="analyzingSubtext">Harap tunggu, sistem sedang memproses data Anda...</div>
+        </div>
       </div>
     </div>
   </div>
@@ -2532,10 +2849,17 @@
     let isLightMode = false;
     let currentStats = null;
     let templates = [];
+    let userProfile = {
+      name: '',
+      class: '',
+      school: '',
+      lastUpdated: null
+    };
     let settings = {
       autoSave: true,
       notifications: true,
       animations: true,
+      validation: true,
       maxSubjects: 20,
       hapticFeedback: true,
       gestureControls: true
@@ -2550,14 +2874,17 @@
     const installPrompt = document.getElementById("installPrompt");
     const offlineIndicator = document.getElementById("offlineIndicator");
     const gestureHint = document.getElementById("gestureHint");
+    const validationSummary = document.getElementById("validationSummary");
+    const validationList = document.getElementById("validationList");
 
     // Initialize the app
     document.addEventListener('DOMContentLoaded', function() {
       // Show splash screen first
       showSplashScreen();
       
-      // Load settings
+      // Load settings and user profile
       loadSettings();
+      loadUserProfile();
       
       // Add initial subject
       setTimeout(() => {
@@ -2625,6 +2952,101 @@
       }, 30);
     }
 
+    // Load user profile
+    function loadUserProfile() {
+      const savedProfile = localStorage.getItem('raportUserProfile');
+      if (savedProfile) {
+        try {
+          userProfile = JSON.parse(savedProfile);
+          updateUserWelcome();
+        } catch (e) {
+          console.error('Error loading user profile:', e);
+        }
+      }
+    }
+
+    // Save user profile
+    function saveUserProfile() {
+      const nameInput = document.getElementById('userNameInput');
+      const classInput = document.getElementById('userClassInput');
+      const schoolInput = document.getElementById('userSchoolInput');
+      const nameValidation = document.getElementById('nameValidation');
+      
+      // Validate name
+      const name = nameInput.value.trim();
+      if (!name) {
+        nameValidation.textContent = 'Nama harus diisi';
+        nameValidation.className = 'validation-message error';
+        nameInput.style.borderColor = 'var(--danger)';
+        return;
+      }
+      
+      if (name.length < 2) {
+        nameValidation.textContent = 'Nama terlalu pendek';
+        nameValidation.className = 'validation-message error';
+        nameInput.style.borderColor = 'var(--danger)';
+        return;
+      }
+      
+      // Save profile
+      userProfile.name = name;
+      userProfile.class = classInput.value;
+      userProfile.school = schoolInput.value.trim();
+      userProfile.lastUpdated = new Date().toISOString();
+      
+      localStorage.setItem('raportUserProfile', JSON.stringify(userProfile));
+      
+      // Update UI
+      updateUserWelcome();
+      closeModal('userModal');
+      
+      // Show success message
+      showNotification(`Profil berhasil disimpan! Selamat belajar, ${userProfile.name}!`, 'success');
+      
+      // Haptic feedback
+      if (settings.hapticFeedback && 'vibrate' in navigator) {
+        navigator.vibrate(50);
+      }
+    }
+
+    // Update user welcome section
+    function updateUserWelcome() {
+      const greeting = document.getElementById('userGreeting');
+      const message = document.getElementById('userMessage');
+      
+      if (userProfile.name) {
+        const hour = new Date().getHours();
+        let timeGreeting = '';
+        
+        if (hour < 11) timeGreeting = 'Selamat pagi';
+        else if (hour < 15) timeGreeting = 'Selamat siang';
+        else if (hour < 19) timeGreeting = 'Selamat sore';
+        else timeGreeting = 'Selamat malam';
+        
+        greeting.textContent = `${timeGreeting}, ${userProfile.name}!`;
+        
+        if (userProfile.class) {
+          message.textContent = `Kelas ${userProfile.class} | Siap untuk analisis nilai`;
+        } else {
+          message.textContent = 'Siap untuk analisis nilai raport Anda';
+        }
+      } else {
+        greeting.textContent = 'Selamat Datang, Siswa!';
+        message.textContent = 'Masukkan nama Anda untuk memulai analisis';
+      }
+    }
+
+    // Show user modal
+    function showUserModal() {
+      document.getElementById('userNameInput').value = userProfile.name || '';
+      document.getElementById('userClassInput').value = userProfile.class || '';
+      document.getElementById('userSchoolInput').value = userProfile.school || '';
+      document.getElementById('nameValidation').textContent = '';
+      document.getElementById('userNameInput').style.borderColor = '';
+      
+      document.getElementById('userModal').classList.add('active');
+    }
+
     // Create ripple effect
     function createRipple(event) {
       const btn = event.currentTarget;
@@ -2645,7 +3067,7 @@
 
     // Add ripple effect to buttons
     function addRippleEffect() {
-      const buttons = document.querySelectorAll('.btn, .action-btn, .theme-toggle, .header-btn, .subject-action-btn');
+      const buttons = document.querySelectorAll('.btn, .action-btn, .theme-toggle, .header-btn, .subject-action-btn, .user-edit-btn');
       buttons.forEach(button => {
         button.addEventListener('click', function(e) {
           createRipple(e);
@@ -2823,6 +3245,13 @@
         }
       }, true);
       
+      // Input validation on input (real-time)
+      document.addEventListener('input', function(e) {
+        if (e.target.type === 'number' && e.target.classList.contains('nilai')) {
+          validateScore(e.target, true);
+        }
+      }, true);
+      
       // Enter key to add new subject
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && e.target.classList.contains('mapel')) {
@@ -2962,7 +3391,7 @@
       subjectCard.innerHTML = `
         <div class="subject-header">
           <div class="subject-name">
-            <input type="text" placeholder="Mata Pelajaran" class="mapel" onchange="updateSubjectName(${subjectId}, this.value)">
+            <input type="text" placeholder="Mata Pelajaran" class="mapel" onchange="updateSubjectName(${subjectId}, this.value)" oninput="validateSubjectName(${subjectId}, this)">
           </div>
           <div class="subject-actions">
             <button class="subject-action-btn" onclick="duplicateSubject(${subjectId})" title="Duplikat">
@@ -2979,7 +3408,9 @@
               <label>Sem ${i + 1}</label>
               <input type="number" min="0" max="100" placeholder="-" class="nilai" 
                      onchange="updateSubjectScore(${subjectId}, ${i}, this.value)"
-                     oninput="validateScore(this)">
+                     oninput="validateScore(this, true)"
+                     onblur="validateScore(this)">
+              <div class="validation-message" id="validation-${subjectId}-${i}"></div>
             </div>
           `).join('')}
         </div>
@@ -2990,7 +3421,8 @@
       subjects.push({
         id: subjectId,
         name: '',
-        scores: [null, null, null, null, null]
+        scores: [null, null, null, null, null],
+        validated: false
       });
       
       // Add bounce animation
@@ -3008,32 +3440,263 @@
       }
     }
 
-    // Validate score input with animation
-    function validateScore(input) {
-      const value = parseInt(input.value);
-      input.classList.remove('valid', 'warning', 'error');
+    // Validate subject name
+    function validateSubjectName(id, input) {
+      const subjectIndex = subjects.findIndex(s => s.id === id);
+      if (subjectIndex !== -1) {
+        const name = input.value.trim();
+        if (name.length > 0 && name.length < 2) {
+          input.style.borderColor = 'var(--danger)';
+          return false;
+        } else if (name.length >= 2) {
+          input.style.borderColor = 'var(--success)';
+          return true;
+        } else {
+          input.style.borderColor = '';
+          return false;
+        }
+      }
+      return false;
+    }
+
+    // Validate score input with detailed validation
+    function validateScore(input, isRealTime = false) {
+      const value = input.value;
+      const parent = input.closest('.score-input');
+      const validationMsg = parent.querySelector('.validation-message');
       
-      if (isNaN(value)) {
-        input.value = '';
+      // Reset styling and validation message
+      input.classList.remove('valid', 'warning', 'error', 'empty');
+      input.style.borderColor = '';
+      validationMsg.textContent = '';
+      validationMsg.className = 'validation-message';
+      
+      // If empty
+      if (value === '' || value === null || value === undefined) {
+        if (!isRealTime) {
+          input.classList.add('empty');
+          validationMsg.textContent = 'Nilai kosong, akan dianggap 0';
+          validationMsg.className = 'validation-message warning';
+        }
+        return { isValid: false, value: null, message: 'Nilai kosong' };
+      }
+      
+      // Check if it's a number
+      const numValue = parseFloat(value);
+      if (isNaN(numValue)) {
+        input.classList.add('error');
+        validationMsg.textContent = 'Harus berupa angka';
+        validationMsg.className = 'validation-message error';
+        return { isValid: false, value: null, message: 'Bukan angka' };
+      }
+      
+      // Check if it's an integer (optional, could accept decimals)
+      if (!Number.isInteger(numValue) && isRealTime) {
+        input.classList.add('warning');
+        validationMsg.textContent = 'Disarankan menggunakan bilangan bulat';
+        validationMsg.className = 'validation-message warning';
+      }
+      
+      // Check range
+      let finalValue = numValue;
+      let message = '';
+      
+      if (numValue < 0) {
+        finalValue = 0;
+        input.value = 0;
+        message = 'Nilai terlalu rendah, diubah menjadi 0';
+        input.classList.add('error');
+        validationMsg.textContent = message;
+        validationMsg.className = 'validation-message error';
+      } else if (numValue > 100) {
+        finalValue = 100;
+        input.value = 100;
+        message = 'Nilai terlalu tinggi, diubah menjadi 100';
+        input.classList.add('error');
+        validationMsg.textContent = message;
+        validationMsg.className = 'validation-message error';
+      } else if (numValue >= 85) {
+        input.classList.add('valid');
+        message = 'Nilai sangat baik!';
+        if (numValue >= 95) {
+          validationMsg.textContent = 'Luar biasa! Nilai sempurna!';
+          validationMsg.className = 'validation-message success';
+        }
+      } else if (numValue >= 70) {
+        input.classList.add('warning');
+        message = 'Nilai cukup baik';
+      } else if (numValue >= 60) {
+        input.classList.add('warning');
+        message = 'Perlu sedikit peningkatan';
+      } else {
+        input.classList.add('error');
+        message = 'Perlu perhatian khusus';
+        validationMsg.textContent = 'Nilai di bawah standar, perlu belajar lebih giat';
+        validationMsg.className = 'validation-message error';
+      }
+      
+      return { 
+        isValid: true, 
+        value: finalValue, 
+        message: message,
+        grade: numValue >= 85 ? 'A' : numValue >= 70 ? 'B' : numValue >= 60 ? 'C' : 'D'
+      };
+    }
+
+    // Validate all subjects before analysis
+    function validateAllSubjects() {
+      const errors = [];
+      const warnings = [];
+      let hasValidData = false;
+      
+      // Check if user has entered name
+      if (!userProfile.name) {
+        warnings.push({
+          type: 'warning',
+          message: 'Anda belum mengisi nama. Hasil analisis akan kurang personal.',
+          icon: 'fas fa-user'
+        });
+      }
+      
+      // Check each subject
+      subjects.forEach((subject, subjectIndex) => {
+        const subjectElement = document.getElementById(`subject-${subject.id}`);
+        if (!subjectElement) return;
+        
+        const nameInput = subjectElement.querySelector('.mapel');
+        const scoreInputs = subjectElement.querySelectorAll('.nilai');
+        
+        // Check subject name
+        if (!nameInput.value.trim()) {
+          errors.push({
+            type: 'error',
+            message: `Mata pelajaran #${subjectIndex + 1} belum diberi nama`,
+            icon: 'fas fa-book',
+            element: nameInput
+          });
+        }
+        
+        // Check scores
+        let hasScore = false;
+        scoreInputs.forEach((input, index) => {
+          const validation = validateScore(input);
+          if (validation.isValid && validation.value !== null) {
+            hasScore = true;
+            hasValidData = true;
+          }
+          
+          // Highlight empty scores
+          if (input.value === '' && !settings.validation) {
+            input.classList.add('empty');
+            const validationMsg = input.closest('.score-input').querySelector('.validation-message');
+            validationMsg.textContent = 'Kosong (akan dianggap 0)';
+            validationMsg.className = 'validation-message warning';
+          }
+        });
+        
+        if (!hasScore) {
+          warnings.push({
+            type: 'warning',
+            message: `Mata pelajaran "${nameInput.value || 'Tanpa nama'}" tidak memiliki nilai`,
+            icon: 'fas fa-exclamation-circle'
+          });
+        }
+      });
+      
+      // Show validation summary
+      if (errors.length > 0 || warnings.length > 0) {
+        validationSummary.classList.remove('hidden');
+        validationSummary.className = errors.length > 0 ? 'validation-summary' : 'validation-summary warning';
+        
+        let html = '';
+        
+        if (errors.length > 0) {
+          errors.forEach(error => {
+            html += `
+              <li class="validation-summary-item">
+                <i class="${error.icon} danger"></i>
+                <span>${error.message}</span>
+              </li>
+            `;
+          });
+        }
+        
+        if (warnings.length > 0) {
+          warnings.forEach(warning => {
+            html += `
+              <li class="validation-summary-item">
+                <i class="${warning.icon} warning"></i>
+                <span>${warning.message}</span>
+              </li>
+            `;
+          });
+        }
+        
+        validationList.innerHTML = html;
+        
+        // Scroll to validation summary
+        validationSummary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // Shake animation for errors
+        if (errors.length > 0) {
+          validationSummary.classList.add('animate-shake');
+          setTimeout(() => validationSummary.classList.remove('animate-shake'), 500);
+        }
+      } else {
+        validationSummary.classList.add('hidden');
+      }
+      
+      return {
+        isValid: errors.length === 0,
+        hasValidData: hasValidData,
+        errors: errors,
+        warnings: warnings
+      };
+    }
+
+    // Validate and analyze
+    function validateAndAnalyze() {
+      const validation = validateAllSubjects();
+      
+      if (!validation.hasValidData) {
+        showNotification('Masukkan setidaknya satu nilai untuk dianalisis', 'warning');
+        
+        // Highlight all empty fields
+        document.querySelectorAll('.nilai').forEach(input => {
+          if (input.value === '') {
+            input.classList.add('empty');
+            const parent = input.closest('.score-input');
+            const validationMsg = parent.querySelector('.validation-message');
+            validationMsg.textContent = 'Harap isi nilai';
+            validationMsg.className = 'validation-message error';
+          }
+        });
+        
         return;
       }
       
-      // Clamp value between 0-100
-      if (value < 0) input.value = 0;
-      if (value > 100) input.value = 100;
+      if (validation.errors.length > 0) {
+        showNotification('Perbaiki kesalahan sebelum menganalisis', 'error');
+        
+        // Focus on first error
+        if (validation.errors[0].element) {
+          validation.errors[0].element.focus();
+        }
+        
+        return;
+      }
       
-      const clampedValue = Math.min(100, Math.max(0, value));
-      
-      if (clampedValue >= 85) {
-        input.classList.add('valid');
-        input.classList.add('animate-bounce');
-        setTimeout(() => input.classList.remove('animate-bounce'), 300);
-      } else if (clampedValue >= 70) {
-        input.classList.add('warning');
+      // If only warnings, ask for confirmation
+      if (validation.warnings.length > 0 && validation.errors.length === 0) {
+        const confirmMessage = validation.warnings.length === 1 
+          ? validation.warnings[0].message 
+          : `Terdapat ${validation.warnings.length} peringatan. Lanjutkan analisis?`;
+        
+        if (confirm(confirmMessage + '\n\nKlik OK untuk melanjutkan analisis.')) {
+          analyze();
+        }
       } else {
-        input.classList.add('error');
-        input.classList.add('animate-shake');
-        setTimeout(() => input.classList.remove('animate-shake'), 300);
+        analyze();
       }
     }
 
@@ -3133,7 +3796,7 @@
         subjectCard.innerHTML = `
           <div class="subject-header">
             <div class="subject-name">
-              <input type="text" value="${data.name}" class="mapel" onchange="updateSubjectName(${subjectId}, this.value)">
+              <input type="text" value="${data.name}" class="mapel" onchange="updateSubjectName(${subjectId}, this.value)" oninput="validateSubjectName(${subjectId}, this)">
             </div>
             <div class="subject-actions">
               <button class="subject-action-btn" onclick="duplicateSubject(${subjectId})" title="Duplikat">
@@ -3150,7 +3813,9 @@
                 <label>Sem ${i + 1}</label>
                 <input type="number" min="0" max="100" value="${score}" class="nilai" 
                        onchange="updateSubjectScore(${subjectId}, ${i}, this.value)"
-                       oninput="validateScore(this)">
+                       oninput="validateScore(this, true)"
+                       onblur="validateScore(this)">
+                <div class="validation-message" id="validation-${subjectId}-${i}"></div>
               </div>
             `).join('')}
           </div>
@@ -3161,7 +3826,8 @@
         subjects.push({
           id: subjectId,
           name: data.name,
-          scores: data.scores
+          scores: data.scores,
+          validated: true
         });
       });
       
@@ -3200,6 +3866,9 @@
     function confirmClearAll() {
       subjects = [];
       subjectsDiv.innerHTML = '';
+      
+      // Clear validation summary
+      validationSummary.classList.add('hidden');
       
       // Clear results
       document.getElementById('result').innerHTML = `
@@ -3286,35 +3955,36 @@
         return;
       }
       
-      // Show loading with progress animation
-      document.getElementById('progressBar').style.display = 'block';
-      const progressFill = document.getElementById('progressFill');
-      const analyzeBtn = document.getElementById('analyzeBtn');
-      const originalBtnHTML = analyzeBtn.innerHTML;
+      // Show analyzing animation
+      document.getElementById('loadingModal').classList.add('active');
+      const analyzingText = document.getElementById('analyzingText');
+      const analyzingSubtext = document.getElementById('analyzingSubtext');
       
-      analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-      analyzeBtn.disabled = true;
+      // Update analyzing text with user name if available
+      if (userProfile.name) {
+        analyzingText.textContent = `Menganalisis nilai ${userProfile.name}`;
+      }
       
-      // Simulate progress with realistic increments
-      let progress = 0;
-      const progressInterval = setInterval(() => {
-        if (progress < 80) {
-          progress += Math.random() * 15 + 5;
-        } else if (progress < 95) {
-          progress += Math.random() * 3 + 1;
-        } else {
-          progress += 0.5;
-        }
-        
-        progressFill.style.width = `${Math.min(progress, 100)}%`;
-        
-        if (progress >= 100) {
-          clearInterval(progressInterval);
-        }
-      }, 200);
+      // Rotate through analyzing messages
+      const messages = [
+        "Menganalisis pola nilai...",
+        "Menghitung rata-rata...",
+        "Mengevaluasi tren belajar...",
+        "Menyiapkan rekomendasi...",
+        "Menyusun laporan..."
+      ];
+      
+      let messageIndex = 0;
+      const messageInterval = setInterval(() => {
+        analyzingSubtext.textContent = messages[messageIndex];
+        messageIndex = (messageIndex + 1) % messages.length;
+      }, 1500);
       
       // Simulate processing time with actual calculations
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Clear interval
+      clearInterval(messageInterval);
       
       // Calculate statistics
       const stats = calculateStatistics(validSubjects);
@@ -3328,27 +3998,26 @@
       addToHistory(stats);
       updateAchievement(stats);
       
-      // Complete loading animation
-      clearInterval(progressInterval);
-      progressFill.style.width = '100%';
+      // Hide loading modal
+      document.getElementById('loadingModal').classList.remove('active');
       
-      setTimeout(() => {
-        document.getElementById('progressBar').style.display = 'none';
-        progressFill.style.width = '0%';
-        analyzeBtn.innerHTML = originalBtnHTML;
-        analyzeBtn.disabled = false;
-        
-        // Scroll to results with smooth animation
-        document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        
-        // Show success notification with celebration
-        showNotification('Analisis berhasil! Lihat hasilnya di bawah.', 'success');
-        
-        // Haptic feedback for success
-        if (settings.hapticFeedback && 'vibrate' in navigator) {
-          navigator.vibrate([50, 50, 50]);
-        }
-      }, 500);
+      // Scroll to results with smooth animation
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      
+      // Show success notification with celebration
+      const congratsMessage = userProfile.name 
+        ? `Analisis berhasil, ${userProfile.name}! Lihat hasilnya di bawah.`
+        : 'Analisis berhasil! Lihat hasilnya di bawah.';
+      
+      showNotification(congratsMessage, 'success');
+      
+      // Haptic feedback for success
+      if (settings.hapticFeedback && 'vibrate' in navigator) {
+        navigator.vibrate([50, 50, 50]);
+      }
+      
+      // Hide validation summary after successful analysis
+      validationSummary.classList.add('hidden');
     }
 
     // Calculate statistics
@@ -3371,7 +4040,8 @@
           
           subjectAverages.push({
             name: subject.name || 'Tanpa Nama',
-            average: subjectAvg
+            average: subjectAvg,
+            scores: subject.scores
           });
           
           // Calculate trend
@@ -3422,7 +4092,18 @@
       const trendColor = stats.trend === 'naik' ? 'success' : 
                         stats.trend === 'turun' ? 'danger' : 'warning';
       
+      // Personal greeting
+      const personalGreeting = userProfile.name 
+        ? `Selamat, ${userProfile.name}! Berikut hasil analisis nilai Anda:`
+        : 'Berikut hasil analisis nilai Anda:';
+      
       resultDiv.innerHTML = `
+        <div style="margin-bottom: 1rem; text-align: center; padding: 0.5rem; background: rgba(67, 97, 238, 0.1); border-radius: var(--radius-sm);">
+          <p style="font-size: 0.9rem; color: var(--primary);">
+            <i class="fas fa-user-graduate"></i> ${personalGreeting}
+          </p>
+        </div>
+        
         <div class="result-grid">
           <div class="result-stat">
             <div class="stat-label">Rata-rata Total</div>
@@ -3944,7 +4625,8 @@
         return;
       }
       
-      const shareText = `Hasil analisis raport saya:
+      const userName = userProfile.name ? userProfile.name : 'Siswa';
+      const shareText = `Hasil analisis raport ${userName}:
 Rata-rata: ${currentStats.overallAvg.toFixed(1)}
 Tren: ${currentStats.trend === 'naik' ? 'Naik' : currentStats.trend === 'turun' ? 'Turun' : 'Stabil'}
 Mapel terbaik: ${currentStats.bestSubject ? currentStats.bestSubject.name : '-'}
@@ -3997,21 +4679,34 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
         doc.setFontSize(16);
         doc.text('Laporan Analisis Raport', 105, 20, null, null, 'center');
         
-        doc.setFontSize(10);
-        doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 105, 28, null, null, 'center');
+        // Add user info if available
+        if (userProfile.name) {
+          doc.setFontSize(10);
+          doc.text(`Nama: ${userProfile.name}`, 20, 30);
+          if (userProfile.class) {
+            doc.text(`Kelas: ${userProfile.class}`, 20, 36);
+          }
+          if (userProfile.school) {
+            doc.text(`Sekolah: ${userProfile.school}`, 20, 42);
+          }
+          doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 105, 48, null, null, 'center');
+        } else {
+          doc.setFontSize(10);
+          doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 105, 30, null, null, 'center');
+        }
         
         // Add statistics
         if (currentStats) {
           doc.setFontSize(12);
-          doc.text('Statistik Utama:', 20, 40);
+          doc.text('Statistik Utama:', 20, userProfile.name ? 60 : 50);
           
           doc.setFontSize(10);
-          doc.text(`Rata-rata Total: ${currentStats.overallAvg.toFixed(2)}`, 30, 48);
-          doc.text(`Tren: ${currentStats.trend === 'naik' ? 'Naik' : currentStats.trend === 'turun' ? 'Turun' : 'Stabil'}`, 30, 54);
-          doc.text(`Jumlah Mata Pelajaran: ${currentStats.subjectCount}`, 30, 60);
+          doc.text(`Rata-rata Total: ${currentStats.overallAvg.toFixed(2)}`, 30, userProfile.name ? 68 : 58);
+          doc.text(`Tren: ${currentStats.trend === 'naik' ? 'Naik' : currentStats.trend === 'turun' ? 'Turun' : 'Stabil'}`, 30, userProfile.name ? 74 : 64);
+          doc.text(`Jumlah Mata Pelajaran: ${currentStats.subjectCount}`, 30, userProfile.name ? 80 : 70);
           
           if (currentStats.bestSubject) {
-            doc.text(`Mata Pelajaran Terbaik: ${currentStats.bestSubject.name} (${currentStats.bestSubject.average.toFixed(1)})`, 30, 66);
+            doc.text(`Mata Pelajaran Terbaik: ${currentStats.bestSubject.name} (${currentStats.bestSubject.average.toFixed(1)})`, 30, userProfile.name ? 86 : 76);
           }
         }
         
@@ -4044,6 +4739,18 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
         
         // Prepare data
         const data = [];
+        
+        // Add header with user info if available
+        if (userProfile.name) {
+          data.push(['Laporan Analisis Raport']);
+          data.push(['']);
+          data.push(['Nama Siswa:', userProfile.name]);
+          if (userProfile.class) data.push(['Kelas:', userProfile.class]);
+          if (userProfile.school) data.push(['Sekolah:', userProfile.school]);
+          data.push(['Tanggal:', new Date().toLocaleDateString('id-ID')]);
+          data.push(['']);
+        }
+        
         data.push(['No', 'Mata Pelajaran', 'Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Rata-rata']);
         
         validSubjects.forEach((subject, index) => {
@@ -4080,6 +4787,7 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
     // Export to JSON
     function exportToJSON() {
       const data = {
+        userProfile: userProfile,
         subjects: subjects,
         exportDate: new Date().toISOString(),
         stats: currentStats
@@ -4197,7 +4905,7 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
           subjectCard.innerHTML = `
             <div class="subject-header">
               <div class="subject-name">
-                <input type="text" value="${subjectData.name}" class="mapel" onchange="updateSubjectName(${subjectId}, this.value)">
+                <input type="text" value="${subjectData.name}" class="mapel" onchange="updateSubjectName(${subjectId}, this.value)" oninput="validateSubjectName(${subjectId}, this)">
               </div>
               <div class="subject-actions">
                 <button class="subject-action-btn" onclick="duplicateSubject(${subjectId})" title="Duplikat">
@@ -4214,7 +4922,9 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
                   <label>Sem ${j + 1}</label>
                   <input type="number" min="0" max="100" value="${score !== null ? score : ''}" class="nilai" 
                          onchange="updateSubjectScore(${subjectId}, ${j}, this.value)"
-                         oninput="validateScore(this)">
+                         oninput="validateScore(this, true)"
+                         onblur="validateScore(this)">
+                  <div class="validation-message" id="validation-${subjectId}-${j}"></div>
                 </div>
               `).join('')}
             </div>
@@ -4225,7 +4935,8 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
           subjects.push({
             id: subjectId,
             name: subjectData.name,
-            scores: subjectData.scores
+            scores: subjectData.scores,
+            validated: true
           });
         });
         
@@ -4251,6 +4962,7 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       document.getElementById('autoSave').checked = settings.autoSave;
       document.getElementById('notifications').checked = settings.notifications;
       document.getElementById('animations').checked = settings.animations;
+      document.getElementById('validation').checked = settings.validation;
       document.getElementById('maxSubjects').value = settings.maxSubjects;
       
       document.getElementById('settingsModal').classList.add('active');
@@ -4261,6 +4973,7 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       settings.autoSave = document.getElementById('autoSave').checked;
       settings.notifications = document.getElementById('notifications').checked;
       settings.animations = document.getElementById('animations').checked;
+      settings.validation = document.getElementById('validation').checked;
       settings.maxSubjects = parseInt(document.getElementById('maxSubjects').value);
       
       localStorage.setItem('raportSettings', JSON.stringify(settings));
@@ -4300,6 +5013,8 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
     // Show loading
     function showLoading() {
       document.getElementById('loadingModal').classList.add('active');
+      document.getElementById('analyzingText').textContent = 'Menyiapkan Ekspor';
+      document.getElementById('analyzingSubtext').textContent = 'Harap tunggu...';
     }
 
     // Hide loading
@@ -4397,7 +5112,7 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
             subjectCard.innerHTML = `
               <div class="subject-header">
                 <div class="subject-name">
-                  <input type="text" value="${subject.name}" placeholder="Mata Pelajaran" class="mapel" onchange="updateSubjectName(${subject.id}, this.value)">
+                  <input type="text" value="${subject.name}" placeholder="Mata Pelajaran" class="mapel" onchange="updateSubjectName(${subject.id}, this.value)" oninput="validateSubjectName(${subject.id}, this)">
                 </div>
                 <div class="subject-actions">
                   <button class="subject-action-btn" onclick="duplicateSubject(${subject.id})" title="Duplikat">
@@ -4414,7 +5129,9 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
                     <label>Sem ${i + 1}</label>
                     <input type="number" min="0" max="100" value="${score !== null ? score : ''}" class="nilai" 
                            onchange="updateSubjectScore(${subject.id}, ${i}, this.value)"
-                           oninput="validateScore(this)">
+                           oninput="validateScore(this, true)"
+                           onblur="validateScore(this)">
+                    <div class="validation-message" id="validation-${subject.id}-${i}"></div>
                   </div>
                 `).join('')}
               </div>
@@ -4471,7 +5188,7 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       // Ctrl/Cmd + A: Analyze
       if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
         e.preventDefault();
-        analyze();
+        validateAndAnalyze();
       }
       
       // Ctrl/Cmd + D: Sample data
@@ -4498,7 +5215,7 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       
       // Escape: Close modals
       if (e.key === 'Escape') {
-        const modals = ['exportModal', 'templatesModal', 'settingsModal', 'guideModal', 'aboutModal'];
+        const modals = ['exportModal', 'templatesModal', 'settingsModal', 'guideModal', 'aboutModal', 'userModal', 'loadingModal'];
         modals.forEach(modalId => closeModal(modalId));
       }
     });
@@ -4513,7 +5230,8 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
         button:not(.print-only),
         .action-btn,
         .theme-toggle,
-        .header-btn {
+        .header-btn,
+        .user-welcome {
           display: none !important;
         }
         
