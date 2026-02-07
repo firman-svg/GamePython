@@ -320,43 +320,6 @@
       flex: 1;
     }
 
-    /* Accessibility Tools */
-    .accessibility-tools {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .accessibility-btn {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--gradient);
-      border: none;
-      color: white;
-      font-size: 1.2rem;
-      cursor: pointer;
-      box-shadow: var(--shadow-lg);
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .accessibility-btn:hover {
-      transform: scale(1.1);
-      box-shadow: var(--neon-glow);
-    }
-
-    .accessibility-btn.active {
-      background: var(--accent);
-      animation: pulse 1.5s infinite;
-    }
-
     /* 3D Chart Container */
     .chart-3d-container {
       position: relative;
@@ -859,17 +822,6 @@
       
       .user-details h3 {
         font-size: 0.9rem;
-      }
-
-      .accessibility-tools {
-        bottom: 70px;
-        right: 10px;
-      }
-
-      .accessibility-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
       }
     }
 
@@ -2187,8 +2139,7 @@
       button:not(.print-only),
       .action-btn,
       .theme-toggle,
-      .header-btn,
-      .accessibility-tools {
+      .header-btn {
         display: none !important;
       }
       
@@ -2321,13 +2272,14 @@
       transform: scale(1.2);
     }
 
-    /* Analyzing Animation */
+    /* Analyzing Animation - FIXED */
     .analyzing-container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 3rem 1rem;
+      padding: 2rem;
+      min-height: 300px;
     }
 
     .analyzing-animation {
@@ -2347,7 +2299,7 @@
 
     .analyzing-circle:nth-child(1) {
       background: conic-gradient(from 0deg, var(--primary), var(--secondary), var(--accent), var(--primary));
-      animation: loading 2s linear infinite;
+      animation: spin 2s linear infinite;
     }
 
     .analyzing-circle:nth-child(2) {
@@ -2367,21 +2319,23 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      animation: analyzing 2s infinite ease-in-out;
+      animation: pulse 2s infinite ease-in-out;
     }
 
     .analyzing-text {
       text-align: center;
       color: var(--text);
-      font-size: 1rem;
+      font-size: 1.2rem;
       margin-bottom: 0.5rem;
+      font-weight: 600;
     }
 
     .analyzing-subtext {
       text-align: center;
       color: var(--text-secondary);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       max-width: 300px;
+      line-height: 1.5;
     }
 
     /* Data Validation Styles */
@@ -2478,6 +2432,12 @@
 
     .voice-action {
       color: var(--text-secondary);
+    }
+
+    /* Fixed Loading Animation */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -2595,19 +2555,6 @@
   
   <!-- Floating Particles -->
   <div class="floating-particles" id="particles"></div>
-
-  <!-- Accessibility Tools -->
-  <div class="accessibility-tools">
-    <button class="accessibility-btn" id="voiceControlBtn" aria-label="Voice Navigation Control" title="Voice Navigation">
-      <i class="fas fa-microphone"></i>
-    </button>
-    <button class="accessibility-btn" id="screenReaderBtn" aria-label="Toggle Screen Reader Mode" title="Screen Reader Mode">
-      <i class="fas fa-blind"></i>
-    </button>
-    <button class="accessibility-btn" id="highContrastBtn" aria-label="Toggle High Contrast Mode" title="High Contrast Mode">
-      <i class="fas fa-adjust"></i>
-    </button>
-  </div>
 
   <!-- Header -->
   <header>
@@ -3077,7 +3024,7 @@
     </div>
   </div>
 
-  <!-- Settings Modal -->
+  <!-- Settings Modal - REVISED -->
   <div class="modal" id="settingsModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -3117,24 +3064,27 @@
             <input type="checkbox" id="voiceControl" checked>
             <span>Voice Navigation</span>
           </label>
+          <p style="font-size: 0.75rem; color: var(--text-secondary); margin-left: 1.5rem; margin-top: -0.2rem;">
+            Gunakan Ctrl+V untuk mengaktifkan/menonaktifkan voice control
+          </p>
         </div>
         <div class="setting-item">
           <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
             <input type="checkbox" id="screenReaderMode" checked>
             <span>Screen Reader Mode</span>
           </label>
-        </div>
-        <div class="setting-item">
-          <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-            <input type="checkbox" id="highContrast">
-            <span>High Contrast Mode</span>
-          </label>
+          <p style="font-size: 0.75rem; color: var(--text-secondary); margin-left: 1.5rem; margin-top: -0.2rem;">
+            Mengoptimalkan aplikasi untuk pembaca layar
+          </p>
         </div>
         <div class="setting-item">
           <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
             <input type="checkbox" id="hapticFeedback" checked>
             <span>Haptic Feedback</span>
           </label>
+          <p style="font-size: 0.75rem; color: var(--text-secondary); margin-left: 1.5rem; margin-top: -0.2rem;">
+            Getaran pada interaksi (hanya perangkat yang mendukung)
+          </p>
         </div>
         
         <div class="setting-item">
@@ -3213,7 +3163,7 @@
             <strong>Fitur Aksesibilitas</strong>
           </div>
           <p style="font-size: 0.85rem; color: var(--text-secondary);">
-            Gunakan tombol aksesibilitas di kanan bawah untuk Voice Navigation, Screen Reader Mode, dan High Contrast.
+            Aktifkan fitur aksesibilitas di pengaturan untuk Voice Navigation dan Screen Reader Mode.
           </p>
         </div>
         
@@ -3297,7 +3247,7 @@
             <div>
               <strong>Aksesibilitas Lengkap</strong>
               <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.2rem;">
-                Screen reader optimized, high contrast mode, dan fitur aksesibilitas lainnya.
+                Screen reader optimized dan fitur aksesibilitas lainnya.
               </p>
             </div>
           </div>
@@ -3330,10 +3280,10 @@
     </div>
   </div>
 
-  <!-- Loading Overlay -->
+  <!-- Loading Overlay - REVISED -->
   <div class="modal" id="loadingModal">
-    <div class="modal-content" style="max-width: 400px; text-align: center;">
-      <div class="modal-body">
+    <div class="modal-content" style="max-width: 400px; text-align: center; background: transparent; border: none; box-shadow: none;">
+      <div class="modal-body" style="padding: 2rem; background: var(--glass-bg); border-radius: var(--radius); border: 1px solid var(--glass-border);">
         <div class="analyzing-container">
           <div class="analyzing-animation">
             <div class="analyzing-circle"></div>
@@ -3375,8 +3325,7 @@
       hapticFeedback: true,
       gestureControls: true,
       voiceControl: true,
-      screenReaderMode: true,
-      highContrast: false
+      screenReaderMode: true
     };
 
     // Voice Recognition Variables
@@ -3404,9 +3353,6 @@
     const voiceStatus = document.getElementById("voiceStatus");
     const voiceStatusText = document.getElementById("voiceStatusText");
     const voiceCommands = document.getElementById("voiceCommands");
-    const voiceControlBtn = document.getElementById("voiceControlBtn");
-    const screenReaderBtn = document.getElementById("screenReaderBtn");
-    const highContrastBtn = document.getElementById("highContrastBtn");
     const chart3DContainer = document.getElementById("chart3DContainer");
 
     // Initialize the app
@@ -3502,7 +3448,6 @@
           console.log('Voice recognition started');
           voiceStatus.classList.add('active', 'listening');
           voiceStatusText.textContent = 'Mendengarkan perintah...';
-          voiceControlBtn.classList.add('active');
         };
         
         recognition.onresult = function(event) {
@@ -3536,7 +3481,6 @@
         };
       } else {
         console.warn('Speech recognition not supported');
-        voiceControlBtn.style.display = 'none';
       }
     }
 
@@ -3653,7 +3597,6 @@
         isListening = false;
         recognition.stop();
         voiceStatus.classList.remove('active', 'listening');
-        voiceControlBtn.classList.remove('active');
         showNotification('Voice navigation dimatikan', 'info');
       }
     }
@@ -3679,57 +3622,10 @@
 
     // Setup Accessibility Features
     function setupAccessibility() {
-      // Screen Reader Mode
-      screenReaderBtn.addEventListener('click', function() {
-        settings.screenReaderMode = !settings.screenReaderMode;
-        if (settings.screenReaderMode) {
-          document.body.setAttribute('aria-live', 'polite');
-          document.body.setAttribute('aria-atomic', 'true');
-          screenReaderBtn.classList.add('active');
-          showNotification('Screen Reader Mode diaktifkan', 'success');
-          speakFeedback('Screen reader mode diaktifkan');
-        } else {
-          document.body.removeAttribute('aria-live');
-          document.body.removeAttribute('aria-atomic');
-          screenReaderBtn.classList.remove('active');
-          showNotification('Screen Reader Mode dimatikan', 'info');
-        }
-      });
-
-      // High Contrast Mode
-      highContrastBtn.addEventListener('click', function() {
-        settings.highContrast = !settings.highContrast;
-        if (settings.highContrast) {
-          document.body.classList.add('high-contrast');
-          highContrastBtn.classList.add('active');
-          showNotification('High Contrast Mode diaktifkan', 'success');
-          speakFeedback('High contrast mode diaktifkan');
-        } else {
-          document.body.classList.remove('high-contrast');
-          highContrastBtn.classList.remove('active');
-          showNotification('High Contrast Mode dimatikan', 'info');
-        }
-      });
-
-      // Voice Control Button
-      voiceControlBtn.addEventListener('click', function() {
-        if (settings.voiceControl) {
-          toggleVoiceRecognition();
-        } else {
-          showNotification('Voice Navigation dinonaktifkan di pengaturan', 'warning');
-        }
-      });
-
       // Initialize based on settings
       if (settings.screenReaderMode) {
         document.body.setAttribute('aria-live', 'polite');
         document.body.setAttribute('aria-atomic', 'true');
-        screenReaderBtn.classList.add('active');
-      }
-
-      if (settings.highContrast) {
-        document.body.classList.add('high-contrast');
-        highContrastBtn.classList.add('active');
       }
     }
 
@@ -4040,7 +3936,7 @@
 
     // Add ripple effect to buttons
     function addRippleEffect() {
-      const buttons = document.querySelectorAll('.btn, .action-btn, .theme-toggle, .header-btn, .subject-action-btn, .user-edit-btn, .accessibility-btn, .chart-3d-btn');
+      const buttons = document.querySelectorAll('.btn, .action-btn, .theme-toggle, .header-btn, .subject-action-btn, .user-edit-btn, .chart-3d-btn');
       buttons.forEach(button => {
         button.addEventListener('click', function(e) {
           createRipple(e);
@@ -4593,7 +4489,7 @@
       };
     }
 
-    // Validate and analyze
+    // Validate and analyze - REVISED untuk loading
     function validateAndAnalyze() {
       const validation = validateAllSubjects();
       
@@ -4877,7 +4773,7 @@
       }, 300);
     }
 
-    // Analyze function with improved loading animation
+    // Analyze function - FIXED dengan loading yang benar
     async function analyze() {
       const validSubjects = subjects.filter(subject => 
         subject.scores.some(score => score !== null)
@@ -4889,59 +4785,59 @@
         return;
       }
       
-      document.getElementById('loadingModal').classList.add('active');
+      // Tampilkan loading modal dengan benar
+      const loadingModal = document.getElementById('loadingModal');
+      loadingModal.classList.add('active');
+      
       const analyzingText = document.getElementById('analyzingText');
       const analyzingSubtext = document.getElementById('analyzingSubtext');
       
       if (userProfile.name) {
         analyzingText.textContent = `Menganalisis nilai ${userProfile.name}`;
+      } else {
+        analyzingText.textContent = 'Menganalisis Data Nilai';
       }
       
-      const messages = [
-        "Menganalisis pola nilai...",
-        "Menghitung rata-rata...",
-        "Mengevaluasi tren belajar...",
-        "Menyiapkan rekomendasi...",
-        "Menyusun laporan..."
-      ];
+      analyzingSubtext.textContent = 'Harap tunggu, sistem sedang memproses data Anda...';
       
-      let messageIndex = 0;
-      const messageInterval = setInterval(() => {
-        analyzingSubtext.textContent = messages[messageIndex];
-        messageIndex = (messageIndex + 1) % messages.length;
-      }, 1500);
-      
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      clearInterval(messageInterval);
-      
-      const stats = calculateStatistics(validSubjects);
-      currentStats = stats;
-      
-      displayResults(stats);
-      updateChart(validSubjects, stats);
-      update3DChartData(stats);
-      updateDashboard();
-      updateGradeDistribution(validSubjects);
-      addToHistory(stats);
-      updateAchievement(stats);
-      
-      document.getElementById('loadingModal').classList.remove('active');
-      
-      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      
-      const congratsMessage = userProfile.name 
-        ? `Analisis berhasil, ${userProfile.name}! Lihat hasilnya di bawah.`
-        : 'Analisis berhasil! Lihat hasilnya di bawah.';
-      
-      showNotification(congratsMessage, 'success');
-      speakFeedback(congratsMessage);
-      
-      if (settings.hapticFeedback && 'vibrate' in navigator) {
-        navigator.vibrate([50, 50, 50]);
-      }
-      
-      validationSummary.classList.add('hidden');
+      // Simulasi proses analisis
+      setTimeout(async () => {
+        try {
+          const stats = calculateStatistics(validSubjects);
+          currentStats = stats;
+          
+          displayResults(stats);
+          updateChart(validSubjects, stats);
+          update3DChartData(stats);
+          updateDashboard();
+          updateGradeDistribution(validSubjects);
+          addToHistory(stats);
+          updateAchievement(stats);
+          
+          // Sembunyikan loading modal setelah semua selesai
+          loadingModal.classList.remove('active');
+          
+          document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          
+          const congratsMessage = userProfile.name 
+            ? `Analisis berhasil, ${userProfile.name}! Lihat hasilnya di bawah.`
+            : 'Analisis berhasil! Lihat hasilnya di bawah.';
+          
+          showNotification(congratsMessage, 'success');
+          speakFeedback(congratsMessage);
+          
+          if (settings.hapticFeedback && 'vibrate' in navigator) {
+            navigator.vibrate([50, 50, 50]);
+          }
+          
+          validationSummary.classList.add('hidden');
+        } catch (error) {
+          console.error('Error during analysis:', error);
+          loadingModal.classList.remove('active');
+          showNotification('Terjadi kesalahan saat menganalisis data', 'error');
+          speakFeedback('Terjadi kesalahan saat menganalisis data');
+        }
+      }, 2000); // Simulasi proses 2 detik
     }
 
     // Update 3D chart data
@@ -5254,7 +5150,17 @@
 
     // Update chart
     function updateChart(validSubjects, stats) {
-      const ctx = document.getElementById('gradeChart').getContext('2d');
+      // Create canvas if it doesn't exist
+      let canvas = document.getElementById('gradeChart');
+      if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'gradeChart';
+        canvas.width = 400;
+        canvas.height = 300;
+        document.querySelector('.chart-container').appendChild(canvas);
+      }
+      
+      const ctx = canvas.getContext('2d');
       
       if (chart) {
         chart.destroy();
@@ -5986,7 +5892,6 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       document.getElementById('maxSubjects').value = settings.maxSubjects;
       document.getElementById('voiceControl').checked = settings.voiceControl;
       document.getElementById('screenReaderMode').checked = settings.screenReaderMode;
-      document.getElementById('highContrast').checked = settings.highContrast;
       document.getElementById('hapticFeedback').checked = settings.hapticFeedback;
       
       document.getElementById('settingsModal').classList.add('active');
@@ -6001,7 +5906,6 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       settings.maxSubjects = parseInt(document.getElementById('maxSubjects').value);
       settings.voiceControl = document.getElementById('voiceControl').checked;
       settings.screenReaderMode = document.getElementById('screenReaderMode').checked;
-      settings.highContrast = document.getElementById('highContrast').checked;
       settings.hapticFeedback = document.getElementById('hapticFeedback').checked;
       
       const key = getUserStorageKey('settings');
@@ -6011,19 +5915,9 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       if (settings.screenReaderMode) {
         document.body.setAttribute('aria-live', 'polite');
         document.body.setAttribute('aria-atomic', 'true');
-        screenReaderBtn.classList.add('active');
       } else {
         document.body.removeAttribute('aria-live');
         document.body.removeAttribute('aria-atomic');
-        screenReaderBtn.classList.remove('active');
-      }
-      
-      if (settings.highContrast) {
-        document.body.classList.add('high-contrast');
-        highContrastBtn.classList.add('active');
-      } else {
-        document.body.classList.remove('high-contrast');
-        highContrastBtn.classList.remove('active');
       }
       
       // Stop voice recognition if disabled
@@ -6070,14 +5964,18 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
 
     // Show loading
     function showLoading() {
-      document.getElementById('loadingModal').classList.add('active');
-      document.getElementById('analyzingText').textContent = 'Menyiapkan Ekspor';
-      document.getElementById('analyzingSubtext').textContent = 'Harap tunggu...';
+      const loadingModal = document.getElementById('loadingModal');
+      if (loadingModal) {
+        loadingModal.classList.add('active');
+      }
     }
 
     // Hide loading
     function hideLoading() {
-      document.getElementById('loadingModal').classList.remove('active');
+      const loadingModal = document.getElementById('loadingModal');
+      if (loadingModal) {
+        loadingModal.classList.remove('active');
+      }
     }
 
     // Show notification with animation
@@ -6271,21 +6169,14 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
         closeVoiceCommands();
       }
       
-      // Voice control shortcut
+      // Voice control shortcut - Ctrl+V
       if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
         e.preventDefault();
-        toggleVoiceRecognition();
-      }
-      
-      // Accessibility shortcuts
-      if ((e.ctrlKey || e.altKey) && e.key === 'h') {
-        e.preventDefault();
-        document.getElementById('highContrastBtn').click();
-      }
-      
-      if ((e.ctrlKey || e.altKey) && e.key === 's') {
-        e.preventDefault();
-        document.getElementById('screenReaderBtn').click();
+        if (settings.voiceControl) {
+          toggleVoiceRecognition();
+        } else {
+          showNotification('Voice Navigation dinonaktifkan di pengaturan', 'warning');
+        }
       }
     });
 
@@ -6301,7 +6192,6 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
         .theme-toggle,
         .header-btn,
         .user-welcome,
-        .accessibility-tools,
         .chart-3d-controls {
           display: none !important;
         }
@@ -6342,45 +6232,6 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
     `;
     document.head.appendChild(printCSS);
 
-    // High contrast mode styles
-    const highContrastCSS = document.createElement('style');
-    highContrastCSS.textContent = `
-      .high-contrast {
-        --primary: #000000;
-        --primary-dark: #000000;
-        --secondary: #000000;
-        --accent: #000000;
-        --success: #00ff00;
-        --warning: #ffff00;
-        --danger: #ff0000;
-        --light: #ffffff;
-        --dark: #000000;
-        --dark-bg: #ffffff;
-        --card-bg: #ffffff;
-        --border: #000000;
-        --text: #000000;
-        --text-secondary: #333333;
-        --gradient: linear-gradient(135deg, #000000 0%, #000000 100%);
-      }
-      
-      .high-contrast .card,
-      .high-contrast .input-section,
-      .high-contrast .result-section,
-      .high-contrast .chart-section,
-      .high-contrast .sidebar-card {
-        border: 2px solid #000000 !important;
-      }
-      
-      .high-contrast .btn {
-        border: 2px solid #000000 !important;
-      }
-      
-      .high-contrast .notification {
-        border: 2px solid #000000 !important;
-      }
-    `;
-    document.head.appendChild(highContrastCSS);
-
     // Service Worker Registration for PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -6390,30 +6241,6 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
           console.log('ServiceWorker registration failed: ', err);
         });
       });
-    }
-
-    // Create a simple service worker inline (for demo purposes)
-    const serviceWorkerCode = `
-      self.addEventListener('install', event => {
-        console.log('Service Worker installing.');
-      });
-      
-      self.addEventListener('activate', event => {
-        console.log('Service Worker activating.');
-      });
-      
-      self.addEventListener('fetch', event => {
-        console.log('Fetching:', event.request.url);
-      });
-    `;
-    
-    const blob = new Blob([serviceWorkerCode], { type: 'application/javascript' });
-    const swURL = URL.createObjectURL(blob);
-    
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register(swURL)
-        .then(reg => console.log('SW registered'))
-        .catch(err => console.log('SW registration failed:', err));
     }
   </script>
 </body>
