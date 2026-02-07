@@ -2850,6 +2850,7 @@
     let currentStats = null;
     let templates = [];
     let userProfile = {
+      id: null,
       name: '',
       class: '',
       school: '',
@@ -2879,53 +2880,40 @@
 
     // Initialize the app
     document.addEventListener('DOMContentLoaded', function() {
-      // Show splash screen first
       showSplashScreen();
       
-      // Load settings and user profile
       loadSettings();
       loadUserProfile();
       
-      // Add initial subject
       setTimeout(() => {
         addSubject();
         
-        // Initialize particles animation
         createParticles();
         
-        // Load saved data if exists
         loadSavedData();
         
-        // Set theme based on user preference
         const savedTheme = localStorage.getItem('raportTheme');
         if (savedTheme === 'light') {
           toggleTheme();
         }
         
-        // Update dashboard
         updateDashboard();
         
-        // Add event listeners for better UX
         setupEventListeners();
         
-        // Setup PWA
         setupPWA();
         
-        // Setup gesture controls
         setupGestureControls();
         
-        // Check network status
         updateNetworkStatus();
         window.addEventListener('online', updateNetworkStatus);
         window.addEventListener('offline', updateNetworkStatus);
         
-        // Show welcome message after splash screen
         setTimeout(() => {
           if (settings.notifications) {
             showNotification('Selamat datang di Smart Raport Analyzer Pro!', 'info');
           }
           
-          // Show gesture hint on first visit
           if (settings.gestureControls && localStorage.getItem('gestureHintShown') !== 'true') {
             setTimeout(() => {
               showGestureHint();
@@ -2935,6 +2923,20 @@
         }, 500);
       }, 1500);
     });
+
+    // Helper function to get user-specific storage key
+    function getUserStorageKey(key) {
+      if (!userProfile.id) {
+        // If no user ID yet, use default
+        return `raport_${key}_default`;
+      }
+      return `raport_${key}_${userProfile.id}`;
+    }
+
+    // Generate unique user ID
+    function generateUserId() {
+      return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
 
     // Show splash screen with progress animation
     function showSplashScreen() {
@@ -2954,15 +2956,41 @@
 
     // Load user profile
     function loadUserProfile() {
-      const savedProfile = localStorage.getItem('raportUserProfile');
-      if (savedProfile) {
-        try {
+      // First, check if there's a current user ID
+      const currentUserId = localStorage.getItem('raportCurrentUserId');
+      
+      if (currentUserId) {
+        // Load profile for this user
+        const savedProfile = localStorage.getItem(`raportUserProfile_${currentUserId}`);
+        if (savedProfile) {
           userProfile = JSON.parse(savedProfile);
           updateUserWelcome();
-        } catch (e) {
-          console.error('Error loading user profile:', e);
+        } else {
+          // Profile not found, create new one
+          createNewUserProfile();
         }
+      } else {
+        // No user exists, create new one
+        createNewUserProfile();
       }
+    }
+
+    // Create new user profile
+    function createNewUserProfile() {
+      userProfile.id = generateUserId();
+      userProfile.name = '';
+      userProfile.class = '';
+      userProfile.school = '';
+      userProfile.lastUpdated = new Date().toISOString();
+      
+      // Save the profile
+      localStorage.setItem(`raportUserProfile_${userProfile.id}`, JSON.stringify(userProfile));
+      localStorage.setItem('raportCurrentUserId', userProfile.id);
+      
+      // Show user modal to collect name
+      setTimeout(() => {
+        showUserModal();
+      }, 1000);
     }
 
     // Save user profile
@@ -2988,13 +3016,27 @@
         return;
       }
       
+      // Check if user already exists with this name
+      const existingUsers = getAllUsers();
+      const nameExists = existingUsers.some(user => 
+        user.id !== userProfile.id && user.name.toLowerCase() === name.toLowerCase()
+      );
+      
+      if (nameExists) {
+        nameValidation.textContent = 'Nama sudah digunakan oleh pengguna lain';
+        nameValidation.className = 'validation-message error';
+        nameInput.style.borderColor = 'var(--danger)';
+        return;
+      }
+      
       // Save profile
       userProfile.name = name;
       userProfile.class = classInput.value;
       userProfile.school = schoolInput.value.trim();
       userProfile.lastUpdated = new Date().toISOString();
       
-      localStorage.setItem('raportUserProfile', JSON.stringify(userProfile));
+      localStorage.setItem(`raportUserProfile_${userProfile.id}`, JSON.stringify(userProfile));
+      localStorage.setItem('raportCurrentUserId', userProfile.id);
       
       // Update UI
       updateUserWelcome();
@@ -3007,6 +3049,24 @@
       if (settings.hapticFeedback && 'vibrate' in navigator) {
         navigator.vibrate(50);
       }
+    }
+
+    // Get all users from localStorage
+    function getAllUsers() {
+      const users = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('raportUserProfile_')) {
+          try {
+            const user = JSON.parse(localStorage.getItem(key));
+            user.id = key.replace('raportUserProfile_', '');
+            users.push(user);
+          } catch (e) {
+            console.error('Error parsing user data:', e);
+          }
+        }
+      }
+      return users;
     }
 
     // Update user welcome section
@@ -3105,17 +3165,13 @@
         const swipeDistanceX = touchEndX - touchStartX;
         const swipeDistanceY = touchEndY - touchStartY;
         
-        // Horizontal swipe (left/right)
         if (Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY) && Math.abs(swipeDistanceX) > swipeThreshold) {
           if (swipeDistanceX > 0) {
-            // Swipe right - go to previous section
             navigateSections(-1);
           } else {
-            // Swipe left - go to next section
             navigateSections(1);
           }
           
-          // Haptic feedback
           if (settings.hapticFeedback && 'vibrate' in navigator) {
             navigator.vibrate(20);
           }
@@ -3132,7 +3188,6 @@
       
       scrollToSection(sections[newIndex]);
       
-      // Update active nav button
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
       const navBtns = document.querySelectorAll('.nav-btn');
       if (navBtns[newIndex]) {
@@ -3176,18 +3231,15 @@
 
     // Setup PWA
     function setupPWA() {
-      // Check if app is already installed
       if (window.matchMedia('(display-mode: standalone)').matches) {
         console.log('App running in standalone mode');
       }
       
-      // Listen for beforeinstallprompt event
       let deferredPrompt;
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
         
-        // Show install prompt after a delay
         setTimeout(() => {
           if (localStorage.getItem('installPromptDismissed') !== 'true') {
             showInstallPrompt();
@@ -3195,7 +3247,6 @@
         }, 3000);
       });
       
-      // Detect when app is successfully installed
       window.addEventListener('appinstalled', () => {
         console.log('App installed successfully');
         installPrompt.classList.remove('active');
@@ -3238,21 +3289,18 @@
 
     // Setup event listeners
     function setupEventListeners() {
-      // Input validation on blur
       document.addEventListener('blur', function(e) {
         if (e.target.type === 'number' && e.target.classList.contains('nilai')) {
           validateScore(e.target);
         }
       }, true);
       
-      // Input validation on input (real-time)
       document.addEventListener('input', function(e) {
         if (e.target.type === 'number' && e.target.classList.contains('nilai')) {
           validateScore(e.target, true);
         }
       }, true);
       
-      // Enter key to add new subject
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && e.target.classList.contains('mapel')) {
           e.preventDefault();
@@ -3265,17 +3313,13 @@
         }
       });
       
-      // Auto-save on input change
       if (settings.autoSave) {
         document.addEventListener('input', function() {
           saveToLocalStorage();
         }, { passive: true });
       }
       
-      // Add ripple effect to buttons
       addRippleEffect();
-      
-      // Pull to refresh
       setupPullToRefresh();
     }
 
@@ -3298,7 +3342,6 @@
         const pullDistance = touchY - touchStartY;
         
         if (pullDistance > 100) {
-          // Show refresh animation
           isPulling = false;
           refreshData();
         }
@@ -3311,13 +3354,9 @@
 
     // Refresh data with animation
     function refreshData() {
-      // Show refresh animation
       showNotification('Menyegarkan data...', 'info');
-      
-      // Reload data from localStorage
       loadSavedData();
       
-      // Haptic feedback
       if (settings.hapticFeedback && 'vibrate' in navigator) {
         navigator.vibrate(30);
       }
@@ -3331,14 +3370,12 @@
         const particle = document.createElement('div');
         particle.classList.add('particle');
         
-        // Random properties
         const size = Math.random() * 2 + 1;
         const color = colors[Math.floor(Math.random() * colors.length)];
         const left = Math.random() * 100;
         const duration = Math.random() * 20 + 10;
         const delay = Math.random() * 5;
         
-        // Apply styles
         particle.style.width = `${size}px`;
         particle.style.height = `${size}px`;
         particle.style.backgroundColor = color;
@@ -3358,19 +3395,15 @@
       isLightMode = !isLightMode;
       document.body.classList.toggle('light-mode', isLightMode);
       
-      // Update theme toggle icon
       const icon = themeToggle.querySelector('i');
       icon.className = isLightMode ? 'fas fa-sun' : 'fas fa-moon';
       
-      // Save theme preference
       localStorage.setItem('raportTheme', isLightMode ? 'light' : 'dark');
       
-      // Update chart colors if chart exists
       if (chart) {
         updateChartTheme();
       }
       
-      // Show notification
       if (settings.notifications) {
         showNotification(`Mode ${isLightMode ? 'Terang' : 'Gelap'} diaktifkan`, 'success');
       }
@@ -3425,7 +3458,6 @@
         validated: false
       });
       
-      // Add bounce animation
       subjectCard.classList.add('animate-bounce');
       setTimeout(() => {
         subjectCard.classList.remove('animate-bounce');
@@ -3434,7 +3466,6 @@
       saveToLocalStorage();
       updateDashboard();
       
-      // Haptic feedback
       if (settings.hapticFeedback && 'vibrate' in navigator) {
         navigator.vibrate(20);
       }
@@ -3465,13 +3496,11 @@
       const parent = input.closest('.score-input');
       const validationMsg = parent.querySelector('.validation-message');
       
-      // Reset styling and validation message
       input.classList.remove('valid', 'warning', 'error', 'empty');
       input.style.borderColor = '';
       validationMsg.textContent = '';
       validationMsg.className = 'validation-message';
       
-      // If empty
       if (value === '' || value === null || value === undefined) {
         if (!isRealTime) {
           input.classList.add('empty');
@@ -3481,7 +3510,6 @@
         return { isValid: false, value: null, message: 'Nilai kosong' };
       }
       
-      // Check if it's a number
       const numValue = parseFloat(value);
       if (isNaN(numValue)) {
         input.classList.add('error');
@@ -3490,14 +3518,12 @@
         return { isValid: false, value: null, message: 'Bukan angka' };
       }
       
-      // Check if it's an integer (optional, could accept decimals)
       if (!Number.isInteger(numValue) && isRealTime) {
         input.classList.add('warning');
         validationMsg.textContent = 'Disarankan menggunakan bilangan bulat';
         validationMsg.className = 'validation-message warning';
       }
       
-      // Check range
       let finalValue = numValue;
       let message = '';
       
@@ -3549,7 +3575,6 @@
       const warnings = [];
       let hasValidData = false;
       
-      // Check if user has entered name
       if (!userProfile.name) {
         warnings.push({
           type: 'warning',
@@ -3558,7 +3583,6 @@
         });
       }
       
-      // Check each subject
       subjects.forEach((subject, subjectIndex) => {
         const subjectElement = document.getElementById(`subject-${subject.id}`);
         if (!subjectElement) return;
@@ -3566,7 +3590,6 @@
         const nameInput = subjectElement.querySelector('.mapel');
         const scoreInputs = subjectElement.querySelectorAll('.nilai');
         
-        // Check subject name
         if (!nameInput.value.trim()) {
           errors.push({
             type: 'error',
@@ -3576,7 +3599,6 @@
           });
         }
         
-        // Check scores
         let hasScore = false;
         scoreInputs.forEach((input, index) => {
           const validation = validateScore(input);
@@ -3585,7 +3607,6 @@
             hasValidData = true;
           }
           
-          // Highlight empty scores
           if (input.value === '' && !settings.validation) {
             input.classList.add('empty');
             const validationMsg = input.closest('.score-input').querySelector('.validation-message');
@@ -3603,7 +3624,6 @@
         }
       });
       
-      // Show validation summary
       if (errors.length > 0 || warnings.length > 0) {
         validationSummary.classList.remove('hidden');
         validationSummary.className = errors.length > 0 ? 'validation-summary' : 'validation-summary warning';
@@ -3634,10 +3654,8 @@
         
         validationList.innerHTML = html;
         
-        // Scroll to validation summary
         validationSummary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         
-        // Shake animation for errors
         if (errors.length > 0) {
           validationSummary.classList.add('animate-shake');
           setTimeout(() => validationSummary.classList.remove('animate-shake'), 500);
@@ -3661,7 +3679,6 @@
       if (!validation.hasValidData) {
         showNotification('Masukkan setidaknya satu nilai untuk dianalisis', 'warning');
         
-        // Highlight all empty fields
         document.querySelectorAll('.nilai').forEach(input => {
           if (input.value === '') {
             input.classList.add('empty');
@@ -3678,7 +3695,6 @@
       if (validation.errors.length > 0) {
         showNotification('Perbaiki kesalahan sebelum menganalisis', 'error');
         
-        // Focus on first error
         if (validation.errors[0].element) {
           validation.errors[0].element.focus();
         }
@@ -3686,7 +3702,6 @@
         return;
       }
       
-      // If only warnings, ask for confirmation
       if (validation.warnings.length > 0 && validation.errors.length === 0) {
         const confirmMessage = validation.warnings.length === 1 
           ? validation.warnings[0].message 
@@ -3712,7 +3727,6 @@
       newSubject.name = original.name + " (Salinan)";
       newSubject.scores = [...original.scores];
       
-      // Update UI
       const subjectCard = document.getElementById(`subject-${newSubject.id}`);
       const nameInput = subjectCard.querySelector('.mapel');
       nameInput.value = newSubject.name;
@@ -3782,7 +3796,6 @@
         { name: "Geografi", scores: [80, 82, 85, 83, 87] }
       ];
       
-      // Clear existing
       subjects = [];
       subjectsDiv.innerHTML = '';
       
@@ -3840,7 +3853,6 @@
     function clearAll() {
       if (subjects.length === 0) return;
       
-      // Create custom confirmation modal
       const confirmModal = document.createElement('div');
       confirmModal.className = 'modal active';
       confirmModal.innerHTML = `
@@ -3867,10 +3879,8 @@
       subjects = [];
       subjectsDiv.innerHTML = '';
       
-      // Clear validation summary
       validationSummary.classList.add('hidden');
       
-      // Clear results
       document.getElementById('result').innerHTML = `
         <div class="text-center" style="padding: 2rem 0; color: var(--text-secondary);">
           <i class="fas fa-chart-bar" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5;"></i>
@@ -3878,13 +3888,11 @@
         </div>
       `;
       
-      // Clear chart
       if (chart) {
         chart.destroy();
         chart = null;
       }
       
-      // Clear recommendations
       document.getElementById('recommendations').innerHTML = `
         <li class="recommendation-item">
           <div class="rec-icon">
@@ -3894,7 +3902,6 @@
         </li>
       `;
       
-      // Clear grade distribution
       document.getElementById('gradeDistribution').innerHTML = `
         <div class="text-center" style="padding: 1rem 0; color: var(--text-secondary);">
           <i class="fas fa-chart-pie" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
@@ -3902,7 +3909,6 @@
         </div>
       `;
       
-      // Clear history list
       document.getElementById('historyList').innerHTML = `
         <div class="text-center" style="padding: 1rem 0; color: var(--text-secondary);">
           <i class="fas fa-clock" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
@@ -3910,7 +3916,6 @@
         </div>
       `;
       
-      // Reset achievement
       document.getElementById('achievementContent').innerHTML = `
         <div class="badge-icon">
           <i class="fas fa-medal"></i>
@@ -3919,7 +3924,6 @@
         <div class="badge-desc">Lengkapi analisis untuk mendapatkan penghargaan</div>
       `;
       
-      // Reset dashboard
       document.getElementById('avgTotal').textContent = '0.0';
       document.getElementById('bestSubject').textContent = '-';
       document.getElementById('worstSubject').textContent = '-';
@@ -3929,16 +3933,14 @@
         <span class="trend-stable">Stabil</span>
       `;
       
-      // Clear local storage
-      localStorage.removeItem('raportSubjects');
+      const key = getUserStorageKey('subjects');
+      localStorage.removeItem(key);
       
-      // Remove confirmation modal
       const modal = document.querySelector('.modal.active');
       if (modal) modal.remove();
       
       showNotification('Semua data berhasil dihapus', 'success');
       
-      // Add a new subject
       setTimeout(() => {
         addSubject();
       }, 300);
@@ -3955,17 +3957,14 @@
         return;
       }
       
-      // Show analyzing animation
       document.getElementById('loadingModal').classList.add('active');
       const analyzingText = document.getElementById('analyzingText');
       const analyzingSubtext = document.getElementById('analyzingSubtext');
       
-      // Update analyzing text with user name if available
       if (userProfile.name) {
         analyzingText.textContent = `Menganalisis nilai ${userProfile.name}`;
       }
       
-      // Rotate through analyzing messages
       const messages = [
         "Menganalisis pola nilai...",
         "Menghitung rata-rata...",
@@ -3980,17 +3979,13 @@
         messageIndex = (messageIndex + 1) % messages.length;
       }, 1500);
       
-      // Simulate processing time with actual calculations
       await new Promise(resolve => setTimeout(resolve, 3000));
       
-      // Clear interval
       clearInterval(messageInterval);
       
-      // Calculate statistics
       const stats = calculateStatistics(validSubjects);
       currentStats = stats;
       
-      // Update UI with animations
       displayResults(stats);
       updateChart(validSubjects, stats);
       updateDashboard();
@@ -3998,25 +3993,20 @@
       addToHistory(stats);
       updateAchievement(stats);
       
-      // Hide loading modal
       document.getElementById('loadingModal').classList.remove('active');
       
-      // Scroll to results with smooth animation
       document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       
-      // Show success notification with celebration
       const congratsMessage = userProfile.name 
         ? `Analisis berhasil, ${userProfile.name}! Lihat hasilnya di bawah.`
         : 'Analisis berhasil! Lihat hasilnya di bawah.';
       
       showNotification(congratsMessage, 'success');
       
-      // Haptic feedback for success
       if (settings.hapticFeedback && 'vibrate' in navigator) {
         navigator.vibrate([50, 50, 50]);
       }
       
-      // Hide validation summary after successful analysis
       validationSummary.classList.add('hidden');
     }
 
@@ -4044,7 +4034,6 @@
             scores: subject.scores
           });
           
-          // Calculate trend
           if (scores.length >= 2) {
             lastTotal += scores[scores.length - 1];
             prevTotal += scores[scores.length - 2];
@@ -4065,7 +4054,6 @@
         trendIcon = "arrow-down";
       }
       
-      // Find best and worst subjects
       subjectAverages.sort((a, b) => b.average - a.average);
       const bestSubject = subjectAverages.length > 0 ? subjectAverages[0] : null;
       const worstSubject = subjectAverages.length > 0 ? subjectAverages[subjectAverages.length - 1] : null;
@@ -4092,7 +4080,6 @@
       const trendColor = stats.trend === 'naik' ? 'success' : 
                         stats.trend === 'turun' ? 'danger' : 'warning';
       
-      // Personal greeting
       const personalGreeting = userProfile.name 
         ? `Selamat, ${userProfile.name}! Berikut hasil analisis nilai Anda:`
         : 'Berikut hasil analisis nilai Anda:';
@@ -4149,14 +4136,12 @@
         </div>
       `;
       
-      // Add animations to result stats
       const resultStats = resultDiv.querySelectorAll('.result-stat');
       resultStats.forEach((stat, index) => {
         stat.style.animationDelay = `${index * 0.1}s`;
         stat.classList.add('animate-fadeIn');
       });
       
-      // Update recommendations
       updateRecommendations(stats);
     }
 
@@ -4200,35 +4185,7 @@
     // Update recommendations with animations
     function updateRecommendations(stats) {
       const recommendationsDiv = document.getElementById('recommendations');
-      const recommendations = [];
-      
-      if (stats.overallAvg < 75) {
-        recommendations.push({
-          icon: 'fas fa-bullseye',
-          text: 'Fokus pada mata pelajaran dengan nilai terendah'
-        });
-        recommendations.push({
-          icon: 'fas fa-clock',
-          text: 'Tambah waktu belajar untuk konsep yang sulit'
-        });
-      }
-      
-      if (stats.trend === 'turun') {
-        recommendations.push({
-          icon: 'fas fa-search',
-          text: 'Evaluasi penyebab penurunan nilai'
-        });
-      }
-      
-      recommendations.push({
-        icon: 'fas fa-brain',
-        text: 'Gunakan teknik belajar aktif seperti mind mapping'
-      });
-      
-      recommendations.push({
-        icon: 'fas fa-heart',
-        text: 'Jaga kesehatan dan istirahat yang cukup'
-      });
+      const recommendations = getAIRecommendations(stats);
       
       recommendationsDiv.innerHTML = recommendations.map((rec, index) => `
         <li class="recommendation-item animate-fadeIn" style="animation-delay: ${index * 0.1}s">
@@ -4240,6 +4197,95 @@
       `).join('');
     }
 
+    // Get AI recommendations based on performance
+    function getAIRecommendations(stats) {
+      const recommendations = [];
+      const avg = stats.overallAvg;
+      
+      // General recommendations for all users
+      recommendations.push({
+        icon: 'fas fa-brain',
+        text: 'Gunakan teknik belajar aktif seperti mind mapping untuk pemahaman mendalam'
+      });
+      
+      recommendations.push({
+        icon: 'fas fa-heart',
+        text: 'Jaga kesehatan dan istirahat yang cukup untuk konsentrasi optimal'
+      });
+      
+      // Performance-based recommendations
+      if (avg < 60) {
+        recommendations.push({
+          icon: 'fas fa-life-ring',
+          text: 'Minta bantuan guru atau tutor untuk materi yang sulit dipahami'
+        });
+        recommendations.push({
+          icon: 'fas fa-tasks',
+          text: 'Buat jadwal belajar teratur dengan target harian yang jelas'
+        });
+      } else if (avg < 70) {
+        recommendations.push({
+          icon: 'fas fa-book',
+          text: 'Tingkatkan frekuensi latihan soal untuk mata pelajaran yang lemah'
+        });
+        recommendations.push({
+          icon: 'fas fa-users',
+          text: 'Bergabung dengan kelompok belajar untuk diskusi dan sharing pengetahuan'
+        });
+      } else if (avg < 80) {
+        recommendations.push({
+          icon: 'fas fa-chart-line',
+          text: 'Fokus pada peningkatan konsistensi di semua mata pelajaran'
+        });
+        recommendations.push({
+          icon: 'fas fa-lightbulb',
+          text: 'Coba metode pembelajaran baru seperti Feynman Technique'
+        });
+      } else if (avg < 90) {
+        recommendations.push({
+          icon: 'fas fa-trophy',
+          text: 'Tantang diri dengan soal-soal tingkat tinggi dan olimpiade'
+        });
+        recommendations.push({
+          icon: 'fas fa-graduation-cap',
+          text: 'Jadilah mentor untuk teman yang membutuhkan bantuan belajar'
+        });
+      } else {
+        recommendations.push({
+          icon: 'fas fa-star',
+          text: 'Eksplor materi di luar kurikulum untuk pengembangan diri lebih lanjut'
+        });
+        recommendations.push({
+          icon: 'fas fa-rocket',
+          text: 'Ikuti kompetisi akademik untuk mengasah kemampuan maksimal'
+        });
+      }
+      
+      // Trend-based recommendations
+      if (stats.trend === 'turun') {
+        recommendations.push({
+          icon: 'fas fa-search',
+          text: 'Evaluasi penyebab penurunan dan buat strategi perbaikan segera'
+        });
+      } else if (stats.trend === 'naik') {
+        recommendations.push({
+          icon: 'fas fa-check-circle',
+          text: 'Pertahankan strategi belajar yang sudah terbukti efektif'
+        });
+      }
+      
+      // Subject-specific recommendations
+      if (stats.worstSubject && stats.worstSubject.average < 70) {
+        recommendations.push({
+          icon: 'fas fa-exclamation-triangle',
+          text: `Prioritaskan perbaikan di ${stats.worstSubject.name} dengan belajar ekstra 2 jam/minggu`
+        });
+      }
+      
+      // Limit to 4 recommendations
+      return recommendations.slice(0, 4);
+    }
+
     // Update chart
     function updateChart(validSubjects, stats) {
       const ctx = document.getElementById('gradeChart').getContext('2d');
@@ -4248,7 +4294,6 @@
         chart.destroy();
       }
       
-      // Prepare data
       const labels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5'];
       const semesterAverages = [];
       
@@ -4266,7 +4311,6 @@
         semesterAverages.push(count > 0 ? total / count : null);
       }
       
-      // Filter out null values for trend line
       const validAverages = semesterAverages.filter(avg => avg !== null);
       const validLabels = labels.filter((_, i) => semesterAverages[i] !== null);
       
@@ -4341,7 +4385,6 @@
       if (validSubjects.length > 0) {
         const stats = calculateStatistics(validSubjects);
         
-        // Update values with animation
         const avgTotal = document.getElementById('avgTotal');
         avgTotal.textContent = stats.overallAvg.toFixed(1);
         avgTotal.classList.add('animate-bounce');
@@ -4349,7 +4392,6 @@
         
         document.getElementById('subjectCount').textContent = validSubjects.length;
         
-        // Update best subject
         if (stats.bestSubject) {
           document.getElementById('bestSubject').textContent = 
             stats.bestSubject.name.length > 10 ? 
@@ -4357,7 +4399,6 @@
             stats.bestSubject.name;
         }
         
-        // Update worst subject
         if (stats.worstSubject) {
           document.getElementById('worstSubject').textContent = 
             stats.worstSubject.name.length > 10 ? 
@@ -4365,7 +4406,6 @@
             stats.worstSubject.name;
         }
         
-        // Update trend
         const trendDiv = document.getElementById('avgTrend');
         const trendClass = stats.trend === 'naik' ? 'trend-up' : 
                           stats.trend === 'turun' ? 'trend-down' : 'trend-stable';
@@ -4383,7 +4423,6 @@
     function updateGradeDistribution(validSubjects) {
       const distributionDiv = document.getElementById('gradeDistribution');
       
-      // Count scores by category
       const categories = [
         { name: 'A (85-100)', min: 85, max: 100, color: '#10b981', count: 0 },
         { name: 'B (70-84)', min: 70, max: 84, color: '#3b82f6', count: 0 },
@@ -4433,7 +4472,6 @@
         `;
       }).join('');
       
-      // Animate the bars after a short delay
       setTimeout(() => {
         const gradeFills = distributionDiv.querySelectorAll('.grade-fill');
         categories.forEach((category, index) => {
@@ -4461,13 +4499,14 @@
       
       analysisHistory.unshift(historyItem);
       
-      // Keep only last 5 items
       if (analysisHistory.length > 5) {
         analysisHistory = analysisHistory.slice(0, 5);
       }
       
       updateHistoryUI();
-      localStorage.setItem('raportHistory', JSON.stringify(analysisHistory));
+      
+      const key = getUserStorageKey('history');
+      localStorage.setItem(key, JSON.stringify(analysisHistory));
     }
 
     // Update history UI with animations
@@ -4508,7 +4547,6 @@
       
       const avg = stats.overallAvg;
       
-      // Detailed achievement titles based on exact average
       if (avg >= 98) {
         achievement = {
           icon: 'fas fa-crown',
@@ -4675,11 +4713,9 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Add content
         doc.setFontSize(16);
         doc.text('Laporan Analisis Raport', 105, 20, null, null, 'center');
         
-        // Add user info if available
         if (userProfile.name) {
           doc.setFontSize(10);
           doc.text(`Nama: ${userProfile.name}`, 20, 30);
@@ -4695,7 +4731,6 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
           doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 105, 30, null, null, 'center');
         }
         
-        // Add statistics
         if (currentStats) {
           doc.setFontSize(12);
           doc.text('Statistik Utama:', 20, userProfile.name ? 60 : 50);
@@ -4710,7 +4745,6 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
           }
         }
         
-        // Save PDF
         doc.save(`raport-analysis-${new Date().toISOString().slice(0, 10)}.pdf`);
         
         closeModal('exportModal');
@@ -4737,10 +4771,8 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
           return;
         }
         
-        // Prepare data
         const data = [];
         
-        // Add header with user info if available
         if (userProfile.name) {
           data.push(['Laporan Analisis Raport']);
           data.push(['']);
@@ -4767,12 +4799,10 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
           ]);
         });
         
-        // Create worksheet
         const ws = XLSX.utils.aoa_to_sheet(data);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Analisis Raport');
         
-        // Save Excel file
         XLSX.writeFile(wb, `raport-analysis-${new Date().toISOString().slice(0, 10)}.xlsx`);
         
         closeModal('exportModal');
@@ -4833,9 +4863,10 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       document.getElementById('templatesModal').classList.add('active');
     }
 
-    // Load templates
+    // Load templates for current user
     function loadTemplates() {
-      const savedTemplates = localStorage.getItem('raportTemplates');
+      const key = getUserStorageKey('templates');
+      const savedTemplates = localStorage.getItem(key);
       templates = savedTemplates ? JSON.parse(savedTemplates) : [];
       
       const templateList = document.getElementById('templateList');
@@ -4867,7 +4898,7 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       `).join('');
     }
 
-    // Save current as template
+    // Save current as template for current user
     function saveCurrentAsTemplate() {
       const name = prompt('Nama template:', `Template ${new Date().toLocaleDateString('id-ID')}`);
       if (!name) return;
@@ -4879,22 +4910,22 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       };
       
       templates.push(template);
-      localStorage.setItem('raportTemplates', JSON.stringify(templates));
+      
+      const key = getUserStorageKey('templates');
+      localStorage.setItem(key, JSON.stringify(templates));
       
       loadTemplates();
       showNotification('Template berhasil disimpan', 'success');
     }
 
-    // Load template
+    // Load template for current user
     function loadTemplate(index) {
       if (templates[index]) {
         const template = templates[index];
         
-        // Clear current
         subjects = [];
         subjectsDiv.innerHTML = '';
         
-        // Load template subjects
         template.subjects.forEach((subjectData, i) => {
           const subjectId = Date.now() + i;
           const subjectCard = document.createElement('div');
@@ -4947,11 +4978,14 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       }
     }
 
-    // Delete template
+    // Delete template for current user
     function deleteTemplate(index) {
       if (confirm('Hapus template ini?')) {
         templates.splice(index, 1);
-        localStorage.setItem('raportTemplates', JSON.stringify(templates));
+        
+        const key = getUserStorageKey('templates');
+        localStorage.setItem(key, JSON.stringify(templates));
+        
         loadTemplates();
         showNotification('Template berhasil dihapus', 'success');
       }
@@ -4968,7 +5002,7 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       document.getElementById('settingsModal').classList.add('active');
     }
 
-    // Save settings
+    // Save settings for current user
     function saveSettings() {
       settings.autoSave = document.getElementById('autoSave').checked;
       settings.notifications = document.getElementById('notifications').checked;
@@ -4976,15 +5010,17 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       settings.validation = document.getElementById('validation').checked;
       settings.maxSubjects = parseInt(document.getElementById('maxSubjects').value);
       
-      localStorage.setItem('raportSettings', JSON.stringify(settings));
+      const key = getUserStorageKey('settings');
+      localStorage.setItem(key, JSON.stringify(settings));
       
       closeModal('settingsModal');
       showNotification('Pengaturan berhasil disimpan', 'success');
     }
 
-    // Load settings
+    // Load settings for current user
     function loadSettings() {
-      const savedSettings = localStorage.getItem('raportSettings');
+      const key = getUserStorageKey('settings');
+      const savedSettings = localStorage.getItem(key);
       if (savedSettings) {
         settings = JSON.parse(savedSettings);
       }
@@ -5026,7 +5062,6 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
     function showNotification(message, type = 'info') {
       if (!settings.notifications) return;
       
-      // Remove existing notification
       const existing = document.querySelector('.notification');
       if (existing) existing.remove();
       
@@ -5041,14 +5076,12 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       
       document.body.appendChild(notification);
       
-      // Haptic feedback for notifications
       if (settings.hapticFeedback && 'vibrate' in navigator) {
         const vibrationPattern = type === 'success' ? [50] : 
                                 type === 'error' ? [100, 50, 100] : [30];
         navigator.vibrate(vibrationPattern);
       }
       
-      // Auto remove after 3 seconds
       setTimeout(() => {
         if (notification.parentNode) {
           notification.style.opacity = '0';
@@ -5072,15 +5105,13 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
         sections[sectionId].scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
       
-      // Update active nav button
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelector(`[onclick="scrollToSection('${sectionId}')"]`).classList.add('active');
       
-      // Close mobile nav
       document.getElementById('mobileNav').classList.remove('active');
     }
 
-    // Save to local storage
+    // Save to local storage for current user
     function saveToLocalStorage() {
       if (!settings.autoSave) return;
       
@@ -5089,13 +5120,17 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
         timestamp: new Date().toISOString()
       };
       
-      localStorage.setItem('raportSubjects', JSON.stringify(data));
+      const key = getUserStorageKey('subjects');
+      localStorage.setItem(key, JSON.stringify(data));
     }
 
-    // Load saved data
+    // Load saved data for current user
     function loadSavedData() {
-      const savedSubjects = localStorage.getItem('raportSubjects');
-      const savedHistory = localStorage.getItem('raportHistory');
+      const key = getUserStorageKey('subjects');
+      const savedSubjects = localStorage.getItem(key);
+      
+      const historyKey = getUserStorageKey('history');
+      const savedHistory = localStorage.getItem(historyKey);
       
       if (savedSubjects) {
         try {
@@ -5147,7 +5182,6 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
           
           updateDashboard();
           
-          // Auto analyze if there are valid subjects
           const validSubjects = subjects.filter(subject => 
             subject.scores.some(score => score !== null)
           );
@@ -5173,37 +5207,31 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
-      // Ctrl/Cmd + N: New subject
       if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
         e.preventDefault();
         addSubject();
       }
       
-      // Ctrl/Cmd + S: Save
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
         saveProgress();
       }
       
-      // Ctrl/Cmd + A: Analyze
       if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
         e.preventDefault();
         validateAndAnalyze();
       }
       
-      // Ctrl/Cmd + D: Sample data
       if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
         e.preventDefault();
         addSampleData();
       }
       
-      // Ctrl/Cmd + E: Export
       if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
         e.preventDefault();
         showExportModal();
       }
       
-      // Arrow keys for navigation
       if (e.key === 'ArrowRight') {
         e.preventDefault();
         navigateSections(1);
@@ -5213,7 +5241,6 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
         navigateSections(-1);
       }
       
-      // Escape: Close modals
       if (e.key === 'Escape') {
         const modals = ['exportModal', 'templatesModal', 'settingsModal', 'guideModal', 'aboutModal', 'userModal', 'loadingModal'];
         modals.forEach(modalId => closeModal(modalId));
@@ -5297,11 +5324,9 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       });
     `;
     
-    // Create a blob URL for the service worker
     const blob = new Blob([serviceWorkerCode], { type: 'application/javascript' });
     const swURL = URL.createObjectURL(blob);
     
-    // Register the service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register(swURL)
         .then(reg => console.log('SW registered'))
