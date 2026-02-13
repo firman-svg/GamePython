@@ -1251,6 +1251,8 @@
       box-shadow: var(--shadow);
       margin-bottom: 1.2rem;
       border: 1px solid var(--glass-border);
+      width: 100%;
+      overflow-x: hidden;
     }
 
     .result-header {
@@ -1307,6 +1309,7 @@
 
     #result {
       min-height: 180px;
+      width: 100%;
     }
 
     .result-grid {
@@ -1314,6 +1317,7 @@
       grid-template-columns: repeat(2, 1fr);
       gap: 0.8rem;
       margin-bottom: 1rem;
+      width: 100%;
     }
 
     @media (max-width: 768px) {
@@ -1330,6 +1334,7 @@
       text-align: center;
       transition: var(--transition);
       border: 1px solid transparent;
+      word-break: break-word;
     }
 
     .result-stat:hover {
@@ -1367,6 +1372,7 @@
       color: white;
       position: relative;
       overflow: hidden;
+      width: 100%;
     }
 
     .motivation-content {
@@ -1384,6 +1390,7 @@
       font-size: 0.9rem;
       line-height: 1.5;
       font-style: italic;
+      word-break: break-word;
     }
 
     /* Chart Section - DIAGRAM BATANG REGULER */
@@ -1396,6 +1403,8 @@
       box-shadow: var(--shadow);
       margin-bottom: 1.2rem;
       border: 1px solid var(--glass-border);
+      width: 100%;
+      overflow-x: hidden;
     }
 
     .chart-container {
@@ -1403,6 +1412,12 @@
       position: relative;
       margin-top: 1rem;
       width: 100%;
+    }
+
+    .chart-container canvas {
+      max-width: 100%;
+      height: auto !important;
+      width: 100% !important;
     }
 
     /* Sidebar - Compact */
@@ -1428,6 +1443,7 @@
       box-shadow: var(--shadow);
       margin-bottom: 0.8rem;
       border: 1px solid var(--glass-border);
+      width: 100%;
     }
 
     .sidebar-title {
@@ -1484,6 +1500,7 @@
       flex: 1;
       font-size: 0.8rem;
       line-height: 1.4;
+      word-break: break-word;
     }
 
     /* Grade Distribution */
@@ -1496,6 +1513,8 @@
       align-items: center;
       justify-content: space-between;
       padding: 0.4rem 0;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
 
     .grade-label {
@@ -1510,6 +1529,7 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
+      flex-shrink: 0;
     }
 
     .grade-bar {
@@ -1519,6 +1539,7 @@
       border-radius: 3px;
       margin: 0 0.8rem;
       overflow: hidden;
+      min-width: 50px;
     }
 
     .grade-fill {
@@ -1596,6 +1617,7 @@
       padding: 1.2rem;
       box-shadow: var(--shadow);
       border: 1px solid var(--glass-border);
+      width: 100%;
     }
 
     .history-list {
@@ -2207,52 +2229,6 @@
       pointer-events: none;
     }
 
-    /* Gesture Hint */
-    .gesture-hint {
-      position: fixed;
-      bottom: 120px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--glass-bg);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
-      padding: 0.8rem 1rem;
-      font-size: 0.8rem;
-      color: var(--text);
-      z-index: 999;
-      display: none;
-      animation: slideInUp 0.3s ease;
-      text-align: center;
-      max-width: 300px;
-    }
-
-    .gesture-hint.active {
-      display: block;
-    }
-
-    /* Swipe Indicator */
-    .swipe-indicator {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-
-    .swipe-dot {
-      width: 6px;
-      height: 6px;
-      background: var(--text-secondary);
-      border-radius: 50%;
-      transition: var(--transition);
-    }
-
-    .swipe-dot.active {
-      background: var(--primary);
-      transform: scale(1.2);
-    }
-
     /* Analyzing Animation - FIXED */
     .analyzing-container {
       display: flex;
@@ -2509,16 +2485,6 @@
   <!-- Offline Indicator -->
   <div class="offline-indicator" id="offlineIndicator">
     <i class="fas fa-wifi-slash"></i> Mode Offline
-  </div>
-
-  <!-- Gesture Hint -->
-  <div class="gesture-hint" id="gestureHint">
-    <div>Geser ke kiri/kanan untuk navigasi cepat</div>
-    <div class="swipe-indicator">
-      <div class="swipe-dot"></div>
-      <div class="swipe-dot active"></div>
-      <div class="swipe-dot"></div>
-    </div>
   </div>
 
   <!-- Animated Background -->
@@ -3266,7 +3232,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <script>
-    // (JavaScript unchanged – same as original)
+    // (JavaScript unchanged – same as original, but with gesture controls removed)
     // Global variables
     let subjects = [];
     let chart = null;
@@ -3307,7 +3273,6 @@
     const splashProgress = document.getElementById("splashProgress");
     const installPrompt = document.getElementById("installPrompt");
     const offlineIndicator = document.getElementById("offlineIndicator");
-    const gestureHint = document.getElementById("gestureHint");
     const validationSummary = document.getElementById("validationSummary");
     const validationList = document.getElementById("validationList");
     const voiceStatus = document.getElementById("voiceStatus");
@@ -3339,8 +3304,6 @@
         
         setupPWA();
         
-        setupGestureControls();
-        
         setupVoiceRecognition();
         
         setupAccessibility();
@@ -3352,13 +3315,6 @@
         setTimeout(() => {
           if (settings.notifications) {
             showNotification('Selamat datang di Smart Raport Analyzer Pro dengan fitur aksesibilitas!', 'info');
-          }
-          
-          if (settings.gestureControls && localStorage.getItem('gestureHintShown') !== 'true') {
-            setTimeout(() => {
-              showGestureHint();
-              localStorage.setItem('gestureHintShown', 'true');
-            }, 2000);
           }
         }, 500);
       }, 1500);
@@ -3882,151 +3838,25 @@
       });
     }
 
-    // Setup gesture controls
-    function setupGestureControls() {
-      if (!settings.gestureControls) return;
+    // Navigate between sections (manual scroll)
+    function scrollToSection(sectionId) {
+      const sections = {
+        dashboard: 0,
+        input: document.querySelector('.input-section'),
+        results: document.querySelector('.result-section')
+      };
       
-      let touchStartX = 0;
-      let touchStartY = 0;
-      let touchEndX = 0;
-      let touchEndY = 0;
-      
-      document.addEventListener('touchstart', function(e) {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-      }, { passive: true });
-      
-      document.addEventListener('touchend', function(e) {
-        touchEndX = e.changedTouches[0].screenX;
-        touchEndY = e.changedTouches[0].screenY;
-        handleSwipe();
-      }, { passive: true });
-      
-      function handleSwipe() {
-        const swipeThreshold = 50;
-        const swipeDistanceX = touchEndX - touchStartX;
-        const swipeDistanceY = touchEndY - touchStartY;
-        
-        if (Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY) && Math.abs(swipeDistanceX) > swipeThreshold) {
-          if (swipeDistanceX > 0) {
-            navigateSections(-1);
-          } else {
-            navigateSections(1);
-          }
-          
-          if (settings.hapticFeedback && 'vibrate' in navigator) {
-            navigator.vibrate(20);
-          }
-        }
+      if (sectionId === 'dashboard') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (sections[sectionId]) {
+        sections[sectionId].scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }
-
-    // Navigate between sections
-    function navigateSections(direction) {
-      const sections = ['dashboard', 'input', 'results'];
-      const currentSection = getCurrentSection();
-      const currentIndex = sections.indexOf(currentSection);
-      const newIndex = (currentIndex + direction + sections.length) % sections.length;
-      
-      scrollToSection(sections[newIndex]);
       
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-      const navBtns = document.querySelectorAll('.nav-btn');
-      if (navBtns[newIndex]) {
-        navBtns[newIndex].classList.add('active');
-      }
-    }
-
-    // Get current section based on scroll position
-    function getCurrentSection() {
-      const sections = [
-        { id: 'dashboard', element: document.getElementById('dashboard') },
-        { id: 'input', element: document.querySelector('.input-section') },
-        { id: 'results', element: document.querySelector('.result-section') }
-      ];
+      const activeBtn = document.querySelector(`[onclick="scrollToSection('${sectionId}')"]`);
+      if (activeBtn) activeBtn.classList.add('active');
       
-      let currentSection = 'dashboard';
-      let maxVisible = 0;
-      
-      sections.forEach(section => {
-        if (section.element) {
-          const rect = section.element.getBoundingClientRect();
-          const visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
-          
-          if (visibleHeight > maxVisible) {
-            maxVisible = visibleHeight;
-            currentSection = section.id;
-          }
-        }
-      });
-      
-      return currentSection;
-    }
-
-    // Show gesture hint
-    function showGestureHint() {
-      gestureHint.classList.add('active');
-      setTimeout(() => {
-        gestureHint.classList.remove('active');
-      }, 4000);
-    }
-
-    // Setup PWA
-    function setupPWA() {
-      if (window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('App running in standalone mode');
-      }
-      
-      let deferredPrompt;
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        
-        setTimeout(() => {
-          if (localStorage.getItem('installPromptDismissed') !== 'true') {
-            showInstallPrompt();
-          }
-        }, 3000);
-      });
-      
-      window.addEventListener('appinstalled', () => {
-        console.log('App installed successfully');
-        installPrompt.classList.remove('active');
-        showNotification('Aplikasi berhasil diinstal!', 'success');
-      });
-    }
-
-    // Show install prompt
-    function showInstallPrompt() {
-      installPrompt.classList.add('active');
-    }
-
-    // Dismiss install prompt
-    function dismissInstallPrompt() {
-      installPrompt.classList.remove('active');
-      localStorage.setItem('installPromptDismissed', 'true');
-    }
-
-    // Install app
-    function installApp() {
-      if (window.deferredPrompt) {
-        window.deferredPrompt.prompt();
-        window.deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted install');
-          }
-          window.deferredPrompt = null;
-        });
-      }
-    }
-
-    // Update network status
-    function updateNetworkStatus() {
-      if (!navigator.onLine) {
-        offlineIndicator.classList.add('active');
-      } else {
-        offlineIndicator.classList.remove('active');
-      }
+      document.getElementById('mobileNav').classList.remove('active');
     }
 
     // Setup event listeners
@@ -4062,46 +3892,6 @@
       }
       
       addRippleEffect();
-      setupPullToRefresh();
-    }
-
-    // Setup pull to refresh
-    function setupPullToRefresh() {
-      let touchStartY = 0;
-      let isPulling = false;
-      
-      document.addEventListener('touchstart', function(e) {
-        if (window.scrollY === 0) {
-          touchStartY = e.touches[0].clientY;
-          isPulling = true;
-        }
-      }, { passive: true });
-      
-      document.addEventListener('touchmove', function(e) {
-        if (!isPulling) return;
-        
-        const touchY = e.touches[0].clientY;
-        const pullDistance = touchY - touchStartY;
-        
-        if (pullDistance > 100) {
-          isPulling = false;
-          refreshData();
-        }
-      }, { passive: true });
-      
-      document.addEventListener('touchend', function() {
-        isPulling = false;
-      }, { passive: true });
-    }
-
-    // Refresh data with animation
-    function refreshData() {
-      showNotification('Menyegarkan data...', 'info');
-      loadSavedData();
-      
-      if (settings.hapticFeedback && 'vibrate' in navigator) {
-        navigator.vibrate(30);
-      }
     }
 
     // Create floating particles
@@ -5940,26 +5730,6 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       }, 3000);
     }
 
-    // Scroll to section
-    function scrollToSection(sectionId) {
-      const sections = {
-        dashboard: 0,
-        input: document.querySelector('.input-section'),
-        results: document.querySelector('.result-section')
-      };
-      
-      if (sectionId === 'dashboard') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (sections[sectionId]) {
-        sections[sectionId].scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-      
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelector(`[onclick="scrollToSection('${sectionId}')"]`).classList.add('active');
-      
-      document.getElementById('mobileNav').classList.remove('active');
-    }
-
     // Save to local storage for current user
     function saveToLocalStorage() {
       if (!settings.autoSave) return;
@@ -6056,6 +5826,64 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       }
     }
 
+    // Setup PWA
+    function setupPWA() {
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('App running in standalone mode');
+      }
+      
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        setTimeout(() => {
+          if (localStorage.getItem('installPromptDismissed') !== 'true') {
+            showInstallPrompt();
+          }
+        }, 3000);
+      });
+      
+      window.addEventListener('appinstalled', () => {
+        console.log('App installed successfully');
+        installPrompt.classList.remove('active');
+        showNotification('Aplikasi berhasil diinstal!', 'success');
+      });
+    }
+
+    // Show install prompt
+    function showInstallPrompt() {
+      installPrompt.classList.add('active');
+    }
+
+    // Dismiss install prompt
+    function dismissInstallPrompt() {
+      installPrompt.classList.remove('active');
+      localStorage.setItem('installPromptDismissed', 'true');
+    }
+
+    // Install app
+    function installApp() {
+      if (window.deferredPrompt) {
+        window.deferredPrompt.prompt();
+        window.deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted install');
+          }
+          window.deferredPrompt = null;
+        });
+      }
+    }
+
+    // Update network status
+    function updateNetworkStatus() {
+      if (!navigator.onLine) {
+        offlineIndicator.classList.add('active');
+      } else {
+        offlineIndicator.classList.remove('active');
+      }
+    }
+
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
       if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
@@ -6081,15 +5909,6 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
         e.preventDefault();
         showExportModal();
-      }
-      
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        navigateSections(1);
-      }
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        navigateSections(-1);
       }
       
       if (e.key === 'Escape') {
