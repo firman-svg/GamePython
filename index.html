@@ -97,6 +97,19 @@
       margin-bottom: 2rem;
       animation: pulse 2s infinite;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .splash-logo::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+      animation: shimmer 2s infinite;
     }
 
     .splash-logo i {
@@ -105,6 +118,7 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+      animation: icon-shimmer 3s infinite alternate;
     }
 
     .splash-text {
@@ -173,6 +187,83 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    /* Shimmer animation untuk icon */
+    @keyframes shimmer {
+      0% {
+        left: -100%;
+      }
+      100% {
+        left: 200%;
+      }
+    }
+
+    @keyframes icon-shimmer {
+      0%, 100% {
+        filter: brightness(1) saturate(1);
+      }
+      50% {
+        filter: brightness(1.2) saturate(1.5);
+      }
+    }
+
+    /* Icon dengan efek shimmer */
+    .shimmer-icon {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shimmer-icon::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    /* Warna icon yang menarik */
+    .icon-primary {
+      color: #4361ee;
+      background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .icon-secondary {
+      color: #7209b7;
+      background: linear-gradient(135deg, #7209b7 0%, #5a08a3 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .icon-accent {
+      color: #f72585;
+      background: linear-gradient(135deg, #f72585 0%, #d91a6e 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .icon-success {
+      color: #10b981;
+      background: linear-gradient(135deg, #10b981 0%, #0da271 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .icon-warning {
+      color: #f59e0b;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     /* Screen Reader Only */
@@ -318,149 +409,6 @@
     .command-desc {
       color: var(--text-secondary);
       flex: 1;
-    }
-
-    /* 3D Chart Container */
-    .chart-3d-container {
-      position: relative;
-      height: 280px;
-      width: 100%;
-      perspective: 1000px;
-      margin-top: 1rem;
-      overflow: hidden;
-    }
-
-    .chart-3d-controls {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 10;
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .chart-3d-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid var(--glass-border);
-      color: var(--text);
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .chart-3d-btn:hover {
-      background: var(--primary);
-      color: white;
-    }
-
-    .bar-3d {
-      position: absolute;
-      bottom: 40px;
-      transform-style: preserve-3d;
-      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-      cursor: pointer;
-    }
-
-    .bar-3d-front {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: var(--gradient);
-      transform: translateZ(10px);
-      border-radius: 4px 4px 0 0;
-      box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2);
-    }
-
-    .bar-3d-top {
-      position: absolute;
-      width: 100%;
-      height: 10px;
-      background: linear-gradient(to bottom, var(--primary-dark), var(--primary));
-      transform: rotateX(90deg) translateZ(5px);
-      transform-origin: top center;
-      border-radius: 4px;
-    }
-
-    .bar-3d-side {
-      position: absolute;
-      width: 10px;
-      height: 100%;
-      background: linear-gradient(to right, var(--primary-dark), var(--primary));
-      transform: rotateY(90deg) translateZ(5px);
-      right: -5px;
-      border-radius: 0 4px 4px 0;
-    }
-
-    .bar-3d:hover .bar-3d-front {
-      filter: brightness(1.2);
-      transform: translateZ(15px);
-    }
-
-    .bar-3d-label {
-      position: absolute;
-      bottom: -25px;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      font-size: 0.7rem;
-      color: var(--text);
-      transform: translateZ(20px);
-    }
-
-    .bar-3d-value {
-      position: absolute;
-      top: -25px;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      font-size: 0.8rem;
-      font-weight: bold;
-      color: var(--text);
-      transform: translateZ(20px);
-      background: rgba(30, 41, 59, 0.9);
-      padding: 0.2rem 0.4rem;
-      border-radius: var(--radius-sm);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .bar-3d:hover .bar-3d-value {
-      opacity: 1;
-    }
-
-    .chart-3d-axis {
-      position: absolute;
-      background: var(--border);
-    }
-
-    .chart-3d-axis-x {
-      width: 100%;
-      height: 2px;
-      bottom: 40px;
-      left: 0;
-      transform: translateZ(0);
-    }
-
-    .chart-3d-axis-y {
-      width: 2px;
-      height: calc(100% - 80px);
-      bottom: 40px;
-      left: 0;
-      transform: translateZ(0);
-    }
-
-    .chart-3d-grid {
-      position: absolute;
-      border-left: 1px dashed rgba(255,255,255,0.1);
-      height: calc(100% - 80px);
-      bottom: 40px;
-      transform: translateZ(0);
     }
 
     /* Install Prompt */
@@ -664,6 +612,19 @@
       color: white;
       font-size: 1.2rem;
       flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shimmer 3s infinite;
     }
 
     .logo-text {
@@ -763,6 +724,19 @@
       justify-content: center;
       color: white;
       font-size: 1.2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .user-avatar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shimmer 3s infinite;
     }
 
     .user-details h3 {
@@ -922,6 +896,19 @@
       background: var(--gradient);
       color: white;
       flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-icon::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shimmer 2s infinite;
     }
 
     .card-title {
@@ -1414,7 +1401,7 @@
       font-style: italic;
     }
 
-    /* Chart Section */
+    /* Chart Section - DIAGRAM BATANG REGULER */
     .chart-section {
       background: var(--glass-bg);
       backdrop-filter: blur(10px);
@@ -1430,6 +1417,7 @@
       height: 300px;
       position: relative;
       margin-top: 1rem;
+      width: 100%;
     }
 
     /* Sidebar - Compact */
@@ -1586,6 +1574,19 @@
       color: white;
       margin: 0 auto 0.8rem;
       box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .badge-icon::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shimmer 2s infinite;
     }
 
     .badge-title {
@@ -1753,11 +1754,6 @@
       50% { opacity: 1; transform: scale(1.05); }
     }
 
-    @keyframes chart-rotate {
-      0% { transform: rotateY(0deg) rotateX(10deg); }
-      100% { transform: rotateY(360deg) rotateX(10deg); }
-    }
-
     .animate-fadeIn {
       animation: fadeIn 0.3s ease forwards;
     }
@@ -1784,10 +1780,6 @@
 
     .animate-analyzing {
       animation: analyzing 1.5s infinite ease-in-out;
-    }
-
-    .animate-chart-rotate {
-      animation: chart-rotate 20s infinite linear;
     }
 
     /* Utility Classes */
@@ -2433,12 +2425,6 @@
     .voice-action {
       color: var(--text-secondary);
     }
-
-    /* Fixed Loading Animation */
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
   </style>
 </head>
 <body>
@@ -2571,11 +2557,11 @@
       
       <div class="header-actions">
         <button class="header-btn btn-sm desktop-only" onclick="showTemplates()">
-          <i class="fas fa-layer-group"></i>
+          <i class="fas fa-layer-group icon-secondary"></i>
           <span class="desktop-only">Template</span>
         </button>
         <button class="header-btn btn-sm" onclick="showSettings()">
-          <i class="fas fa-cog"></i>
+          <i class="fas fa-cog icon-accent"></i>
           <span class="desktop-only">Settings</span>
         </button>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
@@ -2597,7 +2583,7 @@
       </div>
     </div>
     <button class="user-edit-btn" onclick="showUserModal()" aria-label="Edit User Profile">
-      <i class="fas fa-edit"></i>
+      <i class="fas fa-edit icon-primary"></i>
     </button>
   </div>
 
@@ -2605,19 +2591,19 @@
   <nav class="mobile-nav" id="mobileNav">
     <div class="nav-buttons">
       <button class="nav-btn active" onclick="scrollToSection('dashboard')">
-        <i class="fas fa-home"></i>
+        <i class="fas fa-home icon-primary"></i>
         <span>Dashboard</span>
       </button>
       <button class="nav-btn" onclick="scrollToSection('input')">
-        <i class="fas fa-edit"></i>
+        <i class="fas fa-edit icon-secondary"></i>
         <span>Input</span>
       </button>
       <button class="nav-btn" onclick="scrollToSection('results')">
-        <i class="fas fa-chart-bar"></i>
+        <i class="fas fa-chart-bar icon-accent"></i>
         <span>Analisis</span>
       </button>
       <button class="nav-btn" onclick="showExportModal()">
-        <i class="fas fa-share"></i>
+        <i class="fas fa-share icon-success"></i>
         <span>Ekspor</span>
       </button>
     </div>
@@ -2698,13 +2684,13 @@
       <!-- Subject Input Section -->
       <section class="input-section animate-fadeIn" style="animation-delay: 0.5s" id="input">
         <h2 class="section-title">
-          <i class="fas fa-edit"></i>
+          <i class="fas fa-edit icon-primary"></i>
           Input Nilai Mata Pelajaran
         </h2>
         <p class="section-subtitle">
           Masukkan nilai untuk setiap mata pelajaran dari semester 1 hingga 5. 
           <span class="tooltip">
-            <i class="fas fa-info-circle"></i>
+            <i class="fas fa-info-circle icon-secondary"></i>
             <span class="tooltip-text">Nilai harus antara 0-100. Nilai di luar rentang akan disesuaikan secara otomatis.</span>
           </span>
         </p>
@@ -2719,19 +2705,19 @@
         
         <div class="action-buttons mb-2">
           <button class="btn btn-primary" onclick="addSubject()" aria-label="Tambah Mata Pelajaran">
-            <i class="fas fa-plus"></i>
+            <i class="fas fa-plus icon-primary"></i>
             Tambah Mapel
           </button>
           <button class="btn btn-secondary" onclick="addSampleData()" aria-label="Tambah Data Contoh">
-            <i class="fas fa-vial"></i>
+            <i class="fas fa-vial icon-secondary"></i>
             Data Contoh
           </button>
           <button class="btn btn-success" onclick="validateAndAnalyze()" id="analyzeBtn" aria-label="Analisis Nilai">
-            <i class="fas fa-chart-pie"></i>
+            <i class="fas fa-chart-pie icon-success"></i>
             Analisis Nilai
           </button>
           <button class="btn btn-secondary" onclick="clearAll()" aria-label="Hapus Semua Data">
-            <i class="fas fa-trash"></i>
+            <i class="fas fa-trash icon-accent"></i>
             Hapus Semua
           </button>
         </div>
@@ -2749,20 +2735,20 @@
       <section class="result-section animate-fadeIn" style="animation-delay: 0.6s" id="results">
         <div class="result-header">
           <h2 class="result-title">
-            <i class="fas fa-chart-line"></i>
+            <i class="fas fa-chart-line icon-primary"></i>
             Hasil Analisis
           </h2>
           <div class="result-actions">
             <button class="action-btn" onclick="shareResults()" aria-label="Bagikan Hasil">
-              <i class="fas fa-share"></i>
+              <i class="fas fa-share icon-secondary"></i>
               Bagikan
             </button>
             <button class="action-btn" onclick="printResults()" aria-label="Cetak Hasil">
-              <i class="fas fa-print"></i>
+              <i class="fas fa-print icon-accent"></i>
               Cetak
             </button>
             <button class="action-btn primary" onclick="showExportModal()" aria-label="Ekspor Data">
-              <i class="fas fa-download"></i>
+              <i class="fas fa-download icon-success"></i>
               Ekspor
             </button>
           </div>
@@ -2776,35 +2762,24 @@
         </div>
       </section>
 
-      <!-- Chart Section -->
+      <!-- Chart Section - DIAGRAM BATANG BIASA -->
       <section class="chart-section animate-fadeIn" style="animation-delay: 0.7s">
         <h2 class="section-title">
-          <i class="fas fa-chart-area"></i>
-          Visualisasi Nilai 3D
+          <i class="fas fa-chart-bar icon-primary"></i>
+          Diagram Batang Nilai
         </h2>
-        <div class="chart-3d-container" id="chart3DContainer">
-          <div class="chart-3d-controls">
-            <button class="chart-3d-btn" onclick="rotateChart3D()" aria-label="Rotate Chart">
-              <i class="fas fa-sync-alt"></i>
-            </button>
-            <button class="chart-3d-btn" onclick="toggleChartPerspective()" aria-label="Toggle Perspective">
-              <i class="fas fa-cube"></i>
-            </button>
-            <button class="chart-3d-btn" onclick="resetChart3D()" aria-label="Reset Chart">
-              <i class="fas fa-redo"></i>
-            </button>
-          </div>
-          <!-- 3D bars will be dynamically added here -->
+        <div class="chart-container">
+          <canvas id="barChart"></canvas>
         </div>
-        <div id="chart3DInfo" class="text-center mt-1" style="font-size: 0.8rem; color: var(--text-secondary);">
-          Klik pada bar untuk melihat detail nilai
+        <div id="chartInfo" class="text-center mt-1" style="font-size: 0.8rem; color: var(--text-secondary);">
+          Diagram menunjukkan rata-rata nilai per semester
         </div>
       </section>
 
       <!-- History Section -->
       <section class="history-section animate-fadeIn" style="animation-delay: 0.8s">
         <h2 class="section-title">
-          <i class="fas fa-history"></i>
+          <i class="fas fa-history icon-secondary"></i>
           Riwayat Analisis
         </h2>
         <div class="history-list" id="historyList">
@@ -2821,7 +2796,7 @@
       <!-- Recommendations -->
       <div class="sidebar-card animate-slideIn" style="animation-delay: 0.5s">
         <h3 class="sidebar-title">
-          <i class="fas fa-lightbulb"></i>
+          <i class="fas fa-lightbulb icon-warning"></i>
           Rekomendasi AI
         </h3>
         <ul class="recommendation-list" id="recommendations">
@@ -2837,7 +2812,7 @@
       <!-- Grade Distribution -->
       <div class="sidebar-card animate-slideIn" style="animation-delay: 0.6s">
         <h3 class="sidebar-title">
-          <i class="fas fa-percentage"></i>
+          <i class="fas fa-percentage icon-success"></i>
           Distribusi Nilai
         </h3>
         <div class="grade-distribution" id="gradeDistribution">
@@ -2851,24 +2826,24 @@
       <!-- Quick Actions -->
       <div class="sidebar-card animate-slideIn" style="animation-delay: 0.7s">
         <h3 class="sidebar-title">
-          <i class="fas fa-bolt"></i>
+          <i class="fas fa-bolt icon-accent"></i>
           Aksi Cepat
         </h3>
         <div class="quick-actions">
           <button class="btn btn-secondary btn-sm" onclick="showTemplates()" aria-label="Template">
-            <i class="fas fa-layer-group"></i>
+            <i class="fas fa-layer-group icon-secondary"></i>
             Template
           </button>
           <button class="btn btn-secondary btn-sm" onclick="saveProgress()" aria-label="Simpan Progress">
-            <i class="fas fa-save"></i>
+            <i class="fas fa-save icon-primary"></i>
             Simpan
           </button>
           <button class="btn btn-secondary btn-sm" onclick="showGuideModal()" aria-label="Panduan">
-            <i class="fas fa-question-circle"></i>
+            <i class="fas fa-question-circle icon-warning"></i>
             Panduan
           </button>
           <button class="btn btn-secondary btn-sm" onclick="showAboutModal()" aria-label="Tentang Aplikasi">
-            <i class="fas fa-info-circle"></i>
+            <i class="fas fa-info-circle icon-success"></i>
             Tentang
           </button>
         </div>
@@ -2897,13 +2872,13 @@
       </p>
       <div class="footer-actions">
         <button class="btn btn-secondary btn-sm" onclick="showCreatorInfo()">
-          <i class="fas fa-user"></i> Pembuat
+          <i class="fas fa-user icon-primary"></i> Pembuat
         </button>
         <button class="btn btn-secondary btn-sm" onclick="showPrivacy()">
-          <i class="fas fa-shield-alt"></i> Privasi
+          <i class="fas fa-shield-alt icon-secondary"></i> Privasi
         </button>
         <button class="btn btn-secondary btn-sm" onclick="showTerms()">
-          <i class="fas fa-file-contract"></i> Ketentuan
+          <i class="fas fa-file-contract icon-accent"></i> Ketentuan
         </button>
       </div>
     </div>
@@ -2913,29 +2888,29 @@
   <div class="modal" id="exportModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2><i class="fas fa-file-export"></i> Ekspor Data</h2>
+        <h2><i class="fas fa-file-export icon-primary"></i> Ekspor Data</h2>
         <button class="modal-close" onclick="closeModal('exportModal')">&times;</button>
       </div>
       <div class="modal-body">
         <p style="text-align: center; margin-bottom: 1rem; font-size: 0.9rem;">Pilih format ekspor yang diinginkan:</p>
         <div class="export-options">
           <div class="export-option" onclick="exportToPDF()">
-            <i class="fas fa-file-pdf"></i>
+            <i class="fas fa-file-pdf icon-primary"></i>
             <h3>PDF Report</h3>
             <p>Laporan lengkap dengan grafik</p>
           </div>
           <div class="export-option" onclick="exportToExcel()">
-            <i class="fas fa-file-excel"></i>
+            <i class="fas fa-file-excel icon-success"></i>
             <h3>Excel Data</h3>
             <p>Data mentah untuk analisis lanjutan</p>
           </div>
           <div class="export-option" onclick="exportToJSON()">
-            <i class="fas fa-file-code"></i>
+            <i class="fas fa-file-code icon-secondary"></i>
             <h3>JSON Backup</h3>
             <p>Backup data untuk penyimpanan</p>
           </div>
           <div class="export-option" onclick="exportToImage()">
-            <i class="fas fa-image"></i>
+            <i class="fas fa-image icon-accent"></i>
             <h3>Grafik</h3>
             <p>Simpan grafik sebagai gambar</p>
           </div>
@@ -2951,7 +2926,7 @@
   <div class="modal" id="userModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2><i class="fas fa-user-edit"></i> Profil Siswa</h2>
+        <h2><i class="fas fa-user-edit icon-primary"></i> Profil Siswa</h2>
         <button class="modal-close" onclick="closeModal('userModal')">&times;</button>
       </div>
       <div class="modal-body">
@@ -2964,7 +2939,7 @@
         
         <div class="form-group" style="margin-bottom: 1rem;">
           <label style="display: block; margin-bottom: 0.5rem; color: var(--text); font-size: 0.9rem;">
-            <i class="fas fa-user"></i> Nama Lengkap
+            <i class="fas fa-user icon-primary"></i> Nama Lengkap
           </label>
           <input type="text" id="userNameInput" placeholder="Contoh: Budi Santoso" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: rgba(255, 255, 255, 0.05); color: var(--text); font-size: 0.95rem;">
           <div class="validation-message" id="nameValidation"></div>
@@ -2972,7 +2947,7 @@
         
         <div class="form-group" style="margin-bottom: 1rem;">
           <label style="display: block; margin-bottom: 0.5rem; color: var(--text); font-size: 0.9rem;">
-            <i class="fas fa-graduation-cap"></i> Kelas
+            <i class="fas fa-graduation-cap icon-secondary"></i> Kelas
           </label>
           <select id="userClassInput" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: rgba(255, 255, 255, 0.05); color: var(--text); font-size: 0.95rem;">
             <option value="">Pilih Kelas</option>
@@ -2985,7 +2960,7 @@
         
         <div class="form-group" style="margin-bottom: 1rem;">
           <label style="display: block; margin-bottom: 0.5rem; color: var(--text); font-size: 0.9rem;">
-            <i class="fas fa-school"></i> Sekolah
+            <i class="fas fa-school icon-accent"></i> Sekolah
           </label>
           <input type="text" id="userSchoolInput" placeholder="Nama Sekolah" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: rgba(255, 255, 255, 0.05); color: var(--text); font-size: 0.95rem;">
         </div>
@@ -3008,7 +2983,7 @@
   <div class="modal" id="templatesModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2><i class="fas fa-layer-group"></i> Template Nilai</h2>
+        <h2><i class="fas fa-layer-group icon-secondary"></i> Template Nilai</h2>
         <button class="modal-close" onclick="closeModal('templatesModal')">&times;</button>
       </div>
       <div class="modal-body">
@@ -3017,7 +2992,7 @@
         </div>
         <div class="mt-2">
           <button class="btn btn-primary btn-sm" onclick="saveCurrentAsTemplate()">
-            <i class="fas fa-save"></i> Simpan sebagai Template
+            <i class="fas fa-save icon-primary"></i> Simpan sebagai Template
           </button>
         </div>
       </div>
@@ -3028,7 +3003,7 @@
   <div class="modal" id="settingsModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2><i class="fas fa-cog"></i> Pengaturan</h2>
+        <h2><i class="fas fa-cog icon-accent"></i> Pengaturan</h2>
         <button class="modal-close" onclick="closeModal('settingsModal')">&times;</button>
       </div>
       <div class="modal-body">
@@ -3108,7 +3083,7 @@
   <div class="modal" id="guideModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2><i class="fas fa-book"></i> Panduan Penggunaan</h2>
+        <h2><i class="fas fa-book icon-secondary"></i> Panduan Penggunaan</h2>
         <button class="modal-close" onclick="closeModal('guideModal')">&times;</button>
       </div>
       <div class="modal-body">
@@ -3183,7 +3158,7 @@
   <div class="modal" id="aboutModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2><i class="fas fa-info-circle"></i> Tentang Aplikasi</h2>
+        <h2><i class="fas fa-info-circle icon-success"></i> Tentang Aplikasi</h2>
         <button class="modal-close" onclick="closeModal('aboutModal')">&times;</button>
       </div>
       <div class="modal-body">
@@ -3214,12 +3189,12 @@
         <div class="feature-item">
           <div style="display: flex; align-items: flex-start;">
             <div class="feature-icon">
-              <i class="fas fa-cube"></i>
+              <i class="fas fa-chart-bar"></i>
             </div>
             <div>
-              <strong>Visualisasi 3D Interaktif</strong>
+              <strong>Visualisasi Diagram Batang</strong>
               <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.2rem;">
-                Grafik batang 3D dengan efek visual menarik dan interaktif.
+                Grafik batang interaktif dengan warna-warna menarik.
               </p>
             </div>
           </div>
@@ -3305,6 +3280,7 @@
     // Global variables
     let subjects = [];
     let chart = null;
+    let barChart = null;
     let analysisHistory = [];
     let isLightMode = false;
     let currentStats = null;
@@ -3333,12 +3309,6 @@
     let isListening = false;
     let voiceCommandsActive = false;
 
-    // 3D Chart Variables
-    let chart3DRotation = { x: 10, y: 0 };
-    let chart3DPerspective = 1000;
-    let chart3DBars = [];
-    let isChartRotating = false;
-
     // DOM Elements
     const subjectsDiv = document.getElementById("subjects");
     const themeToggle = document.getElementById("themeToggle");
@@ -3353,7 +3323,6 @@
     const voiceStatus = document.getElementById("voiceStatus");
     const voiceStatusText = document.getElementById("voiceStatusText");
     const voiceCommands = document.getElementById("voiceCommands");
-    const chart3DContainer = document.getElementById("chart3DContainer");
 
     // Initialize the app
     document.addEventListener('DOMContentLoaded', function() {
@@ -3629,137 +3598,111 @@
       }
     }
 
-    // 3D Chart Functions
-    function create3DChart(data) {
-      const container = chart3DContainer;
-      container.innerHTML = '';
+    // Create Bar Chart Function
+    function createBarChart(data) {
+      const canvas = document.getElementById('barChart');
+      if (!canvas) return;
       
-      // Add axes
-      const xAxis = document.createElement('div');
-      xAxis.className = 'chart-3d-axis chart-3d-axis-x';
-      container.appendChild(xAxis);
+      const ctx = canvas.getContext('2d');
       
-      const yAxis = document.createElement('div');
-      yAxis.className = 'chart-3d-axis chart-3d-axis-y';
-      container.appendChild(yAxis);
-      
-      // Add grid lines
-      for (let i = 1; i <= 4; i++) {
-        const gridLine = document.createElement('div');
-        gridLine.className = 'chart-3d-grid';
-        gridLine.style.left = `${i * 20}%`;
-        container.appendChild(gridLine);
+      // Destroy existing chart
+      if (barChart) {
+        barChart.destroy();
       }
       
-      const maxValue = Math.max(...data.values);
-      const containerWidth = container.clientWidth;
-      const containerHeight = container.clientHeight;
-      const barWidth = (containerWidth * 0.7) / data.labels.length;
-      const barSpacing = (containerWidth * 0.3) / (data.labels.length + 1);
+      // Create new chart
+      barChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            label: 'Rata-rata Nilai',
+            data: data.values,
+            backgroundColor: [
+              'rgba(67, 97, 238, 0.8)',
+              'rgba(114, 9, 183, 0.8)',
+              'rgba(247, 37, 133, 0.8)',
+              'rgba(16, 185, 129, 0.8)',
+              'rgba(245, 158, 11, 0.8)'
+            ],
+            borderColor: [
+              'rgba(67, 97, 238, 1)',
+              'rgba(114, 9, 183, 1)',
+              'rgba(247, 37, 133, 1)',
+              'rgba(16, 185, 129, 1)',
+              'rgba(245, 158, 11, 1)'
+            ],
+            borderWidth: 1,
+            borderRadius: 5,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              backgroundColor: 'rgba(30, 41, 59, 0.9)',
+              titleColor: '#e5e7eb',
+              bodyColor: '#e5e7eb',
+              borderColor: 'rgba(67, 97, 238, 0.5)',
+              borderWidth: 1
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: 'var(--text-secondary)',
+                stepSize: 20
+              }
+            },
+            x: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: 'var(--text-secondary)'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Update bar chart data
+    function updateBarChartData() {
+      const semesterAverages = [];
       
-      chart3DBars = [];
-      
-      // Create 3D bars
-      data.labels.forEach((label, index) => {
-        const value = data.values[index];
-        const barHeight = (value / maxValue) * (containerHeight - 100);
-        const xPos = barSpacing * (index + 1) + barWidth * index;
+      for (let i = 0; i < 5; i++) {
+        let total = 0;
+        let count = 0;
         
-        const bar = document.createElement('div');
-        bar.className = 'bar-3d';
-        bar.style.width = `${barWidth}px`;
-        bar.style.height = `${barHeight}px`;
-        bar.style.left = `${xPos}px`;
-        bar.style.transform = `rotateX(${chart3DRotation.x}deg) rotateY(${chart3DRotation.y}deg)`;
-        bar.dataset.value = value;
-        bar.dataset.label = label;
-        
-        // Front face
-        const frontFace = document.createElement('div');
-        frontFace.className = 'bar-3d-front';
-        bar.appendChild(frontFace);
-        
-        // Top face
-        const topFace = document.createElement('div');
-        topFace.className = 'bar-3d-top';
-        bar.appendChild(topFace);
-        
-        // Side face
-        const sideFace = document.createElement('div');
-        sideFace.className = 'bar-3d-side';
-        bar.appendChild(sideFace);
-        
-        // Value label
-        const valueLabel = document.createElement('div');
-        valueLabel.className = 'bar-3d-value';
-        valueLabel.textContent = value.toFixed(1);
-        bar.appendChild(valueLabel);
-        
-        // Bottom label
-        const bottomLabel = document.createElement('div');
-        bottomLabel.className = 'bar-3d-label';
-        bottomLabel.textContent = label;
-        bar.appendChild(bottomLabel);
-        
-        // Click event
-        bar.addEventListener('click', function() {
-          const allBars = container.querySelectorAll('.bar-3d');
-          allBars.forEach(b => {
-            b.style.zIndex = '1';
-            b.querySelector('.bar-3d-front').style.filter = 'brightness(1)';
-          });
-          
-          this.style.zIndex = '10';
-          this.querySelector('.bar-3d-front').style.filter = 'brightness(1.3)';
-          
-          speakFeedback(`${label}: ${value.toFixed(1)}`);
-          showNotification(`${label}: ${value.toFixed(1)}`, 'info');
+        subjects.forEach(subject => {
+          if (subject.scores[i] !== null && !isNaN(subject.scores[i])) {
+            total += subject.scores[i];
+            count++;
+          }
         });
         
-        container.appendChild(bar);
-        chart3DBars.push(bar);
-      });
-      
-      // Add perspective
-      container.style.perspective = `${chart3DPerspective}px`;
-    }
-
-    function rotateChart3D() {
-      if (isChartRotating) {
-        isChartRotating = false;
-        chart3DContainer.classList.remove('animate-chart-rotate');
-      } else {
-        isChartRotating = true;
-        chart3DContainer.classList.add('animate-chart-rotate');
+        semesterAverages.push(count > 0 ? total / count : 0);
       }
-    }
-
-    function toggleChartPerspective() {
-      if (chart3DPerspective === 1000) {
-        chart3DPerspective = 500;
-      } else {
-        chart3DPerspective = 1000;
-      }
-      chart3DContainer.style.perspective = `${chart3DPerspective}px`;
-      showNotification(`Perspektif grafik: ${chart3DPerspective}px`, 'info');
-    }
-
-    function resetChart3D() {
-      chart3DRotation = { x: 10, y: 0 };
-      chart3DPerspective = 1000;
-      isChartRotating = false;
-      chart3DContainer.classList.remove('animate-chart-rotate');
-      chart3DContainer.style.perspective = `${chart3DPerspective}px`;
       
-      chart3DBars.forEach(bar => {
-        bar.style.transform = `rotateX(${chart3DRotation.x}deg) rotateY(${chart3DRotation.y}deg)`;
-      });
-    }
-
-    function update3DChart(data) {
-      if (!data || !data.labels || !data.values) return;
+      const chartData = {
+        labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5'],
+        values: semesterAverages
+      };
       
-      create3DChart(data);
+      createBarChart(chartData);
     }
 
     // Load user profile
@@ -3936,7 +3879,7 @@
 
     // Add ripple effect to buttons
     function addRippleEffect() {
-      const buttons = document.querySelectorAll('.btn, .action-btn, .theme-toggle, .header-btn, .subject-action-btn, .user-edit-btn, .chart-3d-btn');
+      const buttons = document.querySelectorAll('.btn, .action-btn, .theme-toggle, .header-btn, .subject-action-btn, .user-edit-btn');
       buttons.forEach(button => {
         button.addEventListener('click', function(e) {
           createRipple(e);
@@ -4213,11 +4156,30 @@
         updateChartTheme();
       }
       
+      if (barChart) {
+        updateBarChartTheme();
+      }
+      
       if (settings.notifications) {
         showNotification(`Mode ${isLightMode ? 'Terang' : 'Gelap'} diaktifkan`, 'success');
       }
       
       speakFeedback(`Mode ${isLightMode ? 'terang' : 'gelap'} diaktifkan`);
+    }
+
+    // Update bar chart theme
+    function updateBarChartTheme() {
+      if (!barChart) return;
+      
+      const gridColor = isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+      const textColor = isLightMode ? '#1e293b' : '#e5e7eb';
+      
+      barChart.options.scales.x.grid.color = gridColor;
+      barChart.options.scales.y.grid.color = gridColor;
+      barChart.options.scales.x.ticks.color = textColor;
+      barChart.options.scales.y.ticks.color = textColor;
+      
+      barChart.update();
     }
 
     // Add subject with animation
@@ -4239,10 +4201,10 @@
           </div>
           <div class="subject-actions">
             <button class="subject-action-btn" onclick="duplicateSubject(${subjectId})" title="Duplikat" aria-label="Duplikat Mata Pelajaran">
-              <i class="fas fa-copy"></i>
+              <i class="fas fa-copy icon-secondary"></i>
             </button>
             <button class="subject-action-btn remove" onclick="removeSubject(${subjectId})" title="Hapus" aria-label="Hapus Mata Pelajaran">
-              <i class="fas fa-times"></i>
+              <i class="fas fa-times icon-accent"></i>
             </button>
           </div>
         </div>
@@ -4634,10 +4596,10 @@
             </div>
             <div class="subject-actions">
               <button class="subject-action-btn" onclick="duplicateSubject(${subjectId})" title="Duplikat" aria-label="Duplikat Mata Pelajaran">
-                <i class="fas fa-copy"></i>
+                <i class="fas fa-copy icon-secondary"></i>
               </button>
               <button class="subject-action-btn remove" onclick="removeSubject(${subjectId})" title="Hapus" aria-label="Hapus Mata Pelajaran">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times icon-accent"></i>
               </button>
             </div>
           </div>
@@ -4716,8 +4678,10 @@
         chart = null;
       }
       
-      // Clear 3D chart
-      chart3DContainer.innerHTML = '';
+      if (barChart) {
+        barChart.destroy();
+        barChart = null;
+      }
       
       document.getElementById('recommendations').innerHTML = `
         <li class="recommendation-item">
@@ -4776,7 +4740,7 @@
     // Analyze function - FIXED dengan loading yang benar
     async function analyze() {
       const validSubjects = subjects.filter(subject => 
-        subject.scores.some(score => score !== null)
+        subject.scores.some(score => score !== null && !isNaN(score))
       );
       
       if (validSubjects.length === 0) {
@@ -4808,7 +4772,7 @@
           
           displayResults(stats);
           updateChart(validSubjects, stats);
-          update3DChartData(stats);
+          updateBarChartData();
           updateDashboard();
           updateGradeDistribution(validSubjects);
           addToHistory(stats);
@@ -4840,32 +4804,6 @@
       }, 2000); // Simulasi proses 2 detik
     }
 
-    // Update 3D chart data
-    function update3DChartData(stats) {
-      const semesterAverages = [];
-      
-      for (let i = 0; i < 5; i++) {
-        let total = 0;
-        let count = 0;
-        
-        subjects.forEach(subject => {
-          if (subject.scores[i] !== null) {
-            total += subject.scores[i];
-            count++;
-          }
-        });
-        
-        semesterAverages.push(count > 0 ? total / count : 0);
-      }
-      
-      const chartData = {
-        labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5'],
-        values: semesterAverages
-      };
-      
-      update3DChart(chartData);
-    }
-
     // Calculate statistics
     function calculateStatistics(validSubjects) {
       let totalAll = 0;
@@ -4875,7 +4813,7 @@
       let subjectAverages = [];
       
       validSubjects.forEach(subject => {
-        const scores = subject.scores.filter(score => score !== null);
+        const scores = subject.scores.filter(score => score !== null && !isNaN(score));
         
         if (scores.length > 0) {
           const subjectTotal = scores.reduce((a, b) => a + b, 0);
@@ -4897,7 +4835,7 @@
         }
       });
       
-      const avgAll = totalAll / countAll;
+      const avgAll = countAll > 0 ? totalAll / countAll : 0;
       const diff = lastTotal - prevTotal;
       
       let trend = "stabil";
@@ -5174,7 +5112,7 @@
         let count = 0;
         
         validSubjects.forEach(subject => {
-          if (subject.scores[i] !== null) {
+          if (subject.scores[i] !== null && !isNaN(subject.scores[i])) {
             total += subject.scores[i];
             count++;
           }
@@ -5251,7 +5189,7 @@
     // Update dashboard
     function updateDashboard() {
       const validSubjects = subjects.filter(subject => 
-        subject.scores.some(score => score !== null)
+        subject.scores.some(score => score !== null && !isNaN(score))
       );
       
       if (validSubjects.length > 0) {
@@ -5291,7 +5229,7 @@
       }
     }
 
-    // Update grade distribution with animation
+    // Update grade distribution with animation - FIXED
     function updateGradeDistribution(validSubjects) {
       const distributionDiv = document.getElementById('gradeDistribution');
       
@@ -5306,7 +5244,7 @@
       
       validSubjects.forEach(subject => {
         subject.scores.forEach(score => {
-          if (score !== null) {
+          if (score !== null && !isNaN(score)) {
             totalScores++;
             for (const category of categories) {
               if (score >= category.min && score <= category.max) {
@@ -5344,6 +5282,7 @@
         `;
       }).join('');
       
+      // Animate the fills
       setTimeout(() => {
         const gradeFills = distributionDiv.querySelectorAll('.grade-fill');
         categories.forEach((category, index) => {
@@ -5407,7 +5346,7 @@
       }).join('');
     }
 
-    // Update achievement with detailed titles and animation
+    // Update achievement with detailed titles and animation - FIXED
     function updateAchievement(stats) {
       const achievementContent = document.getElementById('achievementContent');
       let achievement = {
@@ -5722,7 +5661,7 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
 
     // Export to Image
     function exportToImage() {
-      if (!chart) {
+      if (!barChart) {
         showNotification('Tidak ada grafik untuk diekspor', 'warning');
         speakFeedback('Tidak ada grafik untuk diekspor');
         return;
@@ -5730,7 +5669,7 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
       
       const link = document.createElement('a');
       link.download = `grafik-raport-${new Date().toISOString().slice(0, 10)}.png`;
-      link.href = chart.canvas.toDataURL('image/png');
+      link.href = barChart.canvas.toDataURL('image/png');
       link.click();
       
       closeModal('exportModal');
@@ -5775,10 +5714,10 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
             </div>
             <div style="display: flex; gap: 0.3rem;">
               <button class="btn btn-secondary btn-sm" onclick="loadTemplate(${index})" aria-label="Load Template">
-                <i class="fas fa-check"></i>
+                <i class="fas fa-check icon-success"></i>
               </button>
               <button class="btn btn-danger btn-sm" onclick="deleteTemplate(${index})" aria-label="Delete Template">
-                <i class="fas fa-trash"></i>
+                <i class="fas fa-trash icon-accent"></i>
               </button>
             </div>
           </div>
@@ -5829,10 +5768,10 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
               </div>
               <div class="subject-actions">
                 <button class="subject-action-btn" onclick="duplicateSubject(${subjectId})" title="Duplikat" aria-label="Duplikat Mata Pelajaran">
-                  <i class="fas fa-copy"></i>
+                  <i class="fas fa-copy icon-secondary"></i>
                 </button>
                 <button class="subject-action-btn remove" onclick="removeSubject(${subjectId})" title="Hapus" aria-label="Hapus Mata Pelajaran">
-                  <i class="fas fa-times"></i>
+                  <i class="fas fa-times icon-accent"></i>
                 </button>
               </div>
             </div>
@@ -6071,10 +6010,10 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
                 </div>
                 <div class="subject-actions">
                   <button class="subject-action-btn" onclick="duplicateSubject(${subject.id})" title="Duplikat" aria-label="Duplikat Mata Pelajaran">
-                    <i class="fas fa-copy"></i>
+                    <i class="fas fa-copy icon-secondary"></i>
                   </button>
                   <button class="subject-action-btn remove" onclick="removeSubject(${subject.id})" title="Hapus" aria-label="Hapus Mata Pelajaran">
-                    <i class="fas fa-times"></i>
+                    <i class="fas fa-times icon-accent"></i>
                   </button>
                 </div>
               </div>
@@ -6113,7 +6052,7 @@ Analisis dilakukan dengan Smart Raport Analyzer Pro`;
               currentStats = stats;
               displayResults(stats);
               updateChart(validSubjects, stats);
-              update3DChartData(stats);
+              updateBarChartData();
               updateGradeDistribution(validSubjects);
               updateAchievement(stats);
             }, 500);
